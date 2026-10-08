@@ -167,7 +167,8 @@ def test_classification_preserves_bookings_and_conflicts(api,app):
     assert after['allocations'][0]['resort_id']=='cs'
     assert api.promote(api.create().json).status_code==409
     c=api.config(7)
-    assert api.send('/catalog/classify',{'changes':[{'id':c['id'],'version':c['version']}],'resort_id':None,'reason':'Correção'}).status_code==200
+    assert api.send('/catalog/classify',{'changes':[{'id':c['id'],'version':c['version']}],'resort_id':None,'reason':'Correção'}).status_code==400
+    assert api.send('/resources',{'name':'Recurso de teste','evidence':'Conferência de teste','resort_id':None}).status_code==400
     assert api.detail(active)['id']==active['id']
 
 

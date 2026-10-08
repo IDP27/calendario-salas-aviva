@@ -65,7 +65,7 @@ O arquivo `docs/classificacao-rio-quente-2026-10-08.json` identifica Gardênia, 
 .venv/bin/flask --app calendar_app classify-reviewed docs/classificacao-rio-quente-2026-10-08.json --apply
 ```
 
-Depois das duas relações, são 90 configurações da Costa do Sauípe e nove do Rio Quente; nenhuma permanece em **A identificar**. As composições físicas de São Tomé e dos conjuntos de dois e três módulos do Rio Quente continuam sem validação operacional. A classificação do empreendimento, sozinha, não libera bloqueios efetivos.
+Depois das duas relações, são 90 configurações da Costa do Sauípe e nove do Rio Quente; todas têm empreendimento. As composições físicas de São Tomé e dos conjuntos de dois e três módulos do Rio Quente continuam sem validação operacional. A classificação do empreendimento, sozinha, não libera bloqueios efetivos.
 
 Configuração:
 
@@ -98,13 +98,13 @@ Não sobrescreva um `.env` existente. Proteja o arquivo e `instance/secret-key`,
 
 A prioridade é relativa à interseção de recursos e dias. Uma solicitação anterior com conjunto integralmente disponível impede ultrapassagem; uma anterior impedida por ocupação em outra parte do conjunto permanece em espera. Alterar espaços/datas/fases de uma espera ou voltar à espera gera nova ordem de entrada. Alterar apenas o texto preserva a ordem. Expansões de uma opção/confirmado revalidam conflitos e prioridade nos novos dias/recursos.
 
-A categoria **Empreendimento a identificar** representa um valor ainda não informado, não um terceiro resort. Um espaço fisicamente homologado pode receber ocupação nessa categoria por quem tenha acesso a ela. Os conflitos usam recursos físicos globais, mesmo após uma classificação posterior.
+Os filtros exibem **Todos**, **Costa do Sauípe** e **Rio Quente**. A categoria provisória de identificação foi retirada da interface após a classificação dos 99 espaços/configurações. O valor vazio permanece apenas como estado interno para uma eventual importação futura; um responsável cadastral precisa atribuir um dos dois empreendimentos antes de criar novos recursos ou alterar a classificação pela aplicação. Os conflitos continuam usando recursos físicos globais.
 
 Na grade, hachura significa **a validar**, ponto indica ocupação efetiva e o contador mostra solicitações pendentes/em espera. A lista apresenta a situação por texto e cor. O filtro de situação filtra solicitações; ele nunca esconde ocupações físicas para fazer um dia parecer livre. O celular abre em lista. A atualização consulta o servidor a cada 20 segundos quando nenhum formulário/campo está em edição; também há **Atualizar agenda**. Falhas de conexão são sinalizadas.
 
 ## Pessoas e responsabilidades
 
-Em **Pessoas & acessos**, a administração cria contas individuais, seleciona a equipe e define o escopo: Costa do Sauípe, Rio Quente e/ou área a identificar. Pode desativar contas e ajustar responsabilidades. Uma alteração de acesso encerra a validade das sessões anteriores. A equipe da conta não é um campo livre de edição de bloqueios.
+Em **Pessoas & acessos**, a administração cria contas individuais, seleciona a equipe e define o escopo: Costa do Sauípe e/ou Rio Quente. Pode desativar contas e ajustar responsabilidades. Uma alteração de acesso encerra a validade das sessões anteriores. A equipe da conta não é um campo livre de edição de bloqueios.
 
 - Usuário comum: consulta seu escopo e altera solicitações da própria equipe.
 - Responsável cadastral: classifica espaços, revisa composições e importa a lista. Isso não concede edição de outra equipe.

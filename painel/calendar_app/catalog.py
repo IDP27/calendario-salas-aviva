@@ -141,7 +141,9 @@ def classify(actor,data):
     if not isinstance(changes,list) or not 1<=len(changes)<=150:
         raise Problem('Selecione de 1 a 150 espaços para classificar.')
     resort=data.get('resort_id')
-    if resort not in (None,'cs','rq') or not in_scope(actor,resort):
+    if resort not in ('cs','rq'):
+        raise Problem('Selecione Costa do Sauípe ou Rio Quente.')
+    if not in_scope(actor,resort):
         raise Problem('Empreendimento fora do seu escopo.',403)
     location=str(data.get('location','')).strip()
     if len(location)>150: raise Problem('Localização deve ter até 150 caracteres.')
@@ -207,7 +209,8 @@ def validate_topology(actor,config_id,data):
 def add_resource(actor,data):
     require_capability(actor,'can_catalog')
     resort=data.get('resort_id')
-    if resort not in (None,'cs','rq') or not in_scope(actor,resort): raise Problem('Empreendimento fora do seu escopo.',403)
+    if resort not in ('cs','rq'): raise Problem('Selecione Costa do Sauípe ou Rio Quente.')
+    if not in_scope(actor,resort): raise Problem('Empreendimento fora do seu escopo.',403)
     name=required_text(data,'name',200); evidence=required_text(data,'evidence',600)
     with write_transaction() as conn:
         resource_id=uid()
