@@ -29,16 +29,58 @@ def test_import_preview_idempotency_and_invalid_preserves_data(api):
     assert api.get('/catalog').json['source_count']==125
 
 
-def test_unknown_topology_accepts_only_pending(api):
+def test_unknown_topology_requires_scheduler_confirmation(api,app):
     b=api.create(status='pending')
     assert b.status_code==201
     assert api.create().status_code==422
     assert api.promote(b.json).status_code==409
-    assert api.create(status='confirmed').status_code==409
+    assert API(app,'seller').create(status='confirmed').status_code==409
     calendar=api.get('/calendar?from=2027-01-01&to=2027-01-31').json
     c=next(c for c in calendar['configurations'] if c['id']=='space_007')
     assert c['days']['2027-01-10']['state']=='unvalidated'
     assert c['days']['2027-01-10']['requests']==[b.json['id']]
+
+
+def test_scheduler_confirmation_blocks_unvalidated_space_for_other_users(api,app):
+    seller=API(app,'seller');ops=API(app,'ops')
+    first=seller.create(code=4,status='pending',start='2026-12-25',end='2026-12-26').json
+    assert seller.send(f"/bookings/{first['id']}/confirm",{'version':first['version']}).status_code==403
+    confirmed=api.send(f"/bookings/{first['id']}/confirm",{'version':first['version']})
+    assert confirmed.status_code==200 and confirmed.json['status']=='confirmed'
+    availability=api.get('/availability?from=2026-12-25&to=2026-12-26').json['results']
+    assert next(r for r in availability if r['id']=='space_004')['available'] is False
+    calendar=api.get('/calendar?from=2026-12-01&to=2026-12-31').json['configurations']
+    baea=next(r for r in calendar if r['id']=='space_004')
+    assert baea['days']['2026-12-25']['state']=='occupied'
+    assert confirmed.json['id'] in baea['days']['2026-12-25']['bookings']
+    other=ops.create(code=4,status='pending',start='2026-12-25',end='2026-12-26').json
+    assert api.send(f"/bookings/{other['id']}/confirm",{'version':other['version']}).status_code==409
+    assert api.detail(other)['status']=='pending'
+    assert seller.send(f"/bookings/{first['id']}/cancel",{'version':confirmed.json['version'],'reason':'Liberado'}).status_code==200
+    assert api.send(f"/bookings/{other['id']}/confirm",{'version':other['version']}).status_code==200
+
+
+def test_confirmation_of_multiple_spaces_is_atomic(api,app):
+    occupied=api.create(code=4,status='confirmed',start='2027-01-10',end='2027-01-12')
+    assert occupied.status_code==201
+    seller=API(app,'seller')
+    request=seller.create(status='pending',allocations=[allocation(4),allocation(7)]).json
+    assert api.send(f"/bookings/{request['id']}/confirm",{'version':request['version']}).status_code==409
+    assert api.detail(request)['status']=='pending'
+    free=api.get('/availability?from=2027-01-10&to=2027-01-12').json['results']
+    assert next(r for r in free if r['id']=='space_007')['available'] is None
+
+
+def test_concurrent_confirmations_cannot_double_book_unvalidated_space(api,app):
+    first=api.create(code=4,status='pending').json
+    second=api.create(code=4,status='pending').json
+    clients=[API(app),API(app)]
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        outcomes=list(pool.map(lambda pair: pair[0].send(
+            f"/bookings/{pair[1]['id']}/confirm",{'version':pair[1]['version']}).status_code,
+            zip(clients,[first,second])))
+    assert sorted(outcomes)==[200,409]
+    assert sum(api.detail(b)['status']=='confirmed' for b in (first,second))==1
 
 
 def test_availability_shows_pending_request_separately_from_occupation(api):
@@ -137,7 +179,8 @@ def test_team_edit_permissions_and_scheduler_exception(api,app):
     assert seller.promote(b).status_code==403
     promoted=api.promote(b)
     assert promoted.status_code==200 and promoted.json['team_id']=='operations'
-    assert ops.send(f"/bookings/{b['id']}",edit_body(promoted.json,status='confirmed'),method='PUT').status_code==200
+    assert ops.send(f"/bookings/{b['id']}",edit_body(promoted.json,status='confirmed'),method='PUT').status_code==409
+    assert api.send(f"/bookings/{b['id']}/confirm",{'version':promoted.json['version']}).status_code==200
     assert seller.create(status='pending',team_id='operations').status_code==403
 
 
@@ -194,7 +237,7 @@ def test_classification_preserves_bookings_and_conflicts(api,app):
 
 
 def test_reclassification_rechecks_scope(api,app):
-    user=api.send('/users',{'username':'limited','name':'Restrito','password':'Teste-isolado-2026!','team_id':'commercial','scopes':['unassigned']}).json
+    user=api.send('/users',{'username':'limited','name':'Restrito','password':'Teste#2026','team_id':'commercial','scopes':['unassigned']}).json
     limited=API(app,'limited');b=limited.create(status='pending').json;c=api.config(7)
     api.send('/catalog/classify',{'changes':[{'id':c['id'],'version':c['version']}],'resort_id':'cs','reason':'Mudança cadastral'})
     assert limited.get(f"/bookings/{b['id']}").status_code==403

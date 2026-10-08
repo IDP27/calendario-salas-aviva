@@ -51,7 +51,7 @@ def cells(allocations):
     return result
 
 
-def normalize_allocations(conn,actor,raw,status):
+def normalize_allocations(conn,actor,raw,status,allow_unvalidated_confirmation=False):
     if not isinstance(raw,list) or not 1<=len(raw)<=40:
         raise Problem('Inclua de 1 a 40 períodos/espaços.')
     configs={c['id']:c for c in all_catalog(conn)}; resources=resources_map(conn)
@@ -69,7 +69,8 @@ def normalize_allocations(conn,actor,raw,status):
         if not isinstance(chosen,list) or any(not isinstance(r,str) for r in chosen) or len(set(chosen))!=len(chosen): raise Problem('Seleção física inválida.')
         chosen=sorted(chosen)
         valid=conf['validated'] and chosen and chosen in conf['options'] and all(resources.get(r,{}).get('validated') and resources[r]['active'] for r in chosen)
-        if status!='pending' and not valid:
+        provisional_confirmed=(status=='confirmed' and allow_unvalidated_confirmation and not conf['validated'] and not chosen)
+        if status!='pending' and not valid and not provisional_confirmed:
             raise Problem(f"{conf['name']}: a composição física precisa ser validada. Registre como Pendente de validação.",422)
         if chosen and not valid:
             raise Problem('Não use uma composição que ainda não foi homologada. Remova a seleção para registrar a pendência.',422)
@@ -85,7 +86,29 @@ def occupation_conflicts(conn,wanted,exclude=None):
     return {(r['resource_id'],r['day']) for r in occupied}&wanted
 
 
-def ensure_priority(conn, booking, wanted, old_cells=None):
+def configuration_conflicts(conn,allocations,exclude=None):
+    for a in allocations:
+        conflict=conn.execute('''SELECT 1 FROM allocations other
+                                 JOIN bookings b ON b.id=other.booking_id
+                                 WHERE b.status IN ('option','confirmed') AND b.id<>%s
+                                   AND other.configuration_id=%s
+                                   AND other.start_date<%s AND other.end_exclusive>%s LIMIT 1''',
+                              (exclude or '',a['configuration_id'],a['end_exclusive'],a['start_date'])).fetchone()
+        if conflict: return True
+    return False
+
+
+def ensure_priority(conn, booking, wanted, old_cells=None, allocations=None):
+    if allocations and configuration_conflicts(conn,allocations,booking['id']):
+        raise Problem('Este espaço já está reservado no período informado. Nenhuma sala foi reservada parcialmente.',409)
+    for a in allocations or []:
+        earlier=conn.execute('''SELECT 1 FROM allocations other JOIN bookings b ON b.id=other.booking_id
+                                WHERE b.status='waiting' AND b.queue_number<%s AND b.id<>%s
+                                  AND other.configuration_id=%s
+                                  AND other.start_date<%s AND other.end_exclusive>%s LIMIT 1''',
+                             (booking['queue_number'],booking['id'],a['configuration_id'],a['end_exclusive'],a['start_date'])).fetchone()
+        if earlier:
+            raise Problem('Uma solicitação anterior tem prioridade para este espaço e período. Consulte a fila.',409)
     if occupation_conflicts(conn,wanted,booking['id']):
         raise Problem('Há ocupação efetiva em pelo menos um espaço/dia. Nenhuma sala foi reservada parcialmente.',409)
     added=wanted-(old_cells or set())
@@ -120,10 +143,16 @@ def save_booking(actor,data,booking_id=None,idempotency_key=None):
             if before['status']=='cancelled': raise Problem('Solicitação cancelada: crie uma nova para preservar o histórico.',409)
         status=data.get('status','pending')
         allowed={'pending','waiting'} if not before or before['status'] in ('pending','waiting') else {before['status'],'waiting','pending'}
-        if before and before['status']=='option': allowed.add('confirmed')
+        if actor['can_schedule'] and (not before or before['status'] in ('pending','waiting')):
+            allowed.add('confirmed')
+        if before and before['status']=='option' and actor['can_schedule']: allowed.add('confirmed')
         if status not in allowed:
             raise Problem('Mudança de situação não permitida. A opção prioritária depende de promoção pela fila.',409)
-        allocations=normalize_allocations(conn,actor,data.get('allocations'),status)
+        allocations=normalize_allocations(conn,actor,data.get('allocations'),status,
+                                          allow_unvalidated_confirmation=status=='confirmed' and (actor['can_schedule'] or before and before['status']=='confirmed'))
+        if before and before['status']=='confirmed' and status=='confirmed' and not actor['can_schedule']:
+            if allocation_signature(allocations)!=allocation_signature(before['allocations']):
+                raise Problem('Peça ao responsável pela fila para alterar o espaço ou período confirmado.',403)
         title=required_text(data,'title',180); responsible=required_text(data,'responsible',120)
         notes=data.get('notes','')
         if not isinstance(notes,str) or len(notes)>4000: raise Problem('Observações devem ter até 4.000 caracteres.')
@@ -140,7 +169,7 @@ def save_booking(actor,data,booking_id=None,idempotency_key=None):
             conn.execute('INSERT INTO allocations(booking_id,configuration_id,phase,start_date,end_exclusive,resources) VALUES (%s,%s,%s,%s,%s,%s)',(booking_id,a['configuration_id'],a['phase'],a['start_date'],a['end_exclusive'],json_value(a['resources'])))
         after=get_booking(conn,booking_id)
         wanted=cells(allocations)
-        if status in ACTIVE: ensure_priority(conn,after,wanted,old)
+        if status in ACTIVE: ensure_priority(conn,after,wanted,old,allocations)
         conn.execute('DELETE FROM occupations WHERE booking_id=%s',(booking_id,))
         if status in ACTIVE:
             for resource_id,occupied_day in sorted(wanted):
@@ -168,9 +197,23 @@ def transition(actor,booking_id,data,action):
             raw=[dict(a,end_date=str(a['end_date']),start_date=str(a['start_date'])) for a in before['allocations']]
             allocations=normalize_allocations(conn,actor,raw,'option')
             wanted=cells(allocations)
-            ensure_priority(conn,before,wanted)
+            ensure_priority(conn,before,wanted,allocations=allocations)
             for resource_id,occupied_day in sorted(wanted): conn.execute('INSERT INTO occupations VALUES (%s,%s,%s)',(resource_id,occupied_day,booking_id))
             status='option'; reason='Promoção manual por ordem de entrada, com disponibilidade integral.'
+        elif action=='confirm':
+            if not actor['can_schedule']: raise Problem('A confirmação é exclusiva do responsável pela fila.',403)
+            if before['status'] not in ('pending','waiting','option'):
+                raise Problem('Esta solicitação não pode ser confirmada.',409)
+            raw=[dict(a,end_date=str(a['end_date']),start_date=str(a['start_date'])) for a in before['allocations']]
+            allocations=normalize_allocations(conn,actor,raw,'confirmed',allow_unvalidated_confirmation=True)
+            wanted=cells(allocations)
+            ensure_priority(conn,before,wanted,
+                            cells(before['allocations']) if before['status']=='option' else None,
+                            allocations=allocations)
+            if before['status']!='option':
+                for resource_id,occupied_day in sorted(wanted):
+                    conn.execute('INSERT INTO occupations VALUES (%s,%s,%s)',(resource_id,occupied_day,booking_id))
+            status='confirmed'; reason='Reserva confirmada pelo responsável da fila para todo o conjunto.'
         else: raise Problem('Ação inválida.')
         conn.execute('UPDATE bookings SET status=%s,updated_by=%s,updated_at=now(),version=version+1 WHERE id=%s',(status,actor['id'],booking_id))
         if status=='cancelled': conn.execute('DELETE FROM occupations WHERE booking_id=%s',(booking_id,))

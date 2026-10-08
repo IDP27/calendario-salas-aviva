@@ -9,7 +9,7 @@ from calendar_app.db import migrate, get_db, write_transaction
 from calendar_app.catalog import import_catalog
 from calendar_app.auth import create_user
 
-PASSWORD='Teste-isolado-2026!'
+PASSWORD='Teste#2026'
 
 
 @pytest.fixture

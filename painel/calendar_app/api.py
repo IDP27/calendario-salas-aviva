@@ -105,12 +105,16 @@ def availability():
             request_counts.setdefault(row['configuration_id'],{})[row['status']]=row['total']
         for config in all_catalog(conn):
             if not config_access(g.user,config,resources) or (q['resort']!='all' and (config['resort_id'] or 'unassigned')!=q['resort']): continue
+            exact_occupation=conn.execute('''SELECT 1 FROM allocations a JOIN bookings b ON b.id=a.booking_id
+                                             WHERE a.configuration_id=%s AND b.status IN ('option','confirmed')
+                                               AND a.start_date<%s AND a.end_exclusive>%s LIMIT 1''',
+                                          (config['id'],end,first)).fetchone() is not None
             choices=[]
             for option in config['options'] if config['validated'] else []:
                 wanted={(rid,first+timedelta(days=i)) for rid in option for i in range((end-first).days)}
-                choices.append({'resources':option,'available':not occupation_conflicts(conn,wanted)})
+                choices.append({'resources':option,'available':not exact_occupation and not occupation_conflicts(conn,wanted)})
             results.append({'id':config['id'],'name':config['name'],'resort_id':config['resort_id'],
-                            'validated':config['validated'],'options':choices,'available':any(o['available'] for o in choices) if choices else None,
+                            'validated':config['validated'],'options':choices,'available':False if exact_occupation else any(o['available'] for o in choices) if choices else None,
                             'pending_count':request_counts.get(config['id'],{}).get('pending',0),
                             'waiting_count':request_counts.get(config['id'],{}).get('waiting',0)})
         return serialize({'results':results,'note':'Solicitações pendentes e em espera não ocupam a sala. Somente opções prioritárias e confirmações geram ocupação efetiva; a promoção respeita a fila.'})
@@ -132,14 +136,22 @@ def calendar():
         visible_by_id={b['id']:b for b in all_visible}
         filtered=list_bookings(g.user,**q)
         occupations={(r['resource_id'],r['day']):r['booking_id'] for r in conn.execute('SELECT * FROM occupations WHERE day>=%s AND day<%s',(first,end))}
+        exact_occupations={}
+        for a in conn.execute('''SELECT a.configuration_id,a.start_date,a.end_exclusive,a.booking_id
+                                 FROM allocations a JOIN bookings b ON b.id=a.booking_id
+                                 WHERE b.status IN ('option','confirmed') AND a.start_date<%s AND a.end_exclusive>%s''',(end,first)):
+            for offset in range((min(a['end_exclusive'],end)-max(a['start_date'],first)).days):
+                key=(a['configuration_id'],max(a['start_date'],first)+timedelta(days=offset))
+                exact_occupations.setdefault(key,set()).add(a['booking_id'])
         days=[first+timedelta(days=i) for i in range((end-first).days)]
         for config in configs:
             config['days']={}
             config_resources = {rid for option in config['options'] for rid in option}
             for d in days:
-                matches={occupations[(rid,d)] for option in config['options'] for rid in option if (rid,d) in occupations}
+                exact_matches=exact_occupations.get((config['id'],d),set())
+                matches=exact_matches|{occupations[(rid,d)] for option in config['options'] for rid in option if (rid,d) in occupations}
                 free=sum(not any((r,d) in occupations for r in option) for option in config['options'])
-                state='unvalidated' if not config['validated'] else 'available' if free==len(config['options']) else 'partial' if free else 'occupied'
+                state='occupied' if exact_matches else 'unvalidated' if not config['validated'] else 'available' if free==len(config['options']) else 'partial' if free else 'occupied'
                 pending=[b['id'] for b in filtered if b['status'] in ('pending','waiting') and any(
                     a['start_date']<=d<a['end_exclusive'] and
                     (a['configuration_id']==config['id'] or

@@ -45,8 +45,8 @@ def create_user(conn, data, actor=None, first=False):
     if not re.fullmatch(r'[a-z0-9._@-]{3,64}', username):
         raise Problem('Usuário deve ter entre 3 e 64 letras, números ou . _ @ -')
     password = data.get('password', '')
-    if not isinstance(password, str) or not 12 <= len(password) <= 256:
-        raise Problem('Use uma senha individual de 12 a 256 caracteres.')
+    if not isinstance(password, str) or not 8 <= len(password) <= 10:
+        raise Problem('Use uma senha individual de 8 a 10 caracteres.')
     team = data.get('team_id')
     if team not in ('commercial', 'operations'):
         raise Problem('Escolha a equipe.')
@@ -130,8 +130,8 @@ def change_password():
     if not isinstance(data.get('current_password'),str) or not check_password_hash(g.user['password_hash'], data['current_password']):
         raise Problem('Senha atual incorreta.',403)
     password=data.get('password','')
-    if not isinstance(password,str) or not 12<=len(password)<=256:
-        raise Problem('A nova senha deve ter de 12 a 256 caracteres.')
+    if not isinstance(password,str) or not 8<=len(password)<=10:
+        raise Problem('A nova senha deve ter de 8 a 10 caracteres.')
     with write_transaction() as conn:
         conn.execute('UPDATE users SET password_hash=%s, version=version+1 WHERE id=%s',(generate_password_hash(password),g.user['id']))
         audit(conn,g.user,'user',g.user['id'],'password_changed')

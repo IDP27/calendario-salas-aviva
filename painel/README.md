@@ -20,7 +20,7 @@ Inicie a aplicação:
 
 Acesse **http://127.0.0.1:4174**. Se a agenda já estiver aberta, não é necessário iniciar outro servidor. `Ctrl+C` encerra a aplicação; o banco permanece ativo. Para encerrar o banco dedicado, use `pg_ctl -D instance/postgres stop` quando não houver usuários conectados.
 
-O primeiro acesso cria a conta individual de administração. Escolha uma senha de pelo menos 12 caracteres. A primeira conta administra cadastros, pessoas e fila; isso não permite editar/cancelar solicitações de outra equipe. Não existe `admin/admin123` na aplicação nova.
+O primeiro acesso cria a conta individual de administração. Escolha uma senha de 8 a 10 caracteres. A primeira conta administra cadastros, pessoas e fila; isso não permite editar/cancelar solicitações de outra equipe. Não existe `admin/admin123` na aplicação nova. Senhas antigas com mais de 10 caracteres continuam válidas no login até que seus titulares as alterem; nesse caso, use a opção “Minha senha não cabe no campo” na tela de entrada.
 
 ## Preparar outra instalação
 
@@ -82,11 +82,11 @@ Não sobrescreva um `.env` existente. Proteja o arquivo e `instance/secret-key`,
 ## Operar a agenda
 
 1. Em **Salas & espaços**, consulte nomes, códigos da fonte e observações. As 125 linhas do PDF geram 99 espaços/configurações para revisão e 63 candidatos a recursos físicos. Os dois serviços ficam fora da agenda. As 28 variantes da Arena ficam rastreáveis sob quatro configurações, sem disponibilidade independente por fase ou climatização.
-2. Use **Validar composição** somente após confirmação da operação. A sugestão extraída do nome não é homologação. Para Arena, cadastre os módulos físicos identificados e depois vincule os conjuntos permitidos. Configurações sem validação aceitam apenas pendências.
+2. Use **Validar composição** somente após confirmação da operação. A sugestão extraída do nome não é homologação. Para Arena, cadastre os módulos físicos identificados e depois vincule os conjuntos permitidos. Configurações sem validação aceitam solicitações pendentes e confirmações feitas pelo responsável da fila. Nestas confirmações, o bloqueio garante exclusividade da configuração escolhida; conflitos com outras configurações combinadas dependem da validação física.
 3. Para atribuir resort e localização, selecione um ou mais itens e clique em **Classificar seleção**. A tela mostra os itens que serão alterados. Registre a referência da classificação. Os IDs, as solicitações e o histórico são preservados.
 4. Em **Nova solicitação**, informe evento/motivo, responsável, espaços, fases e datas. Inclua montagem e desmontagem como períodos. A equipe proprietária vem da conta. A data final é inclusiva; a aplicação aceita 29/02/2028 e passagens entre meses/anos.
-5. Uma solicitação em espera entra na fila por ordem de entrada. O responsável da fila concede manualmente a opção prioritária após verificar o conjunto inteiro. Se alguma sala/dia estiver ocupado, nenhuma parte é concedida.
-6. A própria equipe pode confirmar uma opção, editar seus registros e cancelar com motivo. O cancelamento libera a ocupação e mantém histórico. A fila não avança nem expira automaticamente.
+5. Uma solicitação em espera entra na fila por ordem de entrada. O responsável da fila concede manualmente a opção prioritária após verificar o conjunto inteiro. Ele também pode confirmar a reserva na tela da solicitação ou marcar **Confirmar reserva e bloquear o espaço** ao salvar uma solicitação da própria equipe. A confirmação bloqueia todos os espaços e dias da solicitação de forma atômica: se algum já estiver reservado, nada é confirmado.
+6. Apenas o responsável da fila confirma bloqueios. A equipe proprietária pode editar os dados do seu registro e cancelar com motivo; alterações de espaço ou período já confirmados exigem o responsável da fila. O cancelamento libera a ocupação e mantém histórico. A fila não avança nem expira automaticamente.
 
 | Situação | Ocupa recursos? | Observação |
 | --- | --- | --- |
