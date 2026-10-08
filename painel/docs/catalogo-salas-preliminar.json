@@ -1,0 +1,3568 @@
+{
+  "versao": 1,
+  "estado": "preliminar_para_revisao_nao_importar_em_producao",
+  "fonte": {
+    "arquivo": "LISTA DE SALAS E ESPAÇOS CS & RQ.pdf",
+    "caminho_local": "/Users/idp27/Downloads/LISTA DE SALAS E ESPAÇOS CS & RQ.pdf",
+    "sha256": "e31e3aa5d00c9291c10783ce9962954a29149d38d755955f48a1a82de6fbe743",
+    "paginas": 2,
+    "codigos_de": 1,
+    "codigos_ate": 125
+  },
+  "escopo": "Transcrição dos nomes/códigos e dados técnicos para análise do calendário; preços não foram incorporados.",
+  "avisos": [
+    "125 linhas da fonte não correspondem a 125 salas físicas independentes.",
+    "O documento não fornece coluna ou legenda explícita de empreendimento; nenhum vínculo por resort foi presumido.",
+    "IDs de fonte identificam linhas do documento, não recursos físicos aprovados.",
+    "Classificações, agrupamentos e componentes candidatos são análise, não cadastro homologado.",
+    "Valores técnicos permanecem como texto da fonte: não converter ausência em zero, somar capacidades ou recalcular áreas automaticamente."
+  ],
+  "contagens_por_classificacao": {
+    "espaco_sem_composicao_explicita": 63,
+    "servico": 2,
+    "combinacao_ou_configuracao": 32,
+    "variante_utilizacao_arena": 28
+  },
+  "itens": [
+    {
+      "id_fonte": "lista_salas_pdf_001",
+      "codigo_fonte": 1,
+      "pagina_fonte": 1,
+      "nome_original": "Espaço Circo da Villa",
+      "classificacao_preliminar": "espaco_sem_composicao_explicita",
+      "grupo_preliminar": null,
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": null,
+        "area_m2": "705",
+        "pe_direito": null,
+        "auditorio": null,
+        "escolar_espinha": null,
+        "u": null,
+        "banquete": "300"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar."
+      ],
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_002",
+      "codigo_fonte": 2,
+      "pagina_fonte": 1,
+      "nome_original": "Restaurante La Villa",
+      "classificacao_preliminar": "espaco_sem_composicao_explicita",
+      "grupo_preliminar": null,
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": null,
+        "area_m2": null,
+        "pe_direito": null,
+        "auditorio": null,
+        "escolar_espinha": null,
+        "u": null,
+        "banquete": "124"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar."
+      ],
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_003",
+      "codigo_fonte": 3,
+      "pagina_fonte": 1,
+      "nome_original": "Restaurante Benditos Frutos",
+      "classificacao_preliminar": "espaco_sem_composicao_explicita",
+      "grupo_preliminar": null,
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": null,
+        "area_m2": null,
+        "pe_direito": null,
+        "auditorio": null,
+        "escolar_espinha": null,
+        "u": null,
+        "banquete": "126"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar."
+      ],
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_004",
+      "codigo_fonte": 4,
+      "pagina_fonte": 1,
+      "nome_original": "Restaurante Baea",
+      "classificacao_preliminar": "espaco_sem_composicao_explicita",
+      "grupo_preliminar": null,
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": null,
+        "area_m2": null,
+        "pe_direito": null,
+        "auditorio": null,
+        "escolar_espinha": null,
+        "u": null,
+        "banquete": "168"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar."
+      ],
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_005",
+      "codigo_fonte": 5,
+      "pagina_fonte": 1,
+      "nome_original": "Mão de Obra (Por Turno)",
+      "classificacao_preliminar": "servico",
+      "grupo_preliminar": null,
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": null,
+        "area_m2": null,
+        "pe_direito": null,
+        "auditorio": null,
+        "escolar_espinha": null,
+        "u": null,
+        "banquete": "30"
+      },
+      "pendencias": [
+        "Serviço de mão de obra: excluir do catálogo de espaços reserváveis."
+      ],
+      "tratamento_proposto": "Preservar como linha da fonte, sem criar sala nem alterar a granularidade diária dos bloqueios.",
+      "estado_classificacao_empreendimento": "nao_aplicavel_servico",
+      "estado_validacao_fisica": "nao_aplicavel_servico"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_006",
+      "codigo_fonte": 6,
+      "pagina_fonte": 1,
+      "nome_original": "Mão de Obra Especializada Barnabe (Por Turno)",
+      "classificacao_preliminar": "servico",
+      "grupo_preliminar": null,
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": null,
+        "area_m2": null,
+        "pe_direito": null,
+        "auditorio": null,
+        "escolar_espinha": null,
+        "u": null,
+        "banquete": "30"
+      },
+      "pendencias": [
+        "Serviço de mão de obra: excluir do catálogo de espaços reserváveis."
+      ],
+      "tratamento_proposto": "Preservar como linha da fonte, sem criar sala nem alterar a granularidade diária dos bloqueios.",
+      "estado_classificacao_empreendimento": "nao_aplicavel_servico",
+      "estado_validacao_fisica": "nao_aplicavel_servico"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_007",
+      "codigo_fonte": 7,
+      "pagina_fonte": 1,
+      "nome_original": "Bahia 1",
+      "classificacao_preliminar": "espaco_sem_composicao_explicita",
+      "grupo_preliminar": "Bahia",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": "14,1 x 24,6",
+        "area_m2": "346",
+        "pe_direito": "4,5",
+        "auditorio": "360",
+        "escolar_espinha": "180",
+        "u": "72",
+        "banquete": "300"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar."
+      ],
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_008",
+      "codigo_fonte": 8,
+      "pagina_fonte": 1,
+      "nome_original": "Bahia 2",
+      "classificacao_preliminar": "espaco_sem_composicao_explicita",
+      "grupo_preliminar": "Bahia",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": "14,1 x 24,6",
+        "area_m2": "346",
+        "pe_direito": "4,5",
+        "auditorio": "360",
+        "escolar_espinha": "180",
+        "u": "72",
+        "banquete": "300"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar."
+      ],
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_009",
+      "codigo_fonte": 9,
+      "pagina_fonte": 1,
+      "nome_original": "Bahia 3",
+      "classificacao_preliminar": "espaco_sem_composicao_explicita",
+      "grupo_preliminar": "Bahia",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": "14,1 x 24,6",
+        "area_m2": "346",
+        "pe_direito": "4,5",
+        "auditorio": "360",
+        "escolar_espinha": "180",
+        "u": "72",
+        "banquete": "300"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar."
+      ],
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_010",
+      "codigo_fonte": 10,
+      "pagina_fonte": 1,
+      "nome_original": "Bahia 1 - 2",
+      "classificacao_preliminar": "combinacao_ou_configuracao",
+      "grupo_preliminar": "Bahia",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": "28,2 x 24,6",
+        "area_m2": "694",
+        "pe_direito": "4,5",
+        "auditorio": "800",
+        "escolar_espinha": "400",
+        "u": null,
+        "banquete": "600"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar.",
+        "Validar o vínculo físico com os componentes antes de liberar reservas."
+      ],
+      "componentes_candidatos_codigos": [
+        7,
+        8
+      ],
+      "base_dos_componentes": "Nomes explícitos na descrição; relação operacional pendente de validação.",
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_011",
+      "codigo_fonte": 11,
+      "pagina_fonte": 1,
+      "nome_original": "Bahia 1 - 2 - 3",
+      "classificacao_preliminar": "combinacao_ou_configuracao",
+      "grupo_preliminar": "Bahia",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": "42,3 x 24,6",
+        "area_m2": "1044",
+        "pe_direito": "4,5",
+        "auditorio": "1200",
+        "escolar_espinha": "750",
+        "u": null,
+        "banquete": "1000"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar.",
+        "Validar o vínculo físico com os componentes antes de liberar reservas."
+      ],
+      "componentes_candidatos_codigos": [
+        7,
+        8,
+        9
+      ],
+      "base_dos_componentes": "Nomes explícitos na descrição; relação operacional pendente de validação.",
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_012",
+      "codigo_fonte": 12,
+      "pagina_fonte": 1,
+      "nome_original": "Ilhéus",
+      "classificacao_preliminar": "espaco_sem_composicao_explicita",
+      "grupo_preliminar": null,
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": "13,7 x 9,7",
+        "area_m2": "136",
+        "pe_direito": "4",
+        "auditorio": "150",
+        "escolar_espinha": "60",
+        "u": "39",
+        "banquete": "80"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar."
+      ],
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_013",
+      "codigo_fonte": 13,
+      "pagina_fonte": 1,
+      "nome_original": "Porto Seguro",
+      "classificacao_preliminar": "espaco_sem_composicao_explicita",
+      "grupo_preliminar": null,
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": "14,1 x 9,7",
+        "area_m2": "138",
+        "pe_direito": "4",
+        "auditorio": "150",
+        "escolar_espinha": "60",
+        "u": "39",
+        "banquete": "80"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar."
+      ],
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_014",
+      "codigo_fonte": 14,
+      "pagina_fonte": 1,
+      "nome_original": "São Vicente",
+      "classificacao_preliminar": "espaco_sem_composicao_explicita",
+      "grupo_preliminar": null,
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": "8,2 x 9,7",
+        "area_m2": "81",
+        "pe_direito": "4",
+        "auditorio": "80",
+        "escolar_espinha": "42",
+        "u": "27",
+        "banquete": "48"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar."
+      ],
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_015",
+      "codigo_fonte": 15,
+      "pagina_fonte": 1,
+      "nome_original": "Santana 1",
+      "classificacao_preliminar": "espaco_sem_composicao_explicita",
+      "grupo_preliminar": "Santana",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": "4,6 x 9,8",
+        "area_m2": "45",
+        "pe_direito": "3,5",
+        "auditorio": "40",
+        "escolar_espinha": "21",
+        "u": "21",
+        "banquete": "25"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar."
+      ],
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_016",
+      "codigo_fonte": 16,
+      "pagina_fonte": 1,
+      "nome_original": "Santana 2",
+      "classificacao_preliminar": "espaco_sem_composicao_explicita",
+      "grupo_preliminar": "Santana",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": "4,6 x 9,8",
+        "area_m2": "45",
+        "pe_direito": "3,5",
+        "auditorio": "40",
+        "escolar_espinha": "21",
+        "u": "21",
+        "banquete": "25"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar."
+      ],
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_017",
+      "codigo_fonte": 17,
+      "pagina_fonte": 1,
+      "nome_original": "Santana 3",
+      "classificacao_preliminar": "espaco_sem_composicao_explicita",
+      "grupo_preliminar": "Santana",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": "4,6 x 9,8",
+        "area_m2": "45",
+        "pe_direito": "3,5",
+        "auditorio": "40",
+        "escolar_espinha": "21",
+        "u": "21",
+        "banquete": "25"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar."
+      ],
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_018",
+      "codigo_fonte": 18,
+      "pagina_fonte": 1,
+      "nome_original": "Santana 1 - 2",
+      "classificacao_preliminar": "combinacao_ou_configuracao",
+      "grupo_preliminar": "Santana",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": "9,2 x 9,8",
+        "area_m2": "91",
+        "pe_direito": "3,5",
+        "auditorio": "80",
+        "escolar_espinha": "30",
+        "u": "27",
+        "banquete": "50"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar.",
+        "Validar o vínculo físico com os componentes antes de liberar reservas."
+      ],
+      "componentes_candidatos_codigos": [
+        15,
+        16
+      ],
+      "base_dos_componentes": "Nomes explícitos na descrição; relação operacional pendente de validação.",
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_019",
+      "codigo_fonte": 19,
+      "pagina_fonte": 1,
+      "nome_original": "Santana 1 - 2 - 3",
+      "classificacao_preliminar": "combinacao_ou_configuracao",
+      "grupo_preliminar": "Santana",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": "13,7 x 9,8",
+        "area_m2": "135",
+        "pe_direito": "3,5",
+        "auditorio": "150",
+        "escolar_espinha": "60",
+        "u": "33",
+        "banquete": "80"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar.",
+        "Validar o vínculo físico com os componentes antes de liberar reservas."
+      ],
+      "componentes_candidatos_codigos": [
+        15,
+        16,
+        17
+      ],
+      "base_dos_componentes": "Nomes explícitos na descrição; relação operacional pendente de validação.",
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_020",
+      "codigo_fonte": 20,
+      "pagina_fonte": 1,
+      "nome_original": "São Tomé 1",
+      "classificacao_preliminar": "espaco_sem_composicao_explicita",
+      "grupo_preliminar": "São Tomé",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": "4,6 x 9,8",
+        "area_m2": "45",
+        "pe_direito": "3,5",
+        "auditorio": "40",
+        "escolar_espinha": "21",
+        "u": "21",
+        "banquete": "25"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar."
+      ],
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_021",
+      "codigo_fonte": 21,
+      "pagina_fonte": 1,
+      "nome_original": "São Tomé 2",
+      "classificacao_preliminar": "espaco_sem_composicao_explicita",
+      "grupo_preliminar": "São Tomé",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": "4,6 x 9,8",
+        "area_m2": "45",
+        "pe_direito": "3,5",
+        "auditorio": "40",
+        "escolar_espinha": "21",
+        "u": "21",
+        "banquete": "25"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar."
+      ],
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_022",
+      "codigo_fonte": 22,
+      "pagina_fonte": 1,
+      "nome_original": "São Tomé 3",
+      "classificacao_preliminar": "espaco_sem_composicao_explicita",
+      "grupo_preliminar": "São Tomé",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": "4,6 x 9,8",
+        "area_m2": "45",
+        "pe_direito": "3,5",
+        "auditorio": "40",
+        "escolar_espinha": "21",
+        "u": "21",
+        "banquete": "25"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar."
+      ],
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_023",
+      "codigo_fonte": 23,
+      "pagina_fonte": 1,
+      "nome_original": "São Tomé 1 - 2",
+      "classificacao_preliminar": "combinacao_ou_configuracao",
+      "grupo_preliminar": "São Tomé",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": "9,2 x 9,8",
+        "area_m2": "91",
+        "pe_direito": "3,5",
+        "auditorio": "80",
+        "escolar_espinha": "30",
+        "u": "27",
+        "banquete": "50"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar.",
+        "Validar o vínculo físico com os componentes antes de liberar reservas."
+      ],
+      "componentes_candidatos_codigos": [
+        20,
+        21
+      ],
+      "base_dos_componentes": "Nomes explícitos na descrição; relação operacional pendente de validação.",
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_024",
+      "codigo_fonte": 24,
+      "pagina_fonte": 1,
+      "nome_original": "São Tomé 1 - 2 - 3",
+      "classificacao_preliminar": "combinacao_ou_configuracao",
+      "grupo_preliminar": "São Tomé",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": "14 x 9,8",
+        "area_m2": "135",
+        "pe_direito": "3,5",
+        "auditorio": "150",
+        "escolar_espinha": "60",
+        "u": "33",
+        "banquete": "80"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar.",
+        "Validar o vínculo físico com os componentes antes de liberar reservas."
+      ],
+      "componentes_candidatos_codigos": [
+        20,
+        21,
+        22
+      ],
+      "base_dos_componentes": "Nomes explícitos na descrição; relação operacional pendente de validação.",
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_025",
+      "codigo_fonte": 25,
+      "pagina_fonte": 1,
+      "nome_original": "Santo Amaro 1",
+      "classificacao_preliminar": "espaco_sem_composicao_explicita",
+      "grupo_preliminar": "Santo Amaro",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": "4,6 x 9,8",
+        "area_m2": "45",
+        "pe_direito": "3,5",
+        "auditorio": "40",
+        "escolar_espinha": "21",
+        "u": "21",
+        "banquete": "25"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar."
+      ],
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_026",
+      "codigo_fonte": 26,
+      "pagina_fonte": 1,
+      "nome_original": "Santo Amaro 2",
+      "classificacao_preliminar": "espaco_sem_composicao_explicita",
+      "grupo_preliminar": "Santo Amaro",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": "4,6 x 9,8",
+        "area_m2": "45",
+        "pe_direito": "3,5",
+        "auditorio": "40",
+        "escolar_espinha": "21",
+        "u": "21",
+        "banquete": "25"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar."
+      ],
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_027",
+      "codigo_fonte": 27,
+      "pagina_fonte": 1,
+      "nome_original": "Santo Amaro 3",
+      "classificacao_preliminar": "espaco_sem_composicao_explicita",
+      "grupo_preliminar": "Santo Amaro",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": "4,6 x 9,8",
+        "area_m2": "45",
+        "pe_direito": "3,5",
+        "auditorio": "40",
+        "escolar_espinha": "21",
+        "u": "21",
+        "banquete": "25"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar."
+      ],
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_028",
+      "codigo_fonte": 28,
+      "pagina_fonte": 1,
+      "nome_original": "Santo Amaro 1 - 2",
+      "classificacao_preliminar": "combinacao_ou_configuracao",
+      "grupo_preliminar": "Santo Amaro",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": "9,2 x 9,8",
+        "area_m2": "91",
+        "pe_direito": "3,5",
+        "auditorio": "80",
+        "escolar_espinha": "30",
+        "u": "27",
+        "banquete": "50"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar.",
+        "Validar o vínculo físico com os componentes antes de liberar reservas."
+      ],
+      "componentes_candidatos_codigos": [
+        25,
+        26
+      ],
+      "base_dos_componentes": "Nomes explícitos na descrição; relação operacional pendente de validação.",
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_029",
+      "codigo_fonte": 29,
+      "pagina_fonte": 1,
+      "nome_original": "Santo Amaro 1 - 2 - 3",
+      "classificacao_preliminar": "combinacao_ou_configuracao",
+      "grupo_preliminar": "Santo Amaro",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": "14 x 9,8",
+        "area_m2": "137",
+        "pe_direito": "3,5",
+        "auditorio": "150",
+        "escolar_espinha": "60",
+        "u": "33",
+        "banquete": "80"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar.",
+        "Validar o vínculo físico com os componentes antes de liberar reservas."
+      ],
+      "componentes_candidatos_codigos": [
+        25,
+        26,
+        27
+      ],
+      "base_dos_componentes": "Nomes explícitos na descrição; relação operacional pendente de validação.",
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_030",
+      "codigo_fonte": 30,
+      "pagina_fonte": 1,
+      "nome_original": "Foyer das Colunas",
+      "classificacao_preliminar": "espaco_sem_composicao_explicita",
+      "grupo_preliminar": null,
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": "-",
+        "area_m2": "-",
+        "pe_direito": "-",
+        "auditorio": "-",
+        "escolar_espinha": "-",
+        "u": "-",
+        "banquete": "150"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar."
+      ],
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_031",
+      "codigo_fonte": 31,
+      "pagina_fonte": 1,
+      "nome_original": "Gardênia",
+      "classificacao_preliminar": "espaco_sem_composicao_explicita",
+      "grupo_preliminar": "Gardênia / Canário / Aimorés / Amazonas",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": "11,9 x 7,9",
+        "area_m2": "94",
+        "pe_direito": "3",
+        "auditorio": "90",
+        "escolar_espinha": "40",
+        "u": "25",
+        "banquete": "50"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar."
+      ],
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_032",
+      "codigo_fonte": 32,
+      "pagina_fonte": 1,
+      "nome_original": "Canário",
+      "classificacao_preliminar": "espaco_sem_composicao_explicita",
+      "grupo_preliminar": "Gardênia / Canário / Aimorés / Amazonas",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": "11,9 x 7,9",
+        "area_m2": "94",
+        "pe_direito": "3",
+        "auditorio": "90",
+        "escolar_espinha": "40",
+        "u": "25",
+        "banquete": "50"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar."
+      ],
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_033",
+      "codigo_fonte": 33,
+      "pagina_fonte": 1,
+      "nome_original": "Aimorés",
+      "classificacao_preliminar": "espaco_sem_composicao_explicita",
+      "grupo_preliminar": "Gardênia / Canário / Aimorés / Amazonas",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": "11,9 x 7,9",
+        "area_m2": "94",
+        "pe_direito": "3",
+        "auditorio": "90",
+        "escolar_espinha": "40",
+        "u": "25",
+        "banquete": "50"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar."
+      ],
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_034",
+      "codigo_fonte": 34,
+      "pagina_fonte": 1,
+      "nome_original": "Amazonas",
+      "classificacao_preliminar": "espaco_sem_composicao_explicita",
+      "grupo_preliminar": "Gardênia / Canário / Aimorés / Amazonas",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": "11,9 x 7,9",
+        "area_m2": "94",
+        "pe_direito": "3",
+        "auditorio": "90",
+        "escolar_espinha": "40",
+        "u": "25",
+        "banquete": "50"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar."
+      ],
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_035",
+      "codigo_fonte": 35,
+      "pagina_fonte": 1,
+      "nome_original": "2 Módulos (Gardênia+Canário+Aimorés+Amazonas)",
+      "classificacao_preliminar": "combinacao_ou_configuracao",
+      "grupo_preliminar": "Gardênia / Canário / Aimorés / Amazonas",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": "23,8 x 15,8",
+        "area_m2": "188",
+        "pe_direito": "3",
+        "auditorio": "180",
+        "escolar_espinha": "80",
+        "u": "50",
+        "banquete": "100"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar.",
+        "Informar quais conjuntos de dois/três módulos são permitidos; o nome cita quatro sem escolher o conjunto."
+      ],
+      "quantidade_modulos_indicada": 2,
+      "grupo_de_escolha_candidato_codigos": [
+        31,
+        32,
+        33,
+        34
+      ],
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_036",
+      "codigo_fonte": 36,
+      "pagina_fonte": 1,
+      "nome_original": "3 Módulos (Gardênia+Canário+Aimorés+Amazonas)",
+      "classificacao_preliminar": "combinacao_ou_configuracao",
+      "grupo_preliminar": "Gardênia / Canário / Aimorés / Amazonas",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": "35,7 x 23,7",
+        "area_m2": "282",
+        "pe_direito": "3",
+        "auditorio": "270",
+        "escolar_espinha": "120",
+        "u": "75",
+        "banquete": "150"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar.",
+        "Informar quais conjuntos de dois/três módulos são permitidos; o nome cita quatro sem escolher o conjunto."
+      ],
+      "quantidade_modulos_indicada": 3,
+      "grupo_de_escolha_candidato_codigos": [
+        31,
+        32,
+        33,
+        34
+      ],
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_037",
+      "codigo_fonte": 37,
+      "pagina_fonte": 1,
+      "nome_original": "Gardênia+Canário+Aimorés+Amazonas",
+      "classificacao_preliminar": "combinacao_ou_configuracao",
+      "grupo_preliminar": "Gardênia / Canário / Aimorés / Amazonas",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": "47,6 x 7,9",
+        "area_m2": "376",
+        "pe_direito": "3",
+        "auditorio": "360",
+        "escolar_espinha": "160",
+        "u": "80",
+        "banquete": "200"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar.",
+        "Validar o vínculo físico com os componentes antes de liberar reservas."
+      ],
+      "componentes_candidatos_codigos": [
+        31,
+        32,
+        33,
+        34
+      ],
+      "base_dos_componentes": "Nomes explícitos na descrição; relação operacional pendente de validação.",
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_038",
+      "codigo_fonte": 38,
+      "pagina_fonte": 1,
+      "nome_original": "Jubarte",
+      "classificacao_preliminar": "espaco_sem_composicao_explicita",
+      "grupo_preliminar": null,
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": null,
+        "area_m2": null,
+        "pe_direito": null,
+        "auditorio": null,
+        "escolar_espinha": null,
+        "u": null,
+        "banquete": null
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar.",
+        "Confirmar a política de bloqueio como espaço de apoio; a fonte restringe montagens."
+      ],
+      "observacao_original": "Deposito / Secretaria / Credenc. / etc. Não comporta montagem tipo auditório, escolar etc.",
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_039",
+      "codigo_fonte": 39,
+      "pagina_fonte": 1,
+      "nome_original": "Maremoto",
+      "classificacao_preliminar": "espaco_sem_composicao_explicita",
+      "grupo_preliminar": null,
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": null,
+        "area_m2": null,
+        "pe_direito": null,
+        "auditorio": null,
+        "escolar_espinha": null,
+        "u": null,
+        "banquete": null
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar.",
+        "Confirmar a política de bloqueio como espaço de apoio; a fonte restringe montagens."
+      ],
+      "observacao_original": "Deposito / Secretaria / Credenc. / etc. Não comporta montagem tipo auditório, escolar etc.",
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_040",
+      "codigo_fonte": 40,
+      "pagina_fonte": 1,
+      "nome_original": "Ouro Preto 1",
+      "classificacao_preliminar": "espaco_sem_composicao_explicita",
+      "grupo_preliminar": "Ouro Preto",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": "7,30 x 7,91",
+        "area_m2": "58",
+        "pe_direito": "4,8",
+        "auditorio": "52",
+        "escolar_espinha": "20",
+        "u": "18",
+        "banquete": "40"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar."
+      ],
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_041",
+      "codigo_fonte": 41,
+      "pagina_fonte": 1,
+      "nome_original": "Ouro Preto 2",
+      "classificacao_preliminar": "espaco_sem_composicao_explicita",
+      "grupo_preliminar": "Ouro Preto",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": "7,30 x 7,91",
+        "area_m2": "58",
+        "pe_direito": "4,8",
+        "auditorio": "52",
+        "escolar_espinha": "20",
+        "u": "18",
+        "banquete": "40"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar."
+      ],
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_042",
+      "codigo_fonte": 42,
+      "pagina_fonte": 1,
+      "nome_original": "Ouro Preto 3",
+      "classificacao_preliminar": "espaco_sem_composicao_explicita",
+      "grupo_preliminar": "Ouro Preto",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": "7,30 x 7,91",
+        "area_m2": "58",
+        "pe_direito": "4,8",
+        "auditorio": "52",
+        "escolar_espinha": "20",
+        "u": "18",
+        "banquete": "40"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar."
+      ],
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_043",
+      "codigo_fonte": 43,
+      "pagina_fonte": 1,
+      "nome_original": "Ouro Preto 4",
+      "classificacao_preliminar": "espaco_sem_composicao_explicita",
+      "grupo_preliminar": "Ouro Preto",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": "22,15 x 8,81",
+        "area_m2": "195",
+        "pe_direito": "4,8",
+        "auditorio": "200",
+        "escolar_espinha": "80",
+        "u": "56",
+        "banquete": "100"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar."
+      ],
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_044",
+      "codigo_fonte": 44,
+      "pagina_fonte": 1,
+      "nome_original": "Ouro Preto 5",
+      "classificacao_preliminar": "espaco_sem_composicao_explicita",
+      "grupo_preliminar": "Ouro Preto",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": "22,15 x 8,81",
+        "area_m2": "195",
+        "pe_direito": "4,8",
+        "auditorio": "200",
+        "escolar_espinha": "80",
+        "u": "56",
+        "banquete": "100"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar."
+      ],
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_045",
+      "codigo_fonte": 45,
+      "pagina_fonte": 1,
+      "nome_original": "Ouro Preto 6",
+      "classificacao_preliminar": "espaco_sem_composicao_explicita",
+      "grupo_preliminar": "Ouro Preto",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": "7,30 x 7,91",
+        "area_m2": "58",
+        "pe_direito": "4,8",
+        "auditorio": "52",
+        "escolar_espinha": "20",
+        "u": "18",
+        "banquete": "40"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar."
+      ],
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_046",
+      "codigo_fonte": 46,
+      "pagina_fonte": 1,
+      "nome_original": "Ouro Preto 7",
+      "classificacao_preliminar": "espaco_sem_composicao_explicita",
+      "grupo_preliminar": "Ouro Preto",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": "7,30 x 7,91",
+        "area_m2": "58",
+        "pe_direito": "4,8",
+        "auditorio": "52",
+        "escolar_espinha": "20",
+        "u": "18",
+        "banquete": "40"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar."
+      ],
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_047",
+      "codigo_fonte": 47,
+      "pagina_fonte": 1,
+      "nome_original": "Ouro Preto 8",
+      "classificacao_preliminar": "espaco_sem_composicao_explicita",
+      "grupo_preliminar": "Ouro Preto",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": "7,30 x 7,91",
+        "area_m2": "58",
+        "pe_direito": "4,8",
+        "auditorio": "52",
+        "escolar_espinha": "20",
+        "u": "18",
+        "banquete": "40"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar."
+      ],
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_048",
+      "codigo_fonte": 48,
+      "pagina_fonte": 1,
+      "nome_original": "Ouro Preto 1 - 2 - 3",
+      "classificacao_preliminar": "combinacao_ou_configuracao",
+      "grupo_preliminar": "Ouro Preto",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": "22,15 x 7,91",
+        "area_m2": "175",
+        "pe_direito": "4,8",
+        "auditorio": "200",
+        "escolar_espinha": "100 / 81",
+        "u": "48",
+        "banquete": "120"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar.",
+        "Validar o vínculo físico com os componentes antes de liberar reservas."
+      ],
+      "componentes_candidatos_codigos": [
+        40,
+        41,
+        42
+      ],
+      "base_dos_componentes": "Nomes explícitos na descrição; relação operacional pendente de validação.",
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_049",
+      "codigo_fonte": 49,
+      "pagina_fonte": 1,
+      "nome_original": "Ouro Preto 4 - 5",
+      "classificacao_preliminar": "combinacao_ou_configuracao",
+      "grupo_preliminar": "Ouro Preto",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": "22,15 x 17,62",
+        "area_m2": "390",
+        "pe_direito": "4,8",
+        "auditorio": "465",
+        "escolar_espinha": "230",
+        "u": "66",
+        "banquete": "250"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar.",
+        "Validar o vínculo físico com os componentes antes de liberar reservas."
+      ],
+      "componentes_candidatos_codigos": [
+        43,
+        44
+      ],
+      "base_dos_componentes": "Nomes explícitos na descrição; relação operacional pendente de validação.",
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_050",
+      "codigo_fonte": 50,
+      "pagina_fonte": 1,
+      "nome_original": "Ouro Preto 6 - 8",
+      "classificacao_preliminar": "combinacao_ou_configuracao",
+      "grupo_preliminar": "Ouro Preto",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": "22,15 x 7,91",
+        "area_m2": "175",
+        "pe_direito": "4,8",
+        "auditorio": "200",
+        "escolar_espinha": "72",
+        "u": "56",
+        "banquete": "120"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar.",
+        "Confirmar se o hífen indica intervalo de módulos ou apenas os extremos citados."
+      ],
+      "componentes_candidatos_codigos": [
+        45,
+        46,
+        47
+      ],
+      "base_dos_componentes": "Hipótese de intervalo inclusivo; não foi confirmada pela fonte.",
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_051",
+      "codigo_fonte": 51,
+      "pagina_fonte": 1,
+      "nome_original": "Ouro Preto 1 - 4",
+      "classificacao_preliminar": "combinacao_ou_configuracao",
+      "grupo_preliminar": "Ouro Preto",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": "22,15 x 16,72",
+        "area_m2": "370",
+        "pe_direito": "4,8",
+        "auditorio": "465",
+        "escolar_espinha": "230",
+        "u": "70",
+        "banquete": "240"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar.",
+        "Confirmar se o hífen indica intervalo de módulos ou apenas os extremos citados."
+      ],
+      "componentes_candidatos_codigos": [
+        40,
+        41,
+        42,
+        43
+      ],
+      "base_dos_componentes": "Hipótese de intervalo inclusivo; não foi confirmada pela fonte.",
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_052",
+      "codigo_fonte": 52,
+      "pagina_fonte": 1,
+      "nome_original": "Ouro Preto 1 - 5",
+      "classificacao_preliminar": "combinacao_ou_configuracao",
+      "grupo_preliminar": "Ouro Preto",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": "22,15 x 25,53",
+        "area_m2": "565",
+        "pe_direito": "4,8",
+        "auditorio": "640",
+        "escolar_espinha": "352",
+        "u": "80",
+        "banquete": "360"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar.",
+        "Confirmar se o hífen indica intervalo de módulos ou apenas os extremos citados."
+      ],
+      "componentes_candidatos_codigos": [
+        40,
+        41,
+        42,
+        43,
+        44
+      ],
+      "base_dos_componentes": "Hipótese de intervalo inclusivo; não foi confirmada pela fonte.",
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_053",
+      "codigo_fonte": 53,
+      "pagina_fonte": 1,
+      "nome_original": "Ouro Preto 4 - 8",
+      "classificacao_preliminar": "combinacao_ou_configuracao",
+      "grupo_preliminar": "Ouro Preto",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": "22,15 x 25,53",
+        "area_m2": "565",
+        "pe_direito": "4,8",
+        "auditorio": "590",
+        "escolar_espinha": "320",
+        "u": "80",
+        "banquete": "320"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar.",
+        "Confirmar se o hífen indica intervalo de módulos ou apenas os extremos citados."
+      ],
+      "componentes_candidatos_codigos": [
+        43,
+        44,
+        45,
+        46,
+        47
+      ],
+      "base_dos_componentes": "Hipótese de intervalo inclusivo; não foi confirmada pela fonte.",
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_054",
+      "codigo_fonte": 54,
+      "pagina_fonte": 1,
+      "nome_original": "Ouro Preto 5 - 8",
+      "classificacao_preliminar": "combinacao_ou_configuracao",
+      "grupo_preliminar": "Ouro Preto",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": "22,15 x 16,72",
+        "area_m2": "370",
+        "pe_direito": "4,8",
+        "auditorio": "465",
+        "escolar_espinha": "230",
+        "u": "60",
+        "banquete": "220"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar.",
+        "Confirmar se o hífen indica intervalo de módulos ou apenas os extremos citados."
+      ],
+      "componentes_candidatos_codigos": [
+        44,
+        45,
+        46,
+        47
+      ],
+      "base_dos_componentes": "Hipótese de intervalo inclusivo; não foi confirmada pela fonte.",
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_055",
+      "codigo_fonte": 55,
+      "pagina_fonte": 1,
+      "nome_original": "Ouro Preto 1 - 2 - 3 - 4 - 5 - 6 - 7 - 8",
+      "classificacao_preliminar": "combinacao_ou_configuracao",
+      "grupo_preliminar": "Ouro Preto",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": "22,15 x 33,85",
+        "area_m2": "750",
+        "pe_direito": "4,8",
+        "auditorio": "960",
+        "escolar_espinha": "570",
+        "u": "96",
+        "banquete": "540"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar.",
+        "Validar o vínculo físico com os componentes antes de liberar reservas."
+      ],
+      "componentes_candidatos_codigos": [
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        46,
+        47
+      ],
+      "base_dos_componentes": "Nomes explícitos na descrição; relação operacional pendente de validação.",
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_056",
+      "codigo_fonte": 56,
+      "pagina_fonte": 1,
+      "nome_original": "Gran Bahia 1",
+      "classificacao_preliminar": "espaco_sem_composicao_explicita",
+      "grupo_preliminar": "Gran Bahia",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": "13,85 x 9,32",
+        "area_m2": "129",
+        "pe_direito": "3,5",
+        "auditorio": "112",
+        "escolar_espinha": "65",
+        "u": "36",
+        "banquete": "80"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar."
+      ],
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_057",
+      "codigo_fonte": 57,
+      "pagina_fonte": 1,
+      "nome_original": "Gran Bahia 2",
+      "classificacao_preliminar": "espaco_sem_composicao_explicita",
+      "grupo_preliminar": "Gran Bahia",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": "13,85 x 8,80",
+        "area_m2": "121",
+        "pe_direito": "3,5",
+        "auditorio": "112",
+        "escolar_espinha": "65",
+        "u": "36",
+        "banquete": "80"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar."
+      ],
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_058",
+      "codigo_fonte": 58,
+      "pagina_fonte": 1,
+      "nome_original": "Gran Bahia 3",
+      "classificacao_preliminar": "espaco_sem_composicao_explicita",
+      "grupo_preliminar": "Gran Bahia",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": "13,85 x 9,37",
+        "area_m2": "129",
+        "pe_direito": "3,5",
+        "auditorio": "112",
+        "escolar_espinha": "65",
+        "u": "36",
+        "banquete": "80"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar."
+      ],
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_059",
+      "codigo_fonte": 59,
+      "pagina_fonte": 1,
+      "nome_original": "Gran Bahia 1 - 2",
+      "classificacao_preliminar": "combinacao_ou_configuracao",
+      "grupo_preliminar": "Gran Bahia",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": "13,85 x 18,12",
+        "area_m2": "250",
+        "pe_direito": "3,5",
+        "auditorio": "264",
+        "escolar_espinha": "160",
+        "u": "50",
+        "banquete": "240"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar.",
+        "Validar o vínculo físico com os componentes antes de liberar reservas."
+      ],
+      "componentes_candidatos_codigos": [
+        56,
+        57
+      ],
+      "base_dos_componentes": "Nomes explícitos na descrição; relação operacional pendente de validação.",
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_060",
+      "codigo_fonte": 60,
+      "pagina_fonte": 1,
+      "nome_original": "Gran Bahia 2 - 3",
+      "classificacao_preliminar": "combinacao_ou_configuracao",
+      "grupo_preliminar": "Gran Bahia",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": "13,85 x 18,69",
+        "area_m2": "259",
+        "pe_direito": "3,5",
+        "auditorio": "280",
+        "escolar_espinha": "140",
+        "u": "50",
+        "banquete": "160"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar.",
+        "Validar o vínculo físico com os componentes antes de liberar reservas."
+      ],
+      "componentes_candidatos_codigos": [
+        57,
+        58
+      ],
+      "base_dos_componentes": "Nomes explícitos na descrição; relação operacional pendente de validação.",
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_061",
+      "codigo_fonte": 61,
+      "pagina_fonte": 1,
+      "nome_original": "Gran Bahia 1 - 2 - 3",
+      "classificacao_preliminar": "combinacao_ou_configuracao",
+      "grupo_preliminar": "Gran Bahia",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": "13,85 x 27,90",
+        "area_m2": "386",
+        "pe_direito": "3,5",
+        "auditorio": "500",
+        "escolar_espinha": "300",
+        "u": "90",
+        "banquete": "320"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar.",
+        "Validar o vínculo físico com os componentes antes de liberar reservas."
+      ],
+      "componentes_candidatos_codigos": [
+        56,
+        57,
+        58
+      ],
+      "base_dos_componentes": "Nomes explícitos na descrição; relação operacional pendente de validação.",
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_062",
+      "codigo_fonte": 62,
+      "pagina_fonte": 1,
+      "nome_original": "Porto Seguro 1",
+      "classificacao_preliminar": "espaco_sem_composicao_explicita",
+      "grupo_preliminar": "Porto Seguro (numeradas)",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": "6,20 x 6,90",
+        "area_m2": "42",
+        "pe_direito": "3,5",
+        "auditorio": "40",
+        "escolar_espinha": "18",
+        "u": "20",
+        "banquete": "40"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar."
+      ],
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_063",
+      "codigo_fonte": 63,
+      "pagina_fonte": 1,
+      "nome_original": "Porto Seguro 2",
+      "classificacao_preliminar": "espaco_sem_composicao_explicita",
+      "grupo_preliminar": "Porto Seguro (numeradas)",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": "6,20 x 6,90",
+        "area_m2": "42",
+        "pe_direito": "3,5",
+        "auditorio": "40",
+        "escolar_espinha": "18",
+        "u": "20",
+        "banquete": "40"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar."
+      ],
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_064",
+      "codigo_fonte": 64,
+      "pagina_fonte": 1,
+      "nome_original": "Porto Seguro 3",
+      "classificacao_preliminar": "espaco_sem_composicao_explicita",
+      "grupo_preliminar": "Porto Seguro (numeradas)",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": "6,20 x 6,90",
+        "area_m2": "42",
+        "pe_direito": "3,5",
+        "auditorio": "40",
+        "escolar_espinha": "18",
+        "u": "20",
+        "banquete": "40"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar."
+      ],
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_065",
+      "codigo_fonte": 65,
+      "pagina_fonte": 1,
+      "nome_original": "Porto Seguro 1 - 2",
+      "classificacao_preliminar": "combinacao_ou_configuracao",
+      "grupo_preliminar": "Porto Seguro (numeradas)",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": "12,40 x 6,90",
+        "area_m2": "85,56",
+        "pe_direito": "3,5",
+        "auditorio": "90",
+        "escolar_espinha": "48",
+        "u": "37",
+        "banquete": "80"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar.",
+        "Validar o vínculo físico com os componentes antes de liberar reservas."
+      ],
+      "componentes_candidatos_codigos": [
+        62,
+        63
+      ],
+      "base_dos_componentes": "Nomes explícitos na descrição; relação operacional pendente de validação.",
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_066",
+      "codigo_fonte": 66,
+      "pagina_fonte": 1,
+      "nome_original": "Porto Seguro 2 - 3",
+      "classificacao_preliminar": "combinacao_ou_configuracao",
+      "grupo_preliminar": "Porto Seguro (numeradas)",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": "12,40 x 6,90",
+        "area_m2": "85,56",
+        "pe_direito": "3,5",
+        "auditorio": "90",
+        "escolar_espinha": "48",
+        "u": "37",
+        "banquete": "80"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar.",
+        "Validar o vínculo físico com os componentes antes de liberar reservas."
+      ],
+      "componentes_candidatos_codigos": [
+        63,
+        64
+      ],
+      "base_dos_componentes": "Nomes explícitos na descrição; relação operacional pendente de validação.",
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_067",
+      "codigo_fonte": 67,
+      "pagina_fonte": 1,
+      "nome_original": "Porto Seguro 1 - 2 - 3",
+      "classificacao_preliminar": "combinacao_ou_configuracao",
+      "grupo_preliminar": "Porto Seguro (numeradas)",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": "20,95 x 6,90",
+        "area_m2": "144",
+        "pe_direito": "3,5",
+        "auditorio": "160",
+        "escolar_espinha": "80",
+        "u": "55",
+        "banquete": "120"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar.",
+        "Validar o vínculo físico com os componentes antes de liberar reservas."
+      ],
+      "componentes_candidatos_codigos": [
+        62,
+        63,
+        64
+      ],
+      "base_dos_componentes": "Nomes explícitos na descrição; relação operacional pendente de validação.",
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_068",
+      "codigo_fonte": 68,
+      "pagina_fonte": 1,
+      "nome_original": "Vera Cruz 1",
+      "classificacao_preliminar": "espaco_sem_composicao_explicita",
+      "grupo_preliminar": "Vera Cruz",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": "6,55 x 6,85",
+        "area_m2": "44,86",
+        "pe_direito": "3",
+        "auditorio": "40",
+        "escolar_espinha": "18",
+        "u": "20",
+        "banquete": "40"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar."
+      ],
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_069",
+      "codigo_fonte": 69,
+      "pagina_fonte": 1,
+      "nome_original": "Vera Cruz 2",
+      "classificacao_preliminar": "espaco_sem_composicao_explicita",
+      "grupo_preliminar": "Vera Cruz",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": "6,55 x 6,85",
+        "area_m2": "44,86",
+        "pe_direito": "3",
+        "auditorio": "40",
+        "escolar_espinha": "18",
+        "u": "20",
+        "banquete": "40"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar."
+      ],
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_070",
+      "codigo_fonte": 70,
+      "pagina_fonte": 1,
+      "nome_original": "Vera Cruz 1 - 2",
+      "classificacao_preliminar": "combinacao_ou_configuracao",
+      "grupo_preliminar": "Vera Cruz",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": "13,85 x 6,85",
+        "area_m2": "94,87",
+        "pe_direito": "3",
+        "auditorio": "90",
+        "escolar_espinha": "48",
+        "u": "37",
+        "banquete": "80"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar.",
+        "Validar o vínculo físico com os componentes antes de liberar reservas."
+      ],
+      "componentes_candidatos_codigos": [
+        68,
+        69
+      ],
+      "base_dos_componentes": "Nomes explícitos na descrição; relação operacional pendente de validação.",
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_071",
+      "codigo_fonte": 71,
+      "pagina_fonte": 1,
+      "nome_original": "Jangada 1",
+      "classificacao_preliminar": "espaco_sem_composicao_explicita",
+      "grupo_preliminar": "Jangada",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": "4,93 x 9,85",
+        "area_m2": "49",
+        "pe_direito": "3,1",
+        "auditorio": "40",
+        "escolar_espinha": "21",
+        "u": "21",
+        "banquete": "30"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar."
+      ],
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_072",
+      "codigo_fonte": 72,
+      "pagina_fonte": 1,
+      "nome_original": "Jangada 2",
+      "classificacao_preliminar": "espaco_sem_composicao_explicita",
+      "grupo_preliminar": "Jangada",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": "4,93 x 9,85",
+        "area_m2": "49",
+        "pe_direito": "3,1",
+        "auditorio": "40",
+        "escolar_espinha": "21",
+        "u": "21",
+        "banquete": "30"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar."
+      ],
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_073",
+      "codigo_fonte": 73,
+      "pagina_fonte": 1,
+      "nome_original": "Jangada 3",
+      "classificacao_preliminar": "espaco_sem_composicao_explicita",
+      "grupo_preliminar": "Jangada",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": "7,78 x 9,85",
+        "area_m2": "77",
+        "pe_direito": "3,1",
+        "auditorio": "80",
+        "escolar_espinha": "42",
+        "u": "24",
+        "banquete": "50"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar."
+      ],
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_074",
+      "codigo_fonte": 74,
+      "pagina_fonte": 1,
+      "nome_original": "Jangada 1 - 2",
+      "classificacao_preliminar": "combinacao_ou_configuracao",
+      "grupo_preliminar": "Jangada",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": "9,86 x 9,85",
+        "area_m2": "98",
+        "pe_direito": "3,1",
+        "auditorio": "80",
+        "escolar_espinha": "30",
+        "u": "27",
+        "banquete": "60"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar.",
+        "Validar o vínculo físico com os componentes antes de liberar reservas."
+      ],
+      "componentes_candidatos_codigos": [
+        71,
+        72
+      ],
+      "base_dos_componentes": "Nomes explícitos na descrição; relação operacional pendente de validação.",
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_075",
+      "codigo_fonte": 75,
+      "pagina_fonte": 1,
+      "nome_original": "Jangada 2 - 3",
+      "classificacao_preliminar": "combinacao_ou_configuracao",
+      "grupo_preliminar": "Jangada",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": "12,71 x 9,85",
+        "area_m2": "125",
+        "pe_direito": "3,1",
+        "auditorio": "100",
+        "escolar_espinha": "40",
+        "u": "30",
+        "banquete": "80"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar.",
+        "Validar o vínculo físico com os componentes antes de liberar reservas."
+      ],
+      "componentes_candidatos_codigos": [
+        72,
+        73
+      ],
+      "base_dos_componentes": "Nomes explícitos na descrição; relação operacional pendente de validação.",
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_076",
+      "codigo_fonte": 76,
+      "pagina_fonte": 1,
+      "nome_original": "Jangada 1 - 2 - 3",
+      "classificacao_preliminar": "combinacao_ou_configuracao",
+      "grupo_preliminar": "Jangada",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": "17,64 x 9,85",
+        "area_m2": "174",
+        "pe_direito": "3,1",
+        "auditorio": "160",
+        "escolar_espinha": "72",
+        "u": "39",
+        "banquete": "100"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar.",
+        "Validar o vínculo físico com os componentes antes de liberar reservas."
+      ],
+      "componentes_candidatos_codigos": [
+        71,
+        72,
+        73
+      ],
+      "base_dos_componentes": "Nomes explícitos na descrição; relação operacional pendente de validação.",
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_077",
+      "codigo_fonte": 77,
+      "pagina_fonte": 1,
+      "nome_original": "Brinquedoteca",
+      "classificacao_preliminar": "espaco_sem_composicao_explicita",
+      "grupo_preliminar": null,
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": null,
+        "area_m2": null,
+        "pe_direito": null,
+        "auditorio": null,
+        "escolar_espinha": null,
+        "u": null,
+        "banquete": null
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar.",
+        "Confirmar a política de bloqueio como espaço de apoio; a fonte restringe montagens."
+      ],
+      "observacao_original": "Deposito / Secretaria / Credenc. / etc. Não comporta montagem tipo auditório, escolar etc.",
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_078",
+      "codigo_fonte": 78,
+      "pagina_fonte": 2,
+      "nome_original": "Teatro da Vila Nova",
+      "classificacao_preliminar": "espaco_sem_composicao_explicita",
+      "grupo_preliminar": null,
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": null,
+        "area_m2": "1335,11",
+        "pe_direito": null,
+        "auditorio": null,
+        "escolar_espinha": null,
+        "u": null,
+        "banquete": null
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar."
+      ],
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_079",
+      "codigo_fonte": 79,
+      "pagina_fonte": 2,
+      "nome_original": "Ala Mar - Piscina",
+      "classificacao_preliminar": "espaco_sem_composicao_explicita",
+      "grupo_preliminar": null,
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": null,
+        "area_m2": null,
+        "pe_direito": null,
+        "auditorio": null,
+        "escolar_espinha": null,
+        "u": null,
+        "banquete": null
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar."
+      ],
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_080",
+      "codigo_fonte": 80,
+      "pagina_fonte": 2,
+      "nome_original": "Ala Água - Piscina",
+      "classificacao_preliminar": "espaco_sem_composicao_explicita",
+      "grupo_preliminar": null,
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": null,
+        "area_m2": null,
+        "pe_direito": null,
+        "auditorio": null,
+        "escolar_espinha": null,
+        "u": null,
+        "banquete": null
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar."
+      ],
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_081",
+      "codigo_fonte": 81,
+      "pagina_fonte": 2,
+      "nome_original": "Ala Terra - Piscina",
+      "classificacao_preliminar": "espaco_sem_composicao_explicita",
+      "grupo_preliminar": null,
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": null,
+        "area_m2": null,
+        "pe_direito": null,
+        "auditorio": null,
+        "escolar_espinha": null,
+        "u": null,
+        "banquete": null
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar."
+      ],
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_082",
+      "codigo_fonte": 82,
+      "pagina_fonte": 2,
+      "nome_original": "Ala Sol - Piscina",
+      "classificacao_preliminar": "espaco_sem_composicao_explicita",
+      "grupo_preliminar": null,
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": null,
+        "area_m2": null,
+        "pe_direito": null,
+        "auditorio": null,
+        "escolar_espinha": null,
+        "u": null,
+        "banquete": null
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar."
+      ],
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_083",
+      "codigo_fonte": 83,
+      "pagina_fonte": 2,
+      "nome_original": "Pousadas - Piscina",
+      "classificacao_preliminar": "espaco_sem_composicao_explicita",
+      "grupo_preliminar": null,
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": null,
+        "area_m2": null,
+        "pe_direito": null,
+        "auditorio": null,
+        "escolar_espinha": null,
+        "u": null,
+        "banquete": null
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar."
+      ],
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_084",
+      "codigo_fonte": 84,
+      "pagina_fonte": 2,
+      "nome_original": "Premium - Piscina",
+      "classificacao_preliminar": "espaco_sem_composicao_explicita",
+      "grupo_preliminar": null,
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": null,
+        "area_m2": null,
+        "pe_direito": null,
+        "auditorio": null,
+        "escolar_espinha": null,
+        "u": null,
+        "banquete": null
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar."
+      ],
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_085",
+      "codigo_fonte": 85,
+      "pagina_fonte": 2,
+      "nome_original": "Gramado Sol / Mar",
+      "classificacao_preliminar": "espaco_sem_composicao_explicita",
+      "grupo_preliminar": null,
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": null,
+        "area_m2": null,
+        "pe_direito": null,
+        "auditorio": null,
+        "escolar_espinha": null,
+        "u": null,
+        "banquete": null
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar."
+      ],
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_086",
+      "codigo_fonte": 86,
+      "pagina_fonte": 2,
+      "nome_original": "Gramado Água",
+      "classificacao_preliminar": "espaco_sem_composicao_explicita",
+      "grupo_preliminar": null,
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": null,
+        "area_m2": null,
+        "pe_direito": null,
+        "auditorio": null,
+        "escolar_espinha": null,
+        "u": null,
+        "banquete": null
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar."
+      ],
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_087",
+      "codigo_fonte": 87,
+      "pagina_fonte": 2,
+      "nome_original": "Pousada da Torre",
+      "classificacao_preliminar": "espaco_sem_composicao_explicita",
+      "grupo_preliminar": null,
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": null,
+        "area_m2": null,
+        "pe_direito": null,
+        "auditorio": null,
+        "escolar_espinha": null,
+        "u": null,
+        "banquete": null
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar."
+      ],
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_088",
+      "codigo_fonte": 88,
+      "pagina_fonte": 2,
+      "nome_original": "Coqueiral",
+      "classificacao_preliminar": "espaco_sem_composicao_explicita",
+      "grupo_preliminar": null,
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": null,
+        "area_m2": null,
+        "pe_direito": null,
+        "auditorio": null,
+        "escolar_espinha": null,
+        "u": null,
+        "banquete": null
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar."
+      ],
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_089",
+      "codigo_fonte": 89,
+      "pagina_fonte": 2,
+      "nome_original": "Terreno Odebrech",
+      "classificacao_preliminar": "espaco_sem_composicao_explicita",
+      "grupo_preliminar": null,
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": null,
+        "area_m2": null,
+        "pe_direito": null,
+        "auditorio": null,
+        "escolar_espinha": null,
+        "u": null,
+        "banquete": null
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar."
+      ],
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_090",
+      "codigo_fonte": 90,
+      "pagina_fonte": 2,
+      "nome_original": "Arena Sauipe Montagem (Ar Desl.) 3 Módulos",
+      "classificacao_preliminar": "variante_utilizacao_arena",
+      "grupo_preliminar": "Arena Sauipe",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": null,
+        "area_m2": "2436",
+        "pe_direito": "8",
+        "auditorio": "3500",
+        "escolar_espinha": "1900",
+        "u": "260",
+        "banquete": "1800"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar.",
+        "Identificar módulos físicos, combinações permitidas e dependências com o foyer.",
+        "Mapear esta variante ao mesmo recurso físico usado pelas demais fases/climatizações; não criar uma sala independente por linha."
+      ],
+      "fase_indicada": "Montagem",
+      "climatizacao_texto_fonte": "Ar Desl.",
+      "quantidade_modulos_indicada": 3,
+      "apenas_foyer_indicado": false,
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_091",
+      "codigo_fonte": 91,
+      "pagina_fonte": 2,
+      "nome_original": "Arena Sauipe Montagem (Ar Parc.) 3 Módulos",
+      "classificacao_preliminar": "variante_utilizacao_arena",
+      "grupo_preliminar": "Arena Sauipe",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": null,
+        "area_m2": "2436",
+        "pe_direito": "8",
+        "auditorio": "3500",
+        "escolar_espinha": "1900",
+        "u": "260",
+        "banquete": "1800"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar.",
+        "Identificar módulos físicos, combinações permitidas e dependências com o foyer.",
+        "Mapear esta variante ao mesmo recurso físico usado pelas demais fases/climatizações; não criar uma sala independente por linha."
+      ],
+      "fase_indicada": "Montagem",
+      "climatizacao_texto_fonte": "Ar Parc.",
+      "quantidade_modulos_indicada": 3,
+      "apenas_foyer_indicado": false,
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_092",
+      "codigo_fonte": 92,
+      "pagina_fonte": 2,
+      "nome_original": "Arena Sauipe Montagem (Ar Ligado) 3 Módulos",
+      "classificacao_preliminar": "variante_utilizacao_arena",
+      "grupo_preliminar": "Arena Sauipe",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": null,
+        "area_m2": "2436",
+        "pe_direito": "8",
+        "auditorio": "3500",
+        "escolar_espinha": "1900",
+        "u": "260",
+        "banquete": "1800"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar.",
+        "Identificar módulos físicos, combinações permitidas e dependências com o foyer.",
+        "Mapear esta variante ao mesmo recurso físico usado pelas demais fases/climatizações; não criar uma sala independente por linha."
+      ],
+      "fase_indicada": "Montagem",
+      "climatizacao_texto_fonte": "Ar Ligado",
+      "quantidade_modulos_indicada": 3,
+      "apenas_foyer_indicado": false,
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_093",
+      "codigo_fonte": 93,
+      "pagina_fonte": 2,
+      "nome_original": "Arena Sauipe Evento (Ar desligado) 3 Módulos",
+      "classificacao_preliminar": "variante_utilizacao_arena",
+      "grupo_preliminar": "Arena Sauipe",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": null,
+        "area_m2": "2436",
+        "pe_direito": "8",
+        "auditorio": "3500",
+        "escolar_espinha": "1900",
+        "u": "260",
+        "banquete": "1800"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar.",
+        "Identificar módulos físicos, combinações permitidas e dependências com o foyer.",
+        "Mapear esta variante ao mesmo recurso físico usado pelas demais fases/climatizações; não criar uma sala independente por linha."
+      ],
+      "fase_indicada": "Evento",
+      "climatizacao_texto_fonte": "Ar desligado",
+      "quantidade_modulos_indicada": 3,
+      "apenas_foyer_indicado": false,
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_094",
+      "codigo_fonte": 94,
+      "pagina_fonte": 2,
+      "nome_original": "Arena Sauipe Evento (Ar Ligado) 3 Módulos",
+      "classificacao_preliminar": "variante_utilizacao_arena",
+      "grupo_preliminar": "Arena Sauipe",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": null,
+        "area_m2": "2436",
+        "pe_direito": "8",
+        "auditorio": "3500",
+        "escolar_espinha": "1900",
+        "u": "260",
+        "banquete": "1800"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar.",
+        "Identificar módulos físicos, combinações permitidas e dependências com o foyer.",
+        "Mapear esta variante ao mesmo recurso físico usado pelas demais fases/climatizações; não criar uma sala independente por linha."
+      ],
+      "fase_indicada": "Evento",
+      "climatizacao_texto_fonte": "Ar Ligado",
+      "quantidade_modulos_indicada": 3,
+      "apenas_foyer_indicado": false,
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_095",
+      "codigo_fonte": 95,
+      "pagina_fonte": 2,
+      "nome_original": "Arena Sauipe Desmontagem (Ar Desl.) 3 Módulos",
+      "classificacao_preliminar": "variante_utilizacao_arena",
+      "grupo_preliminar": "Arena Sauipe",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": null,
+        "area_m2": "2436",
+        "pe_direito": "8",
+        "auditorio": "3500",
+        "escolar_espinha": "1900",
+        "u": "260",
+        "banquete": "1800"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar.",
+        "Identificar módulos físicos, combinações permitidas e dependências com o foyer.",
+        "Mapear esta variante ao mesmo recurso físico usado pelas demais fases/climatizações; não criar uma sala independente por linha."
+      ],
+      "fase_indicada": "Desmontagem",
+      "climatizacao_texto_fonte": "Ar Desl.",
+      "quantidade_modulos_indicada": 3,
+      "apenas_foyer_indicado": false,
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_096",
+      "codigo_fonte": 96,
+      "pagina_fonte": 2,
+      "nome_original": "Arena Sauipe Desmontagem (Ar Parc.) 3 Módulos",
+      "classificacao_preliminar": "variante_utilizacao_arena",
+      "grupo_preliminar": "Arena Sauipe",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": null,
+        "area_m2": "2436",
+        "pe_direito": "8",
+        "auditorio": "3500",
+        "escolar_espinha": "1900",
+        "u": "260",
+        "banquete": "1800"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar.",
+        "Identificar módulos físicos, combinações permitidas e dependências com o foyer.",
+        "Mapear esta variante ao mesmo recurso físico usado pelas demais fases/climatizações; não criar uma sala independente por linha."
+      ],
+      "fase_indicada": "Desmontagem",
+      "climatizacao_texto_fonte": "Ar Parc.",
+      "quantidade_modulos_indicada": 3,
+      "apenas_foyer_indicado": false,
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_097",
+      "codigo_fonte": 97,
+      "pagina_fonte": 2,
+      "nome_original": "Arena Sauipe Desmontagem (Ar Ligado) 3 Módulos",
+      "classificacao_preliminar": "variante_utilizacao_arena",
+      "grupo_preliminar": "Arena Sauipe",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": null,
+        "area_m2": "2436",
+        "pe_direito": "8",
+        "auditorio": "3500",
+        "escolar_espinha": "1900",
+        "u": "260",
+        "banquete": "1800"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar.",
+        "Identificar módulos físicos, combinações permitidas e dependências com o foyer.",
+        "Mapear esta variante ao mesmo recurso físico usado pelas demais fases/climatizações; não criar uma sala independente por linha."
+      ],
+      "fase_indicada": "Desmontagem",
+      "climatizacao_texto_fonte": "Ar Ligado",
+      "quantidade_modulos_indicada": 3,
+      "apenas_foyer_indicado": false,
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_098",
+      "codigo_fonte": 98,
+      "pagina_fonte": 2,
+      "nome_original": "Arena Sauipe Montagem (Ar Desl.) 2 Módulos",
+      "classificacao_preliminar": "variante_utilizacao_arena",
+      "grupo_preliminar": "Arena Sauipe",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": null,
+        "area_m2": "1624",
+        "pe_direito": "8",
+        "auditorio": "2330",
+        "escolar_espinha": "1266",
+        "u": "173",
+        "banquete": "1200"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar.",
+        "Identificar módulos físicos, combinações permitidas e dependências com o foyer.",
+        "Mapear esta variante ao mesmo recurso físico usado pelas demais fases/climatizações; não criar uma sala independente por linha."
+      ],
+      "fase_indicada": "Montagem",
+      "climatizacao_texto_fonte": "Ar Desl.",
+      "quantidade_modulos_indicada": 2,
+      "apenas_foyer_indicado": false,
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_099",
+      "codigo_fonte": 99,
+      "pagina_fonte": 2,
+      "nome_original": "Arena Sauipe Montagem (Ar Parc.) 2 Módulos",
+      "classificacao_preliminar": "variante_utilizacao_arena",
+      "grupo_preliminar": "Arena Sauipe",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": null,
+        "area_m2": "1624",
+        "pe_direito": "8",
+        "auditorio": "2330",
+        "escolar_espinha": "1266",
+        "u": "173",
+        "banquete": "1200"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar.",
+        "Identificar módulos físicos, combinações permitidas e dependências com o foyer.",
+        "Mapear esta variante ao mesmo recurso físico usado pelas demais fases/climatizações; não criar uma sala independente por linha."
+      ],
+      "fase_indicada": "Montagem",
+      "climatizacao_texto_fonte": "Ar Parc.",
+      "quantidade_modulos_indicada": 2,
+      "apenas_foyer_indicado": false,
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_100",
+      "codigo_fonte": 100,
+      "pagina_fonte": 2,
+      "nome_original": "Arena Sauipe Montagem (Ar Ligado) 2 Módulos",
+      "classificacao_preliminar": "variante_utilizacao_arena",
+      "grupo_preliminar": "Arena Sauipe",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": null,
+        "area_m2": "1624",
+        "pe_direito": "8",
+        "auditorio": "2330",
+        "escolar_espinha": "1266",
+        "u": "173",
+        "banquete": "1200"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar.",
+        "Identificar módulos físicos, combinações permitidas e dependências com o foyer.",
+        "Mapear esta variante ao mesmo recurso físico usado pelas demais fases/climatizações; não criar uma sala independente por linha."
+      ],
+      "fase_indicada": "Montagem",
+      "climatizacao_texto_fonte": "Ar Ligado",
+      "quantidade_modulos_indicada": 2,
+      "apenas_foyer_indicado": false,
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_101",
+      "codigo_fonte": 101,
+      "pagina_fonte": 2,
+      "nome_original": "Arena Sauipe Evento (Ar desligado) 2 Módulos",
+      "classificacao_preliminar": "variante_utilizacao_arena",
+      "grupo_preliminar": "Arena Sauipe",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": null,
+        "area_m2": "1624",
+        "pe_direito": "8",
+        "auditorio": "2330",
+        "escolar_espinha": "1266",
+        "u": "173",
+        "banquete": "1200"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar.",
+        "Identificar módulos físicos, combinações permitidas e dependências com o foyer.",
+        "Mapear esta variante ao mesmo recurso físico usado pelas demais fases/climatizações; não criar uma sala independente por linha."
+      ],
+      "fase_indicada": "Evento",
+      "climatizacao_texto_fonte": "Ar desligado",
+      "quantidade_modulos_indicada": 2,
+      "apenas_foyer_indicado": false,
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_102",
+      "codigo_fonte": 102,
+      "pagina_fonte": 2,
+      "nome_original": "Arena Sauipe Evento (Ar Ligado) 2 Módulos",
+      "classificacao_preliminar": "variante_utilizacao_arena",
+      "grupo_preliminar": "Arena Sauipe",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": null,
+        "area_m2": "1624",
+        "pe_direito": "8",
+        "auditorio": "2330",
+        "escolar_espinha": "1266",
+        "u": "173",
+        "banquete": "1200"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar.",
+        "Identificar módulos físicos, combinações permitidas e dependências com o foyer.",
+        "Mapear esta variante ao mesmo recurso físico usado pelas demais fases/climatizações; não criar uma sala independente por linha."
+      ],
+      "fase_indicada": "Evento",
+      "climatizacao_texto_fonte": "Ar Ligado",
+      "quantidade_modulos_indicada": 2,
+      "apenas_foyer_indicado": false,
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_103",
+      "codigo_fonte": 103,
+      "pagina_fonte": 2,
+      "nome_original": "Arena Sauipe Desmontagem (Ar Desl.) 2 Módulos",
+      "classificacao_preliminar": "variante_utilizacao_arena",
+      "grupo_preliminar": "Arena Sauipe",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": null,
+        "area_m2": "1624",
+        "pe_direito": "8",
+        "auditorio": "2330",
+        "escolar_espinha": "1266",
+        "u": "173",
+        "banquete": "1200"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar.",
+        "Identificar módulos físicos, combinações permitidas e dependências com o foyer.",
+        "Mapear esta variante ao mesmo recurso físico usado pelas demais fases/climatizações; não criar uma sala independente por linha."
+      ],
+      "fase_indicada": "Desmontagem",
+      "climatizacao_texto_fonte": "Ar Desl.",
+      "quantidade_modulos_indicada": 2,
+      "apenas_foyer_indicado": false,
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_104",
+      "codigo_fonte": 104,
+      "pagina_fonte": 2,
+      "nome_original": "Arena Sauipe Desmontagem (Ar Parc.) 2 Módulos",
+      "classificacao_preliminar": "variante_utilizacao_arena",
+      "grupo_preliminar": "Arena Sauipe",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": null,
+        "area_m2": "1624",
+        "pe_direito": "8",
+        "auditorio": "2330",
+        "escolar_espinha": "1266",
+        "u": "173",
+        "banquete": "1200"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar.",
+        "Identificar módulos físicos, combinações permitidas e dependências com o foyer.",
+        "Mapear esta variante ao mesmo recurso físico usado pelas demais fases/climatizações; não criar uma sala independente por linha."
+      ],
+      "fase_indicada": "Desmontagem",
+      "climatizacao_texto_fonte": "Ar Parc.",
+      "quantidade_modulos_indicada": 2,
+      "apenas_foyer_indicado": false,
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_105",
+      "codigo_fonte": 105,
+      "pagina_fonte": 2,
+      "nome_original": "Arena Sauipe Desmontagem (Ar Ligado) 2 Módulos",
+      "classificacao_preliminar": "variante_utilizacao_arena",
+      "grupo_preliminar": "Arena Sauipe",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": null,
+        "area_m2": "1624",
+        "pe_direito": "8",
+        "auditorio": "2330",
+        "escolar_espinha": "1266",
+        "u": "173",
+        "banquete": "1200"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar.",
+        "Identificar módulos físicos, combinações permitidas e dependências com o foyer.",
+        "Mapear esta variante ao mesmo recurso físico usado pelas demais fases/climatizações; não criar uma sala independente por linha."
+      ],
+      "fase_indicada": "Desmontagem",
+      "climatizacao_texto_fonte": "Ar Ligado",
+      "quantidade_modulos_indicada": 2,
+      "apenas_foyer_indicado": false,
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_106",
+      "codigo_fonte": 106,
+      "pagina_fonte": 2,
+      "nome_original": "Arena Sauipe Montagem (Ar Desl.) 1 Módulos",
+      "classificacao_preliminar": "variante_utilizacao_arena",
+      "grupo_preliminar": "Arena Sauipe",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": null,
+        "area_m2": "812",
+        "pe_direito": "8",
+        "auditorio": "1167",
+        "escolar_espinha": "633",
+        "u": "87",
+        "banquete": "600"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar.",
+        "Identificar módulos físicos, combinações permitidas e dependências com o foyer.",
+        "Mapear esta variante ao mesmo recurso físico usado pelas demais fases/climatizações; não criar uma sala independente por linha."
+      ],
+      "fase_indicada": "Montagem",
+      "climatizacao_texto_fonte": "Ar Desl.",
+      "quantidade_modulos_indicada": 1,
+      "apenas_foyer_indicado": false,
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_107",
+      "codigo_fonte": 107,
+      "pagina_fonte": 2,
+      "nome_original": "Arena Sauipe Montagem (Ar Ligado) 1 Módulos",
+      "classificacao_preliminar": "variante_utilizacao_arena",
+      "grupo_preliminar": "Arena Sauipe",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": null,
+        "area_m2": "812",
+        "pe_direito": "8",
+        "auditorio": "1167",
+        "escolar_espinha": "633",
+        "u": "87",
+        "banquete": "600"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar.",
+        "Identificar módulos físicos, combinações permitidas e dependências com o foyer.",
+        "Mapear esta variante ao mesmo recurso físico usado pelas demais fases/climatizações; não criar uma sala independente por linha."
+      ],
+      "fase_indicada": "Montagem",
+      "climatizacao_texto_fonte": "Ar Ligado",
+      "quantidade_modulos_indicada": 1,
+      "apenas_foyer_indicado": false,
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_108",
+      "codigo_fonte": 108,
+      "pagina_fonte": 2,
+      "nome_original": "Arena Sauipe Evento (Ar desligado) 1 Módulos",
+      "classificacao_preliminar": "variante_utilizacao_arena",
+      "grupo_preliminar": "Arena Sauipe",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": null,
+        "area_m2": "812",
+        "pe_direito": "8",
+        "auditorio": "1167",
+        "escolar_espinha": "633",
+        "u": "87",
+        "banquete": "600"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar.",
+        "Identificar módulos físicos, combinações permitidas e dependências com o foyer.",
+        "Mapear esta variante ao mesmo recurso físico usado pelas demais fases/climatizações; não criar uma sala independente por linha."
+      ],
+      "fase_indicada": "Evento",
+      "climatizacao_texto_fonte": "Ar desligado",
+      "quantidade_modulos_indicada": 1,
+      "apenas_foyer_indicado": false,
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_109",
+      "codigo_fonte": 109,
+      "pagina_fonte": 2,
+      "nome_original": "Arena Sauipe Evento (Ar Ligado) 1 Módulos",
+      "classificacao_preliminar": "variante_utilizacao_arena",
+      "grupo_preliminar": "Arena Sauipe",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": null,
+        "area_m2": "812",
+        "pe_direito": "8",
+        "auditorio": "1167",
+        "escolar_espinha": "633",
+        "u": "87",
+        "banquete": "600"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar.",
+        "Identificar módulos físicos, combinações permitidas e dependências com o foyer.",
+        "Mapear esta variante ao mesmo recurso físico usado pelas demais fases/climatizações; não criar uma sala independente por linha."
+      ],
+      "fase_indicada": "Evento",
+      "climatizacao_texto_fonte": "Ar Ligado",
+      "quantidade_modulos_indicada": 1,
+      "apenas_foyer_indicado": false,
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_110",
+      "codigo_fonte": 110,
+      "pagina_fonte": 2,
+      "nome_original": "Arena Sauipe Desmontagem (Ar Desl.) 1 Módulos",
+      "classificacao_preliminar": "variante_utilizacao_arena",
+      "grupo_preliminar": "Arena Sauipe",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": null,
+        "area_m2": "812",
+        "pe_direito": "8",
+        "auditorio": "1167",
+        "escolar_espinha": "633",
+        "u": "87",
+        "banquete": "600"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar.",
+        "Identificar módulos físicos, combinações permitidas e dependências com o foyer.",
+        "Mapear esta variante ao mesmo recurso físico usado pelas demais fases/climatizações; não criar uma sala independente por linha."
+      ],
+      "fase_indicada": "Desmontagem",
+      "climatizacao_texto_fonte": "Ar Desl.",
+      "quantidade_modulos_indicada": 1,
+      "apenas_foyer_indicado": false,
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_111",
+      "codigo_fonte": 111,
+      "pagina_fonte": 2,
+      "nome_original": "Arena Sauipe Desmontagem (Ar Ligado) 1 Módulos",
+      "classificacao_preliminar": "variante_utilizacao_arena",
+      "grupo_preliminar": "Arena Sauipe",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": null,
+        "area_m2": "812",
+        "pe_direito": "8",
+        "auditorio": "1167",
+        "escolar_espinha": "633",
+        "u": "87",
+        "banquete": "600"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar.",
+        "Identificar módulos físicos, combinações permitidas e dependências com o foyer.",
+        "Mapear esta variante ao mesmo recurso físico usado pelas demais fases/climatizações; não criar uma sala independente por linha."
+      ],
+      "fase_indicada": "Desmontagem",
+      "climatizacao_texto_fonte": "Ar Ligado",
+      "quantidade_modulos_indicada": 1,
+      "apenas_foyer_indicado": false,
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_112",
+      "codigo_fonte": 112,
+      "pagina_fonte": 2,
+      "nome_original": "Arena Sauipe Montagem (Ar Desl.) Apenas Foyer",
+      "classificacao_preliminar": "variante_utilizacao_arena",
+      "grupo_preliminar": "Arena Sauipe",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": null,
+        "area_m2": "886,24",
+        "pe_direito": "7,5",
+        "auditorio": null,
+        "escolar_espinha": null,
+        "u": null,
+        "banquete": null
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar.",
+        "Identificar módulos físicos, combinações permitidas e dependências com o foyer.",
+        "Mapear esta variante ao mesmo recurso físico usado pelas demais fases/climatizações; não criar uma sala independente por linha."
+      ],
+      "fase_indicada": "Montagem",
+      "climatizacao_texto_fonte": "Ar Desl.",
+      "quantidade_modulos_indicada": null,
+      "apenas_foyer_indicado": true,
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_113",
+      "codigo_fonte": 113,
+      "pagina_fonte": 2,
+      "nome_original": "Arena Sauipe Montagem (Ar Ligado) Apenas Foyer",
+      "classificacao_preliminar": "variante_utilizacao_arena",
+      "grupo_preliminar": "Arena Sauipe",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": null,
+        "area_m2": "886,24",
+        "pe_direito": "7,5",
+        "auditorio": null,
+        "escolar_espinha": null,
+        "u": null,
+        "banquete": null
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar.",
+        "Identificar módulos físicos, combinações permitidas e dependências com o foyer.",
+        "Mapear esta variante ao mesmo recurso físico usado pelas demais fases/climatizações; não criar uma sala independente por linha."
+      ],
+      "fase_indicada": "Montagem",
+      "climatizacao_texto_fonte": "Ar Ligado",
+      "quantidade_modulos_indicada": null,
+      "apenas_foyer_indicado": true,
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_114",
+      "codigo_fonte": 114,
+      "pagina_fonte": 2,
+      "nome_original": "Arena Sauipe Evento (Ar desligado) Apenas Foyer",
+      "classificacao_preliminar": "variante_utilizacao_arena",
+      "grupo_preliminar": "Arena Sauipe",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": null,
+        "area_m2": "886,24",
+        "pe_direito": "7,5",
+        "auditorio": null,
+        "escolar_espinha": null,
+        "u": null,
+        "banquete": null
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar.",
+        "Identificar módulos físicos, combinações permitidas e dependências com o foyer.",
+        "Mapear esta variante ao mesmo recurso físico usado pelas demais fases/climatizações; não criar uma sala independente por linha."
+      ],
+      "fase_indicada": "Evento",
+      "climatizacao_texto_fonte": "Ar desligado",
+      "quantidade_modulos_indicada": null,
+      "apenas_foyer_indicado": true,
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_115",
+      "codigo_fonte": 115,
+      "pagina_fonte": 2,
+      "nome_original": "Arena Sauipe Evento (Ar Ligado) Apenas Foyer",
+      "classificacao_preliminar": "variante_utilizacao_arena",
+      "grupo_preliminar": "Arena Sauipe",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": null,
+        "area_m2": "886,24",
+        "pe_direito": "7,5",
+        "auditorio": null,
+        "escolar_espinha": null,
+        "u": null,
+        "banquete": null
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar.",
+        "Identificar módulos físicos, combinações permitidas e dependências com o foyer.",
+        "Mapear esta variante ao mesmo recurso físico usado pelas demais fases/climatizações; não criar uma sala independente por linha."
+      ],
+      "fase_indicada": "Evento",
+      "climatizacao_texto_fonte": "Ar Ligado",
+      "quantidade_modulos_indicada": null,
+      "apenas_foyer_indicado": true,
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_116",
+      "codigo_fonte": 116,
+      "pagina_fonte": 2,
+      "nome_original": "Arena Sauipe Desmontagem (Ar Desl.) Apenas Foyer",
+      "classificacao_preliminar": "variante_utilizacao_arena",
+      "grupo_preliminar": "Arena Sauipe",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": null,
+        "area_m2": "886,24",
+        "pe_direito": "7,5",
+        "auditorio": null,
+        "escolar_espinha": null,
+        "u": null,
+        "banquete": null
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar.",
+        "Identificar módulos físicos, combinações permitidas e dependências com o foyer.",
+        "Mapear esta variante ao mesmo recurso físico usado pelas demais fases/climatizações; não criar uma sala independente por linha."
+      ],
+      "fase_indicada": "Desmontagem",
+      "climatizacao_texto_fonte": "Ar Desl.",
+      "quantidade_modulos_indicada": null,
+      "apenas_foyer_indicado": true,
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_117",
+      "codigo_fonte": 117,
+      "pagina_fonte": 2,
+      "nome_original": "Arena Sauipe Desmontagem (Ar Ligado) Apenas Foyer",
+      "classificacao_preliminar": "variante_utilizacao_arena",
+      "grupo_preliminar": "Arena Sauipe",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": null,
+        "area_m2": "886,24",
+        "pe_direito": "7,5",
+        "auditorio": null,
+        "escolar_espinha": null,
+        "u": null,
+        "banquete": null
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar.",
+        "Identificar módulos físicos, combinações permitidas e dependências com o foyer.",
+        "Mapear esta variante ao mesmo recurso físico usado pelas demais fases/climatizações; não criar uma sala independente por linha."
+      ],
+      "fase_indicada": "Desmontagem",
+      "climatizacao_texto_fonte": "Ar Ligado",
+      "quantidade_modulos_indicada": null,
+      "apenas_foyer_indicado": true,
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_118",
+      "codigo_fonte": 118,
+      "pagina_fonte": 2,
+      "nome_original": "Salas 1",
+      "classificacao_preliminar": "espaco_sem_composicao_explicita",
+      "grupo_preliminar": "Salas (contexto a confirmar)",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": null,
+        "area_m2": "52",
+        "pe_direito": "4,4",
+        "auditorio": "70",
+        "escolar_espinha": "40",
+        "u": "25",
+        "banquete": "40"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar.",
+        "Confirmar a que edifício/complexo pertencem as Salas numeradas; a posição após a Arena não prova o vínculo."
+      ],
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_119",
+      "codigo_fonte": 119,
+      "pagina_fonte": 2,
+      "nome_original": "Salas 2",
+      "classificacao_preliminar": "espaco_sem_composicao_explicita",
+      "grupo_preliminar": "Salas (contexto a confirmar)",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": null,
+        "area_m2": "52",
+        "pe_direito": "4,4",
+        "auditorio": "70",
+        "escolar_espinha": "40",
+        "u": "25",
+        "banquete": "40"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar.",
+        "Confirmar a que edifício/complexo pertencem as Salas numeradas; a posição após a Arena não prova o vínculo."
+      ],
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_120",
+      "codigo_fonte": 120,
+      "pagina_fonte": 2,
+      "nome_original": "Salas 3",
+      "classificacao_preliminar": "espaco_sem_composicao_explicita",
+      "grupo_preliminar": "Salas (contexto a confirmar)",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": null,
+        "area_m2": "52",
+        "pe_direito": "4,4",
+        "auditorio": "70",
+        "escolar_espinha": "40",
+        "u": "25",
+        "banquete": "40"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar.",
+        "Confirmar a que edifício/complexo pertencem as Salas numeradas; a posição após a Arena não prova o vínculo."
+      ],
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_121",
+      "codigo_fonte": 121,
+      "pagina_fonte": 2,
+      "nome_original": "Salas 4",
+      "classificacao_preliminar": "espaco_sem_composicao_explicita",
+      "grupo_preliminar": "Salas (contexto a confirmar)",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": null,
+        "area_m2": "52",
+        "pe_direito": "4,4",
+        "auditorio": "70",
+        "escolar_espinha": "40",
+        "u": "25",
+        "banquete": "40"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar.",
+        "Confirmar a que edifício/complexo pertencem as Salas numeradas; a posição após a Arena não prova o vínculo."
+      ],
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_122",
+      "codigo_fonte": 122,
+      "pagina_fonte": 2,
+      "nome_original": "Salas 1 -2",
+      "classificacao_preliminar": "combinacao_ou_configuracao",
+      "grupo_preliminar": "Salas (contexto a confirmar)",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": null,
+        "area_m2": "104",
+        "pe_direito": "4,4",
+        "auditorio": "140",
+        "escolar_espinha": "80",
+        "u": "48",
+        "banquete": "80"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar.",
+        "Validar o vínculo físico com os componentes antes de liberar reservas.",
+        "Confirmar a que edifício/complexo pertencem as Salas numeradas; a posição após a Arena não prova o vínculo."
+      ],
+      "componentes_candidatos_codigos": [
+        118,
+        119
+      ],
+      "base_dos_componentes": "Nomes explícitos na descrição; relação operacional pendente de validação.",
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_123",
+      "codigo_fonte": 123,
+      "pagina_fonte": 2,
+      "nome_original": "Salas 3 - 4",
+      "classificacao_preliminar": "combinacao_ou_configuracao",
+      "grupo_preliminar": "Salas (contexto a confirmar)",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": null,
+        "area_m2": "104",
+        "pe_direito": "4,4",
+        "auditorio": "140",
+        "escolar_espinha": "80",
+        "u": "48",
+        "banquete": "80"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar.",
+        "Validar o vínculo físico com os componentes antes de liberar reservas.",
+        "Confirmar a que edifício/complexo pertencem as Salas numeradas; a posição após a Arena não prova o vínculo."
+      ],
+      "componentes_candidatos_codigos": [
+        120,
+        121
+      ],
+      "base_dos_componentes": "Nomes explícitos na descrição; relação operacional pendente de validação.",
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_124",
+      "codigo_fonte": 124,
+      "pagina_fonte": 2,
+      "nome_original": "Salas 1 - 2 - 3 - 4",
+      "classificacao_preliminar": "combinacao_ou_configuracao",
+      "grupo_preliminar": "Salas (contexto a confirmar)",
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": null,
+        "area_m2": "208",
+        "pe_direito": "4,4",
+        "auditorio": "280",
+        "escolar_espinha": "160",
+        "u": "96",
+        "banquete": "160"
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar.",
+        "Validar o vínculo físico com os componentes antes de liberar reservas.",
+        "Confirmar a que edifício/complexo pertencem as Salas numeradas; a posição após a Arena não prova o vínculo."
+      ],
+      "componentes_candidatos_codigos": [
+        118,
+        119,
+        120,
+        121
+      ],
+      "base_dos_componentes": "Nomes explícitos na descrição; relação operacional pendente de validação.",
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    },
+    {
+      "id_fonte": "lista_salas_pdf_125",
+      "codigo_fonte": 125,
+      "pagina_fonte": 2,
+      "nome_original": "Quermesse",
+      "classificacao_preliminar": "espaco_sem_composicao_explicita",
+      "grupo_preliminar": null,
+      "empreendimento_id": null,
+      "mapeamento_operacional_validado": false,
+      "componentes_confirmados": null,
+      "dados_tecnicos_texto_fonte": {
+        "medidas": null,
+        "area_m2": null,
+        "pe_direito": null,
+        "auditorio": null,
+        "escolar_espinha": null,
+        "u": null,
+        "banquete": null
+      },
+      "pendencias": [
+        "Classificar o empreendimento/localização progressivamente; manter por enquanto em Empreendimento a identificar."
+      ],
+      "estado_classificacao_empreendimento": "a_identificar",
+      "estado_validacao_fisica": "pendente"
+    }
+  ],
+  "politica_empreendimento_indefinido": {
+    "categoria_interface": "Empreendimento a identificar",
+    "empreendimento_id_inicial": null,
+    "catalogo_unico_compartilhado": true,
+    "regra": "Atribuir posteriormente o resort ao mesmo recurso, preservando IDs, solicitações e histórico. Não criar um terceiro resort real nem duplicar o recurso nos dois empreendimentos.",
+    "condicao_ocupacao_efetiva": "Resort pendente não impede, por si só, ocupação. Identidade/composição física, acesso e regras de fila devem estar validados. Caso contrário, permitir somente solicitação pendente de validação, sem garantia de ocupação."
+  }
+}

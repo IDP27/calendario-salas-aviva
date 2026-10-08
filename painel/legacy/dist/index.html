@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#254eda">
+  <meta name="description" content="Painel local para organizar registros, personalizar colunas e gerar relatórios.">
+  <title>Rio Quente · Painel de Registros</title>
+  <link rel="icon" href="./assets/rio-quente-logo.png?v=2" type="image/png">
+  <link rel="stylesheet" href="./styles.css">
+  <script type="module" src="./js/app.js"></script>
+</head>
+<body>
+  <div id="app"></div>
+  <dialog id="editor" aria-labelledby="editor-title"></dialog>
+  <dialog id="confirmation" aria-labelledby="confirmation-title"></dialog>
+  <div id="toast" role="status" aria-live="polite"></div>
+  <input type="file" id="import-file" accept="application/json,.json" hidden>
+</body>
+</html>
