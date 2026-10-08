@@ -41,6 +41,27 @@ def test_unknown_topology_accepts_only_pending(api):
     assert c['days']['2027-01-10']['requests']==[b.json['id']]
 
 
+def test_availability_shows_pending_request_separately_from_occupation(api):
+    pending=api.create(code=4,status='pending',start='2026-12-25',end='2026-12-26').json
+    def baea(first='2026-12-25',last='2026-12-26'):
+        results=api.get(f'/availability?from={first}&to={last}').json['results']
+        return next(row for row in results if row['id']=='space_004')
+    assert baea()['pending_count']==1
+    assert baea()['waiting_count']==0
+    assert baea()['available'] is None
+    assert baea('2026-12-27','2026-12-27')['pending_count']==0
+    api.validate(4)
+    assert baea()['available'] is True
+    waiting=api.create(code=4,start='2026-12-25',end='2026-12-26').json
+    assert baea()['waiting_count']==1
+    assert baea()['available'] is True
+    assert api.promote(waiting).status_code==200
+    assert baea()['waiting_count']==0
+    assert baea()['pending_count']==1
+    assert baea()['available'] is False
+    assert api.detail(pending)['status']=='pending'
+
+
 @pytest.mark.parametrize('first,second',[(10,7),(7,10)])
 def test_configurations_conflict_with_components_both_directions(api,first,second):
     for n in (7,8,10):api.validate(n)

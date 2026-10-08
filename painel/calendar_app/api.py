@@ -96,6 +96,13 @@ def availability():
     with conn.transaction():
         conn.execute('SET TRANSACTION ISOLATION LEVEL REPEATABLE READ READ ONLY')
         resources=resources_map(conn); results=[]
+        request_counts={}
+        for row in conn.execute('''SELECT a.configuration_id,b.status,count(DISTINCT b.id) AS total
+                                   FROM allocations a JOIN bookings b ON b.id=a.booking_id
+                                   WHERE b.status IN ('pending','waiting')
+                                     AND a.start_date<%s AND a.end_exclusive>%s
+                                   GROUP BY a.configuration_id,b.status''',(end,first)):
+            request_counts.setdefault(row['configuration_id'],{})[row['status']]=row['total']
         for config in all_catalog(conn):
             if not config_access(g.user,config,resources) or (q['resort']!='all' and (config['resort_id'] or 'unassigned')!=q['resort']): continue
             choices=[]
@@ -103,8 +110,10 @@ def availability():
                 wanted={(rid,first+timedelta(days=i)) for rid in option for i in range((end-first).days)}
                 choices.append({'resources':option,'available':not occupation_conflicts(conn,wanted)})
             results.append({'id':config['id'],'name':config['name'],'resort_id':config['resort_id'],
-                            'validated':config['validated'],'options':choices,'available':any(o['available'] for o in choices) if choices else None})
-        return serialize({'results':results,'note':'Disponibilidade física consultada. A promoção também respeita a fila e é revalidada ao salvar.'})
+                            'validated':config['validated'],'options':choices,'available':any(o['available'] for o in choices) if choices else None,
+                            'pending_count':request_counts.get(config['id'],{}).get('pending',0),
+                            'waiting_count':request_counts.get(config['id'],{}).get('waiting',0)})
+        return serialize({'results':results,'note':'Solicitações pendentes e em espera não ocupam a sala. Somente opções prioritárias e confirmações geram ocupação efetiva; a promoção respeita a fila.'})
 
 
 @bp.get('/calendar')
