@@ -72,6 +72,63 @@ def resources_map(conn=None):
     return {r['id']:r for r in (conn or get_db()).execute('SELECT * FROM resources ORDER BY name')}
 
 
+def assign_reviewed_resort(data, apply=False):
+    """Apply a traceable resort assignment without approving physical topology."""
+    if not isinstance(data,dict) or data.get('versao') != 1 or data.get('resort_id') not in ('cs','rq'):
+        raise Problem('Relação revisada inválida.')
+    selected=data.get('codigos_fonte')
+    pending=data.get('codigos_pendentes')
+    services=data.get('codigos_servicos_fora_da_agenda')
+    groups=(selected,pending,services)
+    if any(not isinstance(group,list) or any(type(code) is not int for code in group) for group in groups):
+        raise Problem('Os códigos da relação revisada devem ser listas de números inteiros.')
+    covered=selected+pending+services
+    if not selected or len(covered)!=len(set(covered)) or not set(covered)<=set(range(1,126)) or set(services)!={5,6}:
+        raise Problem('A relação revisada contém códigos ausentes, inválidos ou duplicados.')
+    origin=required_text(data,'origem',500)
+    resort=data['resort_id']
+    with write_transaction() as conn:
+        source={row['code']:row for row in conn.execute('SELECT code,name,kind,configuration_id FROM source_items')}
+        if set(source)!=set(range(1,126)):
+            raise Problem('O catálogo completo de 125 códigos precisa ser importado antes desta classificação.')
+        if any(source[code]['kind']=='servico' or not source[code]['configuration_id'] for code in selected+pending):
+            raise Problem('Há serviço ou configuração ausente entre os espaços.')
+        if any(source[code]['kind']!='servico' for code in services):
+            raise Problem('Os códigos de serviço não correspondem ao catálogo.')
+        omitted=set(source)-set(covered)
+        if omitted:
+            previous_ids={source[code]['configuration_id'] for code in omitted}
+            previous={row['id']:row for row in conn.execute('SELECT id,resort_id,source_codes FROM configurations WHERE id = ANY(%s)',(list(previous_ids),))}
+            if set(previous)!=previous_ids or any(row['resort_id'] is None for row in previous.values()):
+                raise Problem('Há códigos fora desta relação ainda sem empreendimento. Aplique primeiro as classificações anteriores.')
+        config_ids={source[code]['configuration_id'] for code in selected}
+        configs={row['id']:row for row in conn.execute('SELECT * FROM configurations WHERE id = ANY(%s)',(list(config_ids),))}
+        if set(configs)!=config_ids or any(not set(config['source_codes'])<=set(selected) for config in configs.values()):
+            raise Problem('Uma configuração agrupa códigos classificados e pendentes; revise a relação antes de aplicar.')
+        singleton_codes={config['source_codes'][0] for config in configs.values() if config['kind']=='espaco_sem_composicao_explicita'}
+        resource_ids=[f'resource_{code:03}' for code in singleton_codes]
+        resources={row['id']:row for row in conn.execute('SELECT * FROM resources WHERE id = ANY(%s)',(resource_ids,))}
+        if set(resources)!=set(resource_ids):
+            raise Problem('Faltam recursos individuais da fonte. A classificação foi cancelada.')
+        if any(row['resort_id'] not in (None,resort) for row in list(configs.values())+list(resources.values())):
+            raise Problem('Há item já atribuído a outro empreendimento. A classificação foi cancelada.',409)
+        to_update=[config for config in configs.values() if config['resort_id'] is None]
+        resources_to_update=[resource for resource in resources.values() if resource['resort_id'] is None]
+        summary={'resort_id':resort,'source_codes':len(selected),'configurations':len(configs),
+                 'configurations_to_update':len(to_update),'resources_to_update':len(resources_to_update),
+                 'pending_source_codes':pending,'services_excluded':services,'applied':apply}
+        if apply:
+            for config in sorted(to_update,key=lambda row:row['id']):
+                conn.execute('UPDATE configurations SET resort_id=%s,version=version+1 WHERE id=%s',(resort,config['id']))
+                after=conn.execute('SELECT * FROM configurations WHERE id=%s',(config['id'],)).fetchone()
+                audit(conn,None,'configuration',config['id'],'classify',config,after,origin)
+            for resource in sorted(resources_to_update,key=lambda row:row['id']):
+                conn.execute('UPDATE resources SET resort_id=%s,version=version+1 WHERE id=%s',(resort,resource['id']))
+                after=conn.execute('SELECT * FROM resources WHERE id=%s',(resource['id'],)).fetchone()
+                audit(conn,None,'resource',resource['id'],'classify',resource,after,origin)
+        return summary
+
+
 def config_access(actor, config, resources=None):
     if not in_scope(actor,config['resort_id']): return False
     resources=resources if resources is not None else resources_map()

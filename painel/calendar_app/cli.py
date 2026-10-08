@@ -8,7 +8,7 @@ import click
 import psycopg
 from psycopg.conninfo import conninfo_to_dict
 from .db import migrate, get_db, write_transaction
-from .catalog import import_catalog
+from .catalog import import_catalog, assign_reviewed_resort
 from .auth import create_user
 from .common import Problem
 
@@ -66,6 +66,16 @@ def register(app):
         migrate()
         try: click.echo(json.dumps(import_catalog(json.loads(path.read_text()),preview=preview),ensure_ascii=False))
         except (Problem,ValueError) as exc: raise click.ClickException(str(getattr(exc,'message',exc)))
+
+    @app.cli.command('classify-reviewed')
+    @click.argument('path',type=click.Path(exists=True,path_type=Path))
+    @click.option('--apply',is_flag=True,help='Grava a classificação; sem a opção, mostra apenas uma prévia.')
+    def classify_reviewed(path,apply):
+        try:
+            result=assign_reviewed_resort(json.loads(path.read_text(encoding='utf-8')),apply=apply)
+            click.echo(json.dumps(result,ensure_ascii=False))
+        except (Problem,ValueError) as exc:
+            raise click.ClickException(str(getattr(exc,'message',exc)))
 
     @app.cli.command('create-user')
     @click.option('--username',prompt=True)

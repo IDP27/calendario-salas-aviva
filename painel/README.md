@@ -2,7 +2,7 @@
 
 Calendário provisório de salas, com bloqueios por dia inteiro entre 01/01/2026 e 31/12/2028. Flask entrega a interface e uma API autenticada; PostgreSQL é a fonte oficial. A aplicação é executada pelo Waitress, sem servidor Node.js.
 
-O piloto funciona localmente. A implantação compartilhada para as equipes ainda depende do ambiente e do login corporativo definidos pelo time. As salas recebidas permanecem **a identificar e a validar**; a carga inicial não equivale à homologação do inventário.
+O piloto funciona localmente. A implantação compartilhada para as equipes ainda depende do ambiente e do login corporativo definidos pelo time. As relações enviadas em 08/10/2026 identificam espaços da **Costa do Sauípe** e do **Rio Quente**; as composições físicas continuam **a validar**. A identificação do empreendimento não equivale à homologação do inventário.
 
 ## Executar neste computador
 
@@ -42,6 +42,30 @@ Crie um banco PostgreSQL dedicado e ajuste `DATABASE_URL` no `.env`. A aplicaç�
 ```
 
 `init-db` aplica apenas migrações ainda não registradas. A importação é transacional e repetível sem duplicar itens ou substituir revisões já feitas. O auxiliar `scripts/prepare_local.py` é exclusivo do banco local chamado `calendario`.
+
+### Relação revisada da Costa do Sauípe
+
+O arquivo `docs/classificacao-costa-sauipe-2026-10-08.json` registra os códigos da fonte associados à lista enviada pelo usuário e à confirmação posterior de Bahia 1–2. Há 110 linhas da fonte que representam 86 configurações da agenda, pois 28 variantes da Arena compartilham quatro configurações. Os serviços 5 e 6 continuam fora da agenda. A classificação é auditada e preserva IDs, localização, solicitações e validação física. Pode ser repetida sem duplicar alterações.
+
+```sh
+.venv/bin/flask --app calendar_app classify-reviewed docs/classificacao-costa-sauipe-2026-10-08.json
+.venv/bin/flask --app calendar_app backup-db instance/backups/antes-classificacao-sauipe.dump
+.venv/bin/flask --app calendar_app classify-reviewed docs/classificacao-costa-sauipe-2026-10-08.json --apply
+```
+
+Sem `--apply`, o comando apenas mostra uma prévia. Ele recusa classificar parcialmente uma configuração compartilhada, como a Arena, ou mover para Sauípe um item já atribuído ao Rio Quente. Após a aplicação, 13 configurações ficam em **A identificar**: São Tomé 1, 2, 3 e 1–2–3; Gardênia, Canário, Aimorés, Amazonas e suas três combinações; Jubarte e Maremoto. Esses itens não foram afirmados de forma inequívoca na relação recebida. A segunda linha escrita como “São Tomé 1–2” descreve 1–2–3 e aguarda esclarecimento. “Santa Amaro” foi associado ao nome original “Santo Amaro”, preservado no catálogo.
+
+### Relação revisada do Rio Quente
+
+O arquivo `docs/classificacao-rio-quente-2026-10-08.json` identifica Gardênia, Canário, Aimorés, Amazonas, três configurações de união do grupo, Jubarte e Maremoto: nove configurações no total. Execute após a classificação da Costa do Sauípe. Os códigos omitidos na segunda relação só são aceitos quando já têm empreendimento, evitando deixar itens sem destino por engano.
+
+```sh
+.venv/bin/flask --app calendar_app classify-reviewed docs/classificacao-rio-quente-2026-10-08.json
+.venv/bin/flask --app calendar_app backup-db instance/backups/antes-classificacao-rio-quente.dump
+.venv/bin/flask --app calendar_app classify-reviewed docs/classificacao-rio-quente-2026-10-08.json --apply
+```
+
+Depois das duas relações, são 86 configurações da Costa do Sauípe, nove do Rio Quente e quatro em **A identificar**: São Tomé 1, 2, 3 e 1–2–3. As composições de dois e três módulos do Rio Quente continuam sem validação física; a lista não informa quais salas específicas formam cada opção. Bloqueios efetivos continuam condicionados à validação operacional.
 
 Configuração:
 

@@ -1,0 +1,27 @@
+{
+  "versao": 1,
+  "origem": "Relação de espaços da Costa do Sauípe enviada pelo usuário em 2026-10-08; Bahia 1-2 confirmado em mensagem posterior",
+  "resort_id": "cs",
+  "codigos_fonte": [
+    1, 2, 3, 4, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 23,
+    25, 26, 27, 28, 29, 30, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49,
+    50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65,
+    66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81,
+    82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97,
+    98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110,
+    111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123,
+    124, 125
+  ],
+  "codigos_pendentes": [
+    20, 21, 22, 24, 31, 32, 33, 34, 35, 36, 37, 38, 39
+  ],
+  "codigos_servicos_fora_da_agenda": [5, 6],
+  "observacoes": [
+    "A classificação identifica somente o empreendimento; não valida a composição física ou a disponibilidade.",
+    "A segunda ocorrência de São Tomé 1-2 descreve uma união 1-2-3; o código 24 aguarda esclarecimento.",
+    "Bahia 1-2 foi confirmado como Costa do Sauípe em mensagem posterior; a composição física ainda aguarda validação.",
+    "São Tomé 1/2/3, Gardênia e suas combinações, Jubarte e Maremoto não constam expressamente na relação enviada.",
+    "Santa Amaro na mensagem foi associado a Santo Amaro no PDF pela numeração inequívoca; o nome original foi preservado.",
+    "As variantes de climatização/fase da Arena permanecem como quatro configurações por quantidade de módulos ou Foyer."
+  ]
+}

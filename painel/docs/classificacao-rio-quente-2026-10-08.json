@@ -1,0 +1,14 @@
+{
+  "versao": 1,
+  "origem": "Relação de espaços do Rio Quente enviada pelo usuário em 2026-10-08",
+  "resort_id": "rq",
+  "codigos_fonte": [31, 32, 33, 34, 35, 36, 37, 38, 39],
+  "codigos_pendentes": [20, 21, 22, 24],
+  "codigos_servicos_fora_da_agenda": [5, 6],
+  "observacoes": [
+    "Os 110 códigos não repetidos nesta relação já foram classificados como Costa do Sauípe na relação anterior.",
+    "Gardênia, Canário, Aimorés, Amazonas, Jubarte e Maremoto são espaços individuais; 2 Módulos, 3 Módulos e a união dos quatro são configurações do grupo.",
+    "A indicação de 2 ou 3 módulos não define quais salas integram cada opção física. A classificação do resort não valida a composição nem garante disponibilidade.",
+    "São Tomé 1, 2, 3 e 1-2-3 continuam sem identificação inequívoca de empreendimento."
+  ]
+}
