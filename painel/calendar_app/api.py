@@ -96,27 +96,38 @@ def availability():
     with conn.transaction():
         conn.execute('SET TRANSACTION ISOLATION LEVEL REPEATABLE READ READ ONLY')
         resources=resources_map(conn); results=[]
-        request_counts={}
-        for row in conn.execute('''SELECT a.configuration_id,b.status,count(DISTINCT b.id) AS total
-                                   FROM allocations a JOIN bookings b ON b.id=a.booking_id
-                                   WHERE b.status IN ('pending','waiting')
-                                     AND a.start_date<%s AND a.end_exclusive>%s
-                                   GROUP BY a.configuration_id,b.status''',(end,first)):
-            request_counts.setdefault(row['configuration_id'],{})[row['status']]=row['total']
+        allocations=list(conn.execute('''SELECT a.booking_id,a.configuration_id,a.phase,a.start_date,a.end_exclusive,a.resources,b.status
+                                         FROM allocations a JOIN bookings b ON b.id=a.booking_id
+                                         WHERE b.status IN ('pending','waiting','option','confirmed')
+                                           AND a.start_date<%s AND a.end_exclusive>%s
+                                         ORDER BY a.start_date,a.end_exclusive,a.id''',(end,first)))
+        request_ids={}
+        for a in allocations:
+            if a['status'] in ('pending','waiting'):
+                request_ids.setdefault(a['configuration_id'],{}).setdefault(a['status'],set()).add(a['booking_id'])
         for config in all_catalog(conn):
             if not config_access(g.user,config,resources) or (q['resort']!='all' and (config['resort_id'] or 'unassigned')!=q['resort']): continue
-            exact_occupation=conn.execute('''SELECT 1 FROM allocations a JOIN bookings b ON b.id=a.booking_id
-                                             WHERE a.configuration_id=%s AND b.status IN ('option','confirmed')
-                                               AND a.start_date<%s AND a.end_exclusive>%s LIMIT 1''',
-                                          (config['id'],end,first)).fetchone() is not None
+            config_resources={rid for option in config['options'] for rid in option}
+            matching=[]
+            for a in allocations:
+                exact=a['configuration_id']==config['id']
+                shared=a['status'] in ('option','confirmed') and bool(config_resources.intersection(a['resources']))
+                if exact or shared:
+                    matching.append({'status':a['status'],'phase':a['phase'],'start_date':a['start_date'],
+                                     'end_date':a['end_exclusive']-timedelta(days=1),'related':not exact})
+            periods=list(dict.fromkeys((p['status'],p['phase'],p['start_date'],p['end_date'],p['related']) for p in matching))
+            periods=[{'status':status,'phase':phase,'start_date':start,'end_date':last,'related':related}
+                     for status,phase,start,last,related in periods]
+            exact_occupation=any(p['status'] in ('option','confirmed') and not p['related'] for p in periods)
             choices=[]
             for option in config['options'] if config['validated'] else []:
                 wanted={(rid,first+timedelta(days=i)) for rid in option for i in range((end-first).days)}
                 choices.append({'resources':option,'available':not exact_occupation and not occupation_conflicts(conn,wanted)})
             results.append({'id':config['id'],'name':config['name'],'resort_id':config['resort_id'],
                             'validated':config['validated'],'options':choices,'available':False if exact_occupation else any(o['available'] for o in choices) if choices else None,
-                            'pending_count':request_counts.get(config['id'],{}).get('pending',0),
-                            'waiting_count':request_counts.get(config['id'],{}).get('waiting',0)})
+                            'pending_count':len(request_ids.get(config['id'],{}).get('pending',set())),
+                            'waiting_count':len(request_ids.get(config['id'],{}).get('waiting',set())),
+                            'periods':periods})
         return serialize({'results':results,'note':'Solicitações pendentes e em espera não ocupam a sala. Somente opções prioritárias e confirmações geram ocupação efetiva; a promoção respeita a fila.'})
 
 

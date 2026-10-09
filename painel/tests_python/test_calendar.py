@@ -8,7 +8,7 @@ from calendar_app import ROOT
 from calendar_app.db import get_db, write_transaction
 from calendar_app.common import Problem
 from flask import g
-from conftest import API, allocation, edit_body
+from conftest import API, PASSWORD, allocation, edit_body
 
 
 def test_import_preserves_source_without_inventing_resources(api,app):
@@ -48,7 +48,10 @@ def test_scheduler_confirmation_blocks_unvalidated_space_for_other_users(api,app
     confirmed=api.send(f"/bookings/{first['id']}/confirm",{'version':first['version']})
     assert confirmed.status_code==200 and confirmed.json['status']=='confirmed'
     availability=api.get('/availability?from=2026-12-25&to=2026-12-26').json['results']
-    assert next(r for r in availability if r['id']=='space_004')['available'] is False
+    baea=next(r for r in availability if r['id']=='space_004')
+    assert baea['available'] is False
+    assert baea['periods']==[{'status':'confirmed','phase':'event','start_date':'2026-12-25',
+                             'end_date':'2026-12-26','related':False}]
     calendar=api.get('/calendar?from=2026-12-01&to=2026-12-31').json['configurations']
     baea=next(r for r in calendar if r['id']=='space_004')
     assert baea['days']['2026-12-25']['state']=='occupied'
@@ -91,7 +94,10 @@ def test_availability_shows_pending_request_separately_from_occupation(api):
     assert baea()['pending_count']==1
     assert baea()['waiting_count']==0
     assert baea()['available'] is None
+    assert baea()['periods']==[{'status':'pending','phase':'event','start_date':'2026-12-25',
+                                'end_date':'2026-12-26','related':False}]
     assert baea('2026-12-27','2026-12-27')['pending_count']==0
+    assert baea('2026-12-27','2026-12-27')['periods']==[]
     api.validate(4)
     assert baea()['available'] is True
     waiting=api.create(code=4,start='2026-12-25',end='2026-12-26').json
@@ -101,6 +107,8 @@ def test_availability_shows_pending_request_separately_from_occupation(api):
     assert baea()['waiting_count']==0
     assert baea()['pending_count']==1
     assert baea()['available'] is False
+    assert [(p['status'],p['start_date'],p['end_date']) for p in baea()['periods']]==[
+        ('pending','2026-12-25','2026-12-26'),('option','2026-12-25','2026-12-26')]
     assert api.detail(pending)['status']=='pending'
 
 
@@ -109,6 +117,10 @@ def test_configurations_conflict_with_components_both_directions(api,first,secon
     for n in (7,8,10):api.validate(n)
     b=api.create(code=first).json
     assert api.promote(b).status_code==200
+    availability=api.get('/availability?from=2027-01-10&to=2027-01-12').json['results']
+    affected=next(r for r in availability if r['id']==f'space_{second:03}')
+    assert any(p['related'] and p['status']=='option' and p['start_date']=='2027-01-10'
+               and p['end_date']=='2027-01-12' for p in affected['periods'])
     other=api.create(code=second).json
     assert api.promote(other).status_code==409
     assert api.detail(other)['status']=='waiting'
@@ -237,7 +249,7 @@ def test_classification_preserves_bookings_and_conflicts(api,app):
 
 
 def test_reclassification_rechecks_scope(api,app):
-    user=api.send('/users',{'username':'limited','name':'Restrito','password':'Teste#2026','team_id':'commercial','scopes':['unassigned']}).json
+    user=api.send('/users',{'username':'limited','name':'Restrito','password':PASSWORD,'team_id':'commercial','scopes':['unassigned']}).json
     limited=API(app,'limited');b=limited.create(status='pending').json;c=api.config(7)
     api.send('/catalog/classify',{'changes':[{'id':c['id'],'version':c['version']}],'resort_id':'cs','reason':'Mudança cadastral'})
     assert limited.get(f"/bookings/{b['id']}").status_code==403

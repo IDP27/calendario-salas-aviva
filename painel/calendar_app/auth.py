@@ -9,6 +9,18 @@ from .db import get_db, write_transaction
 from .common import Problem, required_text, uid, json_value, audit, ensure_version
 
 bp = Blueprint('auth', __name__, url_prefix='/api')
+MIN_PASSWORD_LENGTH = 15
+MAX_PASSWORD_LENGTH = 128
+COMMON_PASSWORDS = frozenset({
+    '123456789012345', '12345678901234567890', 'password12345678',
+    'password123456789', 'qwertyuiopasdfgh', 'senha1234567890',
+    'admin1234567890', 'aviva1234567890',
+})
+
+
+def reject_common_password(password, username):
+    if password.casefold() in COMMON_PASSWORDS or password.casefold() == username.casefold():
+        raise Problem('Escolha uma senha menos comum e diferente do nome de usuário.')
 
 
 def public_user(user):
@@ -45,8 +57,9 @@ def create_user(conn, data, actor=None, first=False):
     if not re.fullmatch(r'[a-z0-9._@-]{3,64}', username):
         raise Problem('Usuário deve ter entre 3 e 64 letras, números ou . _ @ -')
     password = data.get('password', '')
-    if not isinstance(password, str) or not 8 <= len(password) <= 10:
-        raise Problem('Use uma senha individual de 8 a 10 caracteres.')
+    if not isinstance(password, str) or not MIN_PASSWORD_LENGTH <= len(password) <= MAX_PASSWORD_LENGTH:
+        raise Problem('Use uma senha individual de 15 a 128 caracteres.')
+    reject_common_password(password, username)
     team = data.get('team_id')
     if team not in ('commercial', 'operations'):
         raise Problem('Escolha a equipe.')
@@ -130,8 +143,9 @@ def change_password():
     if not isinstance(data.get('current_password'),str) or not check_password_hash(g.user['password_hash'], data['current_password']):
         raise Problem('Senha atual incorreta.',403)
     password=data.get('password','')
-    if not isinstance(password,str) or not 8<=len(password)<=10:
-        raise Problem('A nova senha deve ter de 8 a 10 caracteres.')
+    if not isinstance(password,str) or not MIN_PASSWORD_LENGTH<=len(password)<=MAX_PASSWORD_LENGTH:
+        raise Problem('A nova senha deve ter de 15 a 128 caracteres.')
+    reject_common_password(password, g.user['username'])
     with write_transaction() as conn:
         conn.execute('UPDATE users SET password_hash=%s, version=version+1 WHERE id=%s',(generate_password_hash(password),g.user['id']))
         audit(conn,g.user,'user',g.user['id'],'password_changed')
