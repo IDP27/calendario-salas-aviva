@@ -16,7 +16,7 @@ Regras confirmadas pelo solicitante em 7 de outubro de 2026:
 - Os bloqueios são por **dia inteiro**.
 - **Cada equipe altera apenas os próprios bloqueios**. Proposta de aplicação: Comercial MICE e Operacional consultam a agenda comum; a propriedade é da equipe, não apenas da pessoa que criou o registro. O escopo de acesso por empreendimento ainda será definido.
 - **Pode haver mais de uma negociação para a mesma sala no mesmo período**, mediante opções com prioridade ou lista de espera. A ordem é de entrada; a promoção é manual pelo responsável da fila, sem reordenação arbitrária.
-- **O servidor da solução será desenvolvido em Python com Flask**, seguindo a orientação do time e a escolha discutida com o solicitante. A interface existente permanece em HTML, CSS e JavaScript; o banco escolhido é PostgreSQL. O login corporativo ainda não foi definido; contas individuais locais sustentam o piloto.
+- **O servidor da solução será desenvolvido em Python com Flask**, seguindo a orientação do time e a escolha discutida com o solicitante. A interface existente permanece em HTML, CSS e JavaScript; o banco escolhido é PostgreSQL. O login corporativo será via Microsoft Entra ID, com identidades sincronizadas do Active Directory; contas individuais locais sustentam apenas o piloto atual.
 
 - Situações aprovadas: Pendente de validação, Em espera, Em opção prioritária, Confirmado e Cancelado. Opção e confirmado ocupam; as demais não.
 - Reservas com múltiplos espaços são concedidas juntas, incluindo montagem e desmontagem. Não há concessão parcial ou promoção automática.
@@ -135,7 +135,9 @@ Preservar o painel atual e seus backups. Os 12 registros de demonstração não 
 
 **Etapa 3 — Viabilizar uso compartilhado:** serviço central em Python com Flask, banco, contas individuais, regras de integridade, importação oficial, histórico e atualização de dados. Substituir o servidor Node.js, conectar a interface à API e atualizar as instruções de execução. Entrega: alterações visíveis em sessões independentes, respeitando permissões e sem dupla ocupação, sem depender de Node.js no servidor operacional.
 
-**Etapa 4 — Realizar piloto e entrega:** validar com representantes das duas equipes, testar exportação e impressão, verificar backup/restauração e orientar o uso. Entrega: operação aprovada com dados oficiais e rotina de suporte definida.
+**Etapa 4 — Integrar login corporativo e registros de acesso:** usar o Microsoft Entra ID, alimentado pelas identidades do Active Directory corporativo, para autenticação; validar a resposta no servidor e criar sessão própria com token opaco e revogação. Vincular a identidade corporativa às permissões da agenda e registrar eventos de acesso estruturados. Separar esses eventos do histórico de alterações de negócio e definir acesso, retenção e destino dos logs de aplicação. Entrega: acesso corporativo validado, sessões revogáveis e decisões de acesso rastreáveis, sem armazenar senhas ou tokens em claro. Detalhes e critérios em [AUTENTICACAO-E-LOGS.md](AUTENTICACAO-E-LOGS.md).
+
+**Etapa 5 — Realizar piloto e entrega:** validar com representantes das duas equipes, testar exportação e impressão, verificar backup/restauração, exercitar os fluxos de autenticação e auditoria e orientar o uso. Entrega: operação aprovada com dados oficiais e rotina de suporte definida.
 
 Critérios de aceitação essenciais:
 
@@ -164,6 +166,6 @@ Ficam fora do escopo inicial: integração com Opera Cloud, financeiro, contrato
 - Homologar identidades, composições e dependências físicas, especialmente Ouro Preto, conjuntos Gardênia, módulos/foyer da Arena e Salas numeradas.
 - Classificar os resorts progressivamente e revisar a cobertura do inventário.
 - Designar pessoas responsáveis pela fila e pelo cadastro; configurar os escopos de cada conta. A aplicação oferece essas permissões separadamente.
-- Definir hospedagem, operação do PostgreSQL, número de usuários e login corporativo. O banco PostgreSQL e o Flask já estão confirmados.
+- Definir hospedagem, operação do PostgreSQL, número de usuários e configuração do aplicativo no Microsoft Entra ID. O banco PostgreSQL, o Flask e o provedor de login corporativo já estão confirmados.
 
 A implementação não depende de identificar todos os resorts para aceitar solicitações. Conceder ocupação efetiva exige homologação física do item. O piloto local não foi publicado como serviço compartilhado.

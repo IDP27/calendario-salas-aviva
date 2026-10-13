@@ -2,7 +2,11 @@
 
 Calendário provisório de salas, com bloqueios por dia inteiro entre 01/01/2026 e 31/12/2028. Flask entrega a interface e uma API autenticada; PostgreSQL é a fonte oficial. A aplicação é executada pelo Waitress, sem servidor Node.js.
 
-O piloto funciona localmente. A implantação compartilhada para as equipes ainda depende do ambiente e do login corporativo definidos pelo time. As relações enviadas em 08/10/2026 identificam espaços da **Costa do Sauípe** e do **Rio Quente**; as composições físicas continuam **a validar**. A identificação do empreendimento não equivale à homologação do inventário.
+O piloto funciona localmente. A implantação compartilhada para as equipes ainda depende do ambiente e da integração com o login corporativo. As relações enviadas em 08/10/2026 identificam espaços da **Costa do Sauípe** e do **Rio Quente**; as composições físicas continuam **a validar**. A identificação do empreendimento não equivale à homologação do inventário.
+
+O código já inclui a integração de login via Microsoft Entra ID, sessões revogáveis com token opaco e registros de acesso. O piloto local continua usando contas locais até receber os dados de registro da aplicação no tenant corporativo; a entrada real pelo Entra ID ainda não foi homologada. O desenho e a situação detalhada estão em [docs/AUTENTICACAO-E-LOGS.md](docs/AUTENTICACAO-E-LOGS.md).
+
+Após esta atualização, reinicie a aplicação se ela já estiver aberta. As sessões antigas em cookie assinado não são convertidas; cada pessoa precisa entrar novamente. O banco local já recebeu a migração, precedida pelo backup `instance/backups/pre-auth-2026-10-13.dump`.
 
 ## Executar neste computador
 
@@ -76,6 +80,29 @@ Configuração:
 | `CALENDAR_SECRET_KEY` | Chave persistente de sessão; sem essa variável, usa `instance/secret-key` |
 | `CALENDAR_SECURE_COOKIES` | `1` sob HTTPS; `0` no HTTP local |
 | `CALENDAR_ALLOW_LOCAL_SETUP` | `1` permite primeiro acesso pelo loopback; use `0` após criar a conta e antes de expor por proxy |
+| `CALENDAR_AUTH_MODE` | `local` no piloto ou `entra` para login corporativo |
+| `CALENDAR_AUTH_SESSION_HOURS`, `CALENDAR_AUTH_IDLE_MINUTES` | Prazo absoluto e limite de inatividade da sessão; padrões provisórios de 8 horas e 60 minutos |
+| `ENTRA_TENANT_ID`, `ENTRA_CLIENT_ID`, `ENTRA_CLIENT_SECRET` | Registro da aplicação web no tenant Microsoft Entra ID |
+| `ENTRA_REDIRECT_URI` | URL HTTPS registrada no Entra ID, terminada em `/api/entra/callback` |
+
+### Ativar o login corporativo
+
+Peça à equipe de identidade o **Tenant ID**, **Client ID**, segredo do aplicativo e registro da URL de retorno da agenda como aplicação web. Configure `CALENDAR_AUTH_MODE=entra`, `CALENDAR_SECURE_COOKIES=1`, `CALENDAR_ALLOW_LOCAL_SETUP=0` e as quatro variáveis `ENTRA_*` no ambiente do servidor, sob HTTPS. Execute `init-db` antes de ativar o novo código na base existente. A aplicação recusa iniciar esse modo se faltar configuração ou HTTPS.
+
+Em uma base nova, vincule a primeira pessoa administradora pelo Object ID do Entra ID:
+
+```sh
+.venv/bin/flask --app calendar_app init-db
+.venv/bin/flask --app calendar_app bootstrap-entra --username pessoa@empresa.com --name "Nome da pessoa" --team commercial --object-id UUID-DA-PESSOA
+```
+
+Em uma base que já tem usuários do piloto, vincule cada registro existente para preservar seu ID e histórico:
+
+```sh
+.venv/bin/flask --app calendar_app link-entra --username usuario-existente --object-id UUID-DA-PESSOA
+```
+
+No modo corporativo, o login e a troca de senha locais ficam desativados. A administração pode cadastrar novas pessoas com o Object ID do Entra ID, equipe, empreendimento e responsabilidades. Apenas identidades vinculadas e ativas acessam a agenda; o retorno do provedor não concede permissão automaticamente. `auth_sessions` guarda somente hash do verificador do token, `auth_events` guarda os eventos de acesso e `audit` mantém o histórico de alterações. Administradores consultam os 300 eventos de acesso mais recentes em `GET /api/audit/auth`; a limpeza de sessões e contadores vencidos pode ser agendada com `flask --app calendar_app prune-auth`. O prazo de retenção de `auth_events` depende da política da organização.
 
 Não sobrescreva um `.env` existente. Proteja o arquivo e `instance/secret-key`, com leitura restrita ao usuário do serviço. Variáveis já definidas no processo têm precedência sobre `.env`.
 
@@ -113,7 +140,7 @@ Em **Pessoas & acessos**, a administração cria contas individuais, seleciona a
 - Responsável da fila: concede a opção prioritária às solicitações elegíveis no seu escopo, inclusive de outra equipe. Não pode editar o evento nem cancelar essa outra equipe.
 - Administração de acessos: administra contas e escopos. Não altera o próprio acesso pela tela.
 
-Os nomes das pessoas responsáveis por cadastro e fila devem ser designados pela operação. O login corporativo continua indefinido: o piloto usa contas locais reais, senhas com hash, sessões e proteção CSRF. Não há SSO nem recuperação de senha por e-mail.
+Os nomes das pessoas responsáveis por cadastro e fila devem ser designados pela operação. O piloto ainda usa contas locais reais, senhas com hash, sessões revogáveis e proteção CSRF. O modo Entra ID depende da configuração e homologação com o tenant corporativo; recuperação de senha continua a cargo da identidade corporativa.
 
 Criação administrativa por terminal, com senha solicitada sem exibição:
 

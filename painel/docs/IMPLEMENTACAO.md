@@ -68,7 +68,7 @@ Ainda dependem do time e da operação:
 
 1. Homologar identidades e composições antes de conceder ocupações reais.
 2. Designar responsáveis de cadastro/fila e configurar usuários/escopos; classificar resorts progressivamente.
-3. Definir servidor compartilhado, versão PostgreSQL, HTTPS, login corporativo, monitoramento e política de backups/retenção.
+3. Definir servidor compartilhado, versão PostgreSQL, HTTPS, integração com Microsoft Entra ID e identidades do Active Directory, monitoramento e política de backups/retenção.
 4. Executar homologação com usuários das duas equipes e verificar impressão no navegador adotado.
 
 O piloto local usa Waitress com depuração desligada e escuta apenas o computador local. Não foi publicado um serviço compartilhado. Não foram feitos testes de carga, integração corporativa ou integração com Opera Cloud. Mudanças de composição sob reservas vigentes e fusões de recursos são recusadas; exigem uma migração revisada, sem alteração silenciosa de ocupações.

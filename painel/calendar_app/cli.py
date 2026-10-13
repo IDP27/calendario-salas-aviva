@@ -1,11 +1,13 @@
 """Offline administration. Restores only into an empty, explicitly selected database."""
 import json
 import os
+import secrets
 import subprocess
 import tempfile
 from pathlib import Path
 import click
 import psycopg
+from werkzeug.security import generate_password_hash
 from psycopg.conninfo import conninfo_to_dict
 from .db import migrate, get_db, write_transaction
 from .catalog import import_catalog, assign_reviewed_resort
@@ -55,6 +57,66 @@ def restore_database(url,path):
 
 
 def register(app):
+    @app.cli.command('prune-auth')
+    def prune_auth():
+        with write_transaction() as conn:
+            sessions = conn.execute("DELETE FROM auth_sessions WHERE expires_at < now() - interval '1 day' OR revoked_at < now() - interval '1 day'").rowcount
+            attempts = conn.execute("DELETE FROM login_attempts WHERE last_at < now() - interval '1 day'").rowcount
+        click.echo(f'Sessões removidas: {sessions}; contadores removidos: {attempts}.')
+
+    @app.cli.command('bootstrap-entra')
+    @click.option('--username', required=True)
+    @click.option('--name', required=True)
+    @click.option('--team', type=click.Choice(['commercial', 'operations']), required=True)
+    @click.option('--object-id', required=True, help='Object ID da pessoa no tenant Entra configurado.')
+    def bootstrap_entra(username, name, team, object_id):
+        if app.config['AUTH_MODE'] != 'entra':
+            raise click.ClickException('Ative CALENDAR_AUTH_MODE=entra antes da vinculação.')
+        try:
+            with write_transaction() as conn:
+                if conn.execute('SELECT 1 FROM users LIMIT 1').fetchone():
+                    raise Problem('A base já tem pessoas. Use a administração existente ou link-entra.')
+                create_user(conn, {'username': username, 'name': name, 'team_id': team,
+                                   'scopes': ['cs', 'rq'], 'entra_object_id': object_id}, first=True)
+            click.echo('Primeira conta corporativa vinculada.')
+        except Problem as exc:
+            raise click.ClickException(exc.message) from exc
+
+    @app.cli.command('link-entra')
+    @click.option('--username', required=True)
+    @click.option('--object-id', required=True)
+    def link_entra(username, object_id):
+        if app.config['AUTH_MODE'] != 'entra':
+            raise click.ClickException('Ative CALENDAR_AUTH_MODE=entra antes da vinculação.')
+        from uuid import UUID
+        try:
+            object_id = str(UUID(object_id))
+        except ValueError as exc:
+            raise click.ClickException('Object ID inválido.') from exc
+        try:
+            with write_transaction() as conn:
+                user = conn.execute('SELECT * FROM users WHERE username=%s', (username.lower(),)).fetchone()
+                if not user:
+                    raise Problem('Pessoa não encontrada.')
+                if user['entra_object_id'] and user['entra_object_id'] != object_id:
+                    raise Problem('A conta já está vinculada a outra identidade.')
+                owner = conn.execute('''SELECT id FROM users WHERE entra_tenant_id=%s
+                                        AND entra_object_id=%s''',
+                                     (app.config['ENTRA_TENANT_ID'], object_id)).fetchone()
+                if owner and owner['id'] != user['id']:
+                    raise Problem('Essa identidade corporativa já está vinculada a outra conta.')
+                conn.execute('''UPDATE users SET entra_tenant_id=%s,entra_object_id=%s,
+                                password_hash=%s,version=version+1 WHERE id=%s''',
+                             (app.config['ENTRA_TENANT_ID'], object_id,
+                              generate_password_hash(secrets.token_urlsafe(48)), user['id']))
+                conn.execute('UPDATE auth_sessions SET revoked_at=now() WHERE user_id=%s AND revoked_at IS NULL',
+                             (user['id'],))
+                from .auth import security_event
+                security_event(conn, 'identity_link', 'accepted', user['id'])
+            click.echo('Identidade corporativa vinculada; sessões anteriores revogadas.')
+        except Problem as exc:
+            raise click.ClickException(exc.message) from exc
+
     @app.cli.command('init-db')
     def init_db():
         migrate(); click.echo('Migrações PostgreSQL aplicadas.')

@@ -35,7 +35,12 @@ def write_transaction():
         conn.execute('SELECT pg_advisory_xact_lock(hashtext(current_schema()), 20261007)')
         if has_request_context() and getattr(g, 'user', None):
             current = conn.execute('SELECT active, version FROM users WHERE id=%s', (g.user['id'],)).fetchone()
-            if not current or not current['active'] or current['version'] != g.user['version']:
+            active_session = conn.execute('''SELECT 1 FROM auth_sessions WHERE id=%s AND user_id=%s
+                                             AND revoked_at IS NULL AND expires_at>now()
+                                             AND last_seen_at>now() - (%s * interval '1 minute')''',
+                                          (getattr(g, 'auth_session_id', None), g.user['id'],
+                                           current_app.config['AUTH_IDLE_MINUTES'])).fetchone()
+            if not current or not current['active'] or current['version'] != g.user['version'] or not active_session:
                 from .common import Problem
                 raise Problem('Seu acesso foi atualizado. Entre novamente para continuar.', 401)
         yield conn

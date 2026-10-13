@@ -2,7 +2,7 @@ import csv
 import io
 from datetime import timedelta
 from flask import Blueprint, g, request, Response
-from .auth import login_required, create_user, public_user
+from .auth import login_required, create_user, public_user, security_event
 from .db import get_db, write_transaction
 from .common import Problem, serialize, require_capability, audit, ensure_version, in_scope, json_value
 from .catalog import all_catalog, resources_map, config_access, classify, validate_topology, add_resource, import_catalog
@@ -220,8 +220,10 @@ def users_edit(user_id):
         if not isinstance(scopes,list) or not scopes or any(s not in ['cs','rq','unassigned'] for s in scopes): raise Problem('Escopo inválido.')
         conn.execute('UPDATE users SET scopes=%s,can_catalog=%s,can_schedule=%s,can_manage_users=%s,active=%s,version=version+1 WHERE id=%s',
                      (json_value(scopes),data.get('can_catalog') is True,data.get('can_schedule') is True,data.get('can_manage_users') is True,data.get('active') is True,user_id))
+        conn.execute('UPDATE auth_sessions SET revoked_at=now() WHERE user_id=%s AND revoked_at IS NULL',(user_id,))
         after=conn.execute('SELECT * FROM users WHERE id=%s',(user_id,)).fetchone()
         audit(conn,g.user,'user',user_id,'access_update',public_user(user),public_user(after))
+        security_event(conn,'access_change','accepted',user_id,reason='sessions_revoked')
         return public_user(after)
 
 
@@ -230,3 +232,14 @@ def users_edit(user_id):
 def catalog_audit():
     require_capability(g.user,'can_catalog')
     return serialize({'history':list(get_db().execute("SELECT a.*,u.name AS actor_name FROM audit a LEFT JOIN users u ON u.id=a.actor_id WHERE entity_type IN ('configuration','resource','catalog') ORDER BY a.id DESC LIMIT 300"))})
+
+
+@bp.get('/audit/auth')
+@login_required
+def auth_audit():
+    require_capability(g.user, 'can_manage_users')
+    rows = get_db().execute('''SELECT e.id,e.occurred_at,e.event_type,e.result,e.session_id,
+                                     e.request_id,e.reason,u.name AS user_name
+                              FROM auth_events e LEFT JOIN users u ON u.id=e.user_id
+                              ORDER BY e.id DESC LIMIT 300''')
+    return serialize({'events': list(rows)})

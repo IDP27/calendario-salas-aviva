@@ -17,7 +17,7 @@ def test_backup_restore_preserves_data_and_refuses_existing_database(api, app, t
     schema = app.config['DB_SCHEMA']
     target_name = 'restore_salas_test_' + uuid4().hex
     target_url = make_conninfo(**{**conninfo_to_dict(url), 'dbname': target_name})
-    tables = ['users', 'configurations', 'resources', 'source_items', 'bookings', 'allocations', 'occupations', 'audit']
+    tables = ['users', 'configurations', 'resources', 'source_items', 'bookings', 'allocations', 'occupations', 'audit', 'auth_sessions', 'auth_events']
     with app.app_context():
         expected = {table: get_db().execute(sql.SQL('SELECT count(*) AS n FROM {}').format(sql.Identifier(table))).fetchone()['n'] for table in tables}
     path = backup_database(url, tmp_path / 'salas.dump', schema)
@@ -52,6 +52,6 @@ def test_restore_default_public_schema(app, tmp_path):
             restore_database(urls[1], archive)
             with connect(urls[1]) as restored:
                 assert restored.execute('SELECT count(*) AS n FROM teams').fetchone()['n']==2
-                assert restored.execute('SELECT count(*) AS n FROM schema_migrations').fetchone()['n']==1
+                assert restored.execute('SELECT count(*) AS n FROM schema_migrations').fetchone()['n']==2
         finally:
             for name in names: maintenance.execute(sql.SQL('DROP DATABASE {}').format(sql.Identifier(name)))
