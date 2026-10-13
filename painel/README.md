@@ -1,12 +1,166 @@
 # Agenda de espaços — Costa do Sauípe & Rio Quente
 
-Calendário provisório de salas, com bloqueios por dia inteiro entre 01/01/2026 e 31/12/2028. Flask entrega a interface e uma API autenticada; PostgreSQL é a fonte oficial. A aplicação é executada pelo Waitress, sem servidor Node.js.
+**Estado em 13/10/2026:** piloto local funcional. A agenda permite consultar espaços, registrar solicitações, administrar a fila e controlar bloqueios por dia inteiro de **01/01/2026 a 31/12/2028**. O backend Flask serve a interface e a API; o PostgreSQL é a fonte oficial dos dados. O Waitress executa a aplicação localmente. Não é necessário um servidor Node.js para operá-la.
 
-O piloto funciona localmente. A implantação compartilhada para as equipes ainda depende do ambiente e da integração com o login corporativo. As relações enviadas em 08/10/2026 identificam espaços da **Costa do Sauípe** e do **Rio Quente**; as composições físicas continuam **a validar**. A identificação do empreendimento não equivale à homologação do inventário.
+O projeto atende às equipes **Comercial MICE** e **Operacional**. Cada pessoa possui uma conta, uma equipe, um escopo por empreendimento e responsabilidades adicionais quando autorizada. A implantação compartilhada e o login real pelo Microsoft Entra ID ainda dependem de infraestrutura e homologação corporativas. A agenda não está integrada ao Opera Cloud.
 
-O código já inclui a integração de login via Microsoft Entra ID, sessões revogáveis com token opaco e registros de acesso. O piloto local continua usando contas locais até receber os dados de registro da aplicação no tenant corporativo; a entrada real pelo Entra ID ainda não foi homologada. O desenho e a situação detalhada estão em [docs/AUTENTICACAO-E-LOGS.md](docs/AUTENTICACAO-E-LOGS.md).
+## Navegação deste documento
 
-Após esta atualização, reinicie a aplicação se ela já estiver aberta. As sessões antigas em cookie assinado não são convertidas; cada pessoa precisa entrar novamente. O banco local já recebeu a migração, precedida pelo backup `instance/backups/pre-auth-2026-10-13.dump`.
+- [Estado da entrega](#estado-da-entrega)
+- [Arquitetura e tecnologias](#arquitetura-e-tecnologias)
+- [Funcionalidades e regras de negócio](#funcionalidades-e-regras-de-negócio)
+- [Modelo de dados](#modelo-de-dados)
+- [Autenticação, autorização e segurança](#autenticação-autorização-e-segurança)
+- [API e respostas](#api-e-respostas)
+- [Executar neste computador](#executar-neste-computador)
+- [Preparar outra instalação](#preparar-outra-instalação)
+- [Operar a agenda](#operar-a-agenda)
+- [Pessoas e responsabilidades](#pessoas-e-responsabilidades)
+- [Relatórios](#relatórios)
+- [Backup e recuperação](#backup-e-recuperação)
+- [Testar](#testar)
+- [Estrutura e preservação](#estrutura-e-preservação)
+- [Implantação compartilhada](#implantação-compartilhada)
+
+## Estado da entrega
+
+| Parte | Situação atual |
+| --- | --- |
+| Agenda e solicitações | Implementadas e testadas com PostgreSQL; uso local do piloto. |
+| Catálogo | 125 linhas de origem importadas, resultando em 99 espaços/configurações. Os empreendimentos foram classificados; a composição física continua a validar. |
+| Acesso local | Em uso no piloto: conta e senha individuais, sessões revogáveis e histórico de acesso. |
+| Acesso corporativo | Fluxo OIDC com PKCE implementado e retorno simulado testado. Falta registrar a aplicação no tenant, vincular as identidades e homologar o login real. |
+| Relatórios e backup | Consulta, CSV, impressão/PDF via navegador, backup e restauração PostgreSQL implementados. |
+| Infraestrutura compartilhada | Pendente: hospedagem, HTTPS, banco gerenciado, coleta de logs, monitoramento, rotina de backup e política de retenção. |
+
+Os dois empreendimentos estão identificados: **90 configurações da Costa do Sauípe** e **9 do Rio Quente**. Essa classificação registra a localização administrativa, mas **não homologa a composição física** de salas ou módulos. Uma área hachurada na agenda significa “a validar”; um dia vazio, por si só, não garante disponibilidade. A origem e as decisões de classificação estão em [docs/ANALISE-LISTA-SALAS.md](docs/ANALISE-LISTA-SALAS.md) e nos arquivos de classificação em `docs/`.
+
+## Arquitetura e tecnologias
+
+```mermaid
+flowchart LR
+    U[Pessoa no navegador] -->|HTTPS na implantação; HTTP local no piloto| W[Waitress + Flask]
+    W --> F[Interface em dist/]
+    W --> A[API /api]
+    A --> R[Regras de catálogo, fila e acesso]
+    R --> P[(PostgreSQL)]
+    A --> L[Eventos de acesso e auditoria no PostgreSQL]
+    U -. login corporativo futuro .-> E[Microsoft Entra ID]
+    E -. retorno OIDC .-> A
+```
+
+O navegador carrega arquivos HTML, CSS e JavaScript de `dist/`. O JavaScript consulta a API e envia alterações como JSON. O servidor valida identidade, permissões e regras de negócio antes de gravar. Os dados da agenda ficam no PostgreSQL; `localStorage` é reservado a preferências de exibição. A aplicação oferece `GET /health` para verificar resposta do servidor e conexão com o banco.
+
+| Componente | Versão / papel |
+| --- | --- |
+| Projeto | `0.1.0` em `pyproject.toml`; identificação interna do piloto, sem homologação de produção. |
+| Python | Compatibilidade declarada `>=3.12,<3.14`. Testes passaram em **3.12.4** e **3.13.16** neste computador. |
+| Flask | **3.1.3**, fábrica de aplicação, páginas e API. |
+| Waitress | **3.0.2**, servidor WSGI do piloto. |
+| PostgreSQL | **14.18** validado localmente; versão de implantação ainda a definir. |
+| psycopg com binário | **3.3.6**, conexão e consultas PostgreSQL. |
+| Authlib | **1.8.0**, cliente OpenID Connect para o Entra ID. |
+| Requests | **2.32.5**, dependência direta do cliente de autenticação. |
+| Poetry | Configuração compatível com Poetry 2; **2.5.1** usado para gerar e testar `poetry.lock`. |
+| pytest | **9.1.1**, grupo de desenvolvimento. |
+| Node.js | **20.16.0** disponível neste computador para testes JavaScript legados; a versão não está fixada para implantação e não participa do servidor da agenda. |
+
+As dependências diretas estão fixadas em `pyproject.toml` e `requirements.txt`. O `poetry.lock` fixa também as dependências indiretas para instalações com Poetry. O projeto usa o modo `package-mode = false`: instalar dependências não publica nem instala a agenda como pacote Python.
+
+## Funcionalidades e regras de negócio
+
+| Tela / função | O que oferece |
+| --- | --- |
+| **Calendário** | Grade mensal e lista, filtros por empreendimento e situação, pesquisa, indicação de pendências e de ocupação efetiva. No celular, inicia em lista. |
+| **Consultar disponibilidade** | Exibe por espaço/período as solicitações pendentes, a fila, a ocupação confirmada e, quando a composição foi validada, as opções físicas disponíveis. |
+| **Solicitações & fila** | Criação, consulta, edição e cancelamento de solicitações; ordem de entrada; promoção manual para opção prioritária e confirmação pelo responsável da fila. |
+| **Salas & espaços** | Consulta da fonte, classificação por empreendimento/localização, revisão da importação e validação da composição física com registro de evidência. |
+| **Pessoas & acessos** | Contas individuais, equipe, escopo, responsabilidades, ativação/desativação e histórico de autenticação para administradores. |
+| **Relatórios** | Filtros por período, empreendimento, situação e pesquisa; CSV e impressão, com opção de salvar PDF no navegador. |
+
+Uma **solicitação** contém evento/motivo, responsável, observações e de **1 a 40 alocações**. Cada alocação relaciona uma configuração de espaço, uma fase (`montagem`, `evento` ou `desmontagem`), datas e, se validada, uma opção de recursos físicos. As datas apresentadas ao usuário incluem o último dia; internamente o banco guarda o fim exclusivo, o que simplifica conflitos entre intervalos. Fases repetidas ou sobrepostas não criam dupla ocupação para o mesmo recurso e dia.
+
+| Situação | Efeito e condição principal |
+| --- | --- |
+| **Pendente de validação** | Registra a demanda mesmo sem composição física homologada; não ocupa recursos nem pode receber opção prioritária. |
+| **Em espera** | Entra na fila com composição física válida; não ocupa recursos. |
+| **Em opção prioritária** | Concedida manualmente pelo responsável da fila após revalidar prioridade e disponibilidade integral; ocupa recursos. |
+| **Confirmado** | Reserva aprovada pelo responsável da fila; ocupa os recursos conhecidos. Excepcionalmente, uma configuração ainda não validada pode ser confirmada sem recursos mapeados: a própria configuração fica bloqueada no período, mas conflitos com outras composições dependem da futura validação física. |
+| **Cancelado** | Libera a ocupação e conserva o registro e o histórico; uma nova negociação requer outra solicitação. |
+
+A prioridade considera a **interseção de recursos físicos e dias**, além da mesma configuração. Uma solicitação anterior que permanece integralmente disponível não pode ser ultrapassada por outra que disputa seus recursos. A fila não promove nem expira registros automaticamente. Mudanças de espaços, períodos ou fases de uma espera atribuem uma nova posição; edição apenas de texto preserva a posição. A confirmação é atômica: se uma parte conflitar, nenhuma parte é reservada. A chave única `(resource_id, day)` em `occupations` oferece uma segunda proteção contra dupla ocupação.
+
+O catálogo preserva os 125 códigos da lista recebida. Os códigos **5 e 6** são serviços e ficam fora da agenda. As **28 variantes da Arena Sauípe** são rastreadas sob quatro configurações de uso; não representam 28 salas independentes. A importação recusa mudanças silenciosas em códigos existentes, pode mostrar prévia e não duplica registros. A classificação e a validação da topologia física são operações distintas, com histórico e controle de versão.
+
+**Exemplo do fluxo:** uma pessoa de Comercial MICE registra evento, espaço e períodos de montagem, evento e desmontagem. Se a composição ainda não foi homologada, a solicitação fica pendente de validação e visível para a equipe, sem prometer disponibilidade física. Após a operação validar os recursos e as combinações permitidas, a solicitação pode entrar em espera. O responsável da fila verifica as solicitações anteriores e a ocupação de todos os dias/recursos, concede a opção prioritária e confirma quando autorizado. O bloqueio aparece no calendário e nos relatórios; uma eventual edição ou cancelamento fica no histórico.
+
+## Modelo de dados
+
+As migrações `001_initial.sql` e `002_authentication.sql` são aplicadas por `flask --app calendar_app init-db`. A tabela `schema_migrations` registra o que já foi executado. Não há SQLite nem armazenamento da agenda no navegador.
+
+| Tabelas | Conteúdo |
+| --- | --- |
+| `resorts`, `teams`, `users` | Empreendimentos, equipes, contas, escopos, responsabilidades e identidade corporativa vinculada. |
+| `source_items`, `imports` | Códigos, texto e versão da lista recebida; rastreio da carga. |
+| `configurations`, `resources` | Configurações reserváveis, recursos físicos e opções de composição validadas. |
+| `bookings`, `allocations`, `occupations` | Solicitações, fases/períodos e ocupação por recurso/dia. |
+| `audit` | Alterações de negócio e cadastro, com autor, horário, ação e dados anteriores/posteriores permitidos. |
+| `idempotency` | Chaves de criação para evitar duplicação por reenvio da mesma solicitação. |
+| `auth_sessions`, `auth_events`, `login_attempts` | Sessões revogáveis, eventos de segurança e contadores temporários de falhas de login. |
+
+Escritas de negócio ocorrem em transação. O piloto serializa mutações com um bloqueio consultivo do PostgreSQL para revalidar fila, conflitos e topologia no momento de gravar. Registros editáveis usam campo `version`; se alguém os alterou desde a abertura do formulário, a API retorna `409` e pede recarga. Criações de solicitação exigem `Idempotency-Key`: repetir o mesmo envio devolve o mesmo resultado; reutilizar a chave com outro conteúdo é recusado.
+
+## Autenticação, autorização e segurança
+
+### Modos de entrada
+
+- **`local` (piloto atual):** usuário e senha individuais. Novas senhas têm 15 a 128 caracteres, são armazenadas somente como hash gerado pelo Werkzeug e passam por uma lista local inicial de senhas óbvias. O login limita a oito falhas por combinação de origem e usuário em uma janela de dez minutos. Não existe senha padrão. A primeira conta pode ser criada pelo navegador apenas no loopback e quando `CALENDAR_ALLOW_LOCAL_SETUP=1`.
+- **`entra` (código preparado, ainda não homologado no tenant):** o navegador é redirecionado ao Microsoft Entra ID pelo fluxo OpenID Connect de código de autorização com PKCE `S256`. Authlib trata o retorno OIDC; a aplicação confere `nonce`, tenant, público e o identificador estável `tid` + `oid`. Só uma pessoa **ativa e previamente vinculada** recebe sessão local. O modo desativa login e troca de senha locais. A agenda não consulta o AD local por LDAP, não recebe senha corporativa e não decide a política de MFA do tenant.
+
+O Active Directory corporativo poderá alimentar as identidades do Entra ID por sincronização gerida pela equipe de identidade. Essa sincronização fica fora deste projeto. A autenticação real com o tenant, a política de atribuição/grupos e o comportamento do logout do SSO precisam ser homologados antes da implantação compartilhada. Veja também [docs/AUTENTICACAO-E-LOGS.md](docs/AUTENTICACAO-E-LOGS.md).
+
+### Sessões e permissões
+
+Após o login, a agenda gera um **token opaco aleatório**. O navegador o recebe em cookie `salas_auth` com `HttpOnly` e `SameSite=Lax`; `Secure` é obrigatório no modo Entra/HTTPS e fica desativado apenas no HTTP local do piloto. O PostgreSQL guarda somente o **hash do verificador**, o usuário, a versão de acesso, o último uso, o vencimento absoluto e a revogação. O token completo não é gravado no banco nem em `localStorage`. Um segundo cookie assinado do Flask (`salas_session`) guarda estado de formulário/CSRF e dados transitórios do fluxo OIDC; ele não substitui a verificação da sessão revogável no banco.
+
+Os padrões atuais são **8 horas de duração absoluta** e **60 minutos sem atividade**, configuráveis. Em cada chamada à API, o servidor verifica token, hash, prazos, revogação, conta ativa e versão de acesso. Logout revoga a sessão no banco. Alterar o acesso ou desativar uma conta revoga suas sessões; trocar a senha local revoga as outras sessões da pessoa. Limpeza de sessões antigas e contadores de tentativa existe no comando `prune-auth`, mas precisa de agendamento operacional.
+
+Escopo e responsabilidades são conferidos no servidor, independentemente dos botões visíveis na interface. A conta comum consulta os empreendimentos de seu escopo e edita/cancela apenas solicitações da própria equipe. `can_catalog` autoriza cadastro e topologia; `can_schedule` concede opção prioritária e confirmação; `can_manage_users` administra pessoas e acessos. O responsável da fila pode promover ou confirmar solicitações de outra equipe no escopo, mas não editar o evento ou cancelá-lo. Um administrador não altera o próprio acesso pela tela.
+
+### Proteções de entrada, navegador e banco
+
+- **SQL injection:** valores de usuário são passados como parâmetros separados às consultas `psycopg`; identificadores de esquema dinâmicos usam `psycopg.sql.Identifier`. Os testes incluem um título com texto de injeção e verificam que ele permanece dado, sem executar SQL.
+- **CSRF:** toda operação mutável sob `/api/` exige `X-CSRF-Token` associado ao cookie de sessão do Flask e um objeto JSON válido. Cookies não substituem esse controle.
+- **XSS e exportação:** os campos textuais vindos dos dados são escapados ao compor o HTML; o CSV prefixa células que poderiam ser interpretadas como fórmulas por planilhas.
+- **Cabeçalhos HTTP:** a aplicação envia política de conteúdo (CSP), `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, política de referência e `Cache-Control: no-store`. Requisições têm `X-Request-ID`; o corpo aceito tem limite de 3 MB.
+- **Concorrência:** transações, controle de versão, revalidação no salvamento e chave única de ocupação evitam reservas parciais e dupla ocupação conhecida.
+
+Essas camadas foram testadas no piloto, mas não constituem uma auditoria de segurança externa nem substituem revisão de infraestrutura, proxy, permissões do banco e testes corporativos antes da exposição em rede.
+
+### Registros e retenção
+
+| Registro | Onde fica e como é usado |
+| --- | --- |
+| `auth_events` | PostgreSQL: entrada aceita ou recusada, limite de tentativas, início/retorno do SSO, saída, mudança de senha, vínculo de identidade, alteração de acesso e recusas `403`. Contém horário, tipo/resultado, usuário quando conhecido, IDs de sessão/requisição, motivo padronizado e hash da origem; não contém senha nem token completo. Administração consulta os 300 eventos mais recentes em **Pessoas & acessos → Histórico de acessos**. |
+| `audit` | PostgreSQL: alterações de solicitações, catálogo e pessoas, com histórico por entidade. É separado do histórico de autenticação. |
+| `login_attempts` | PostgreSQL: contadores temporários usados para limitar tentativas de senha local. |
+| Log técnico | `app.logger` usa JSON com horário UTC, nível, mensagem, caminho e ID da requisição quando disponível; a hospedagem ainda precisa coletar, proteger e girar a saída do processo. |
+| Entra ID | Eventos de senha, MFA e acesso condicional pertencem aos registros corporativos do provedor, sob gestão da equipe de identidade. |
+
+O comando `prune-auth` elimina sessões expiradas/revogadas e contadores antigos **após um dia**; ele **não apaga `auth_events`**. Retenção de eventos de acesso, auditoria e backups, monitoramento/alertas, destino central de logs e acesso administrativo devem ser definidos com segurança e privacidade. O backup PostgreSQL inclui os eventos e históricos.
+
+## API e respostas
+
+A interface usa a mesma origem da API. As rotas de autenticação e saúde são exceções públicas; as demais exigem sessão válida e filtram dados pelo escopo da pessoa.
+
+| Grupo | Rotas principais |
+| --- | --- |
+| Estado e entrada | `GET /health`, `GET /api/session`, `POST /api/setup`, `POST /api/login`, `POST /api/logout`, `POST /api/password`, `GET /api/entra/login`, `GET /api/entra/callback`. |
+| Catálogo | `GET /api/catalog`, `GET /api/catalog/sources`, `POST /api/catalog/import`, `POST /api/catalog/classify`, `POST /api/catalog/{id}/topology`, `POST /api/resources`. |
+| Solicitações | `GET/POST /api/bookings`, `GET/PUT /api/bookings/{id}`, `POST /api/bookings/{id}/{promote|confirm|cancel}`, `GET /api/availability`, `GET /api/calendar`. |
+| Pessoas, histórico e relatório | `GET/POST /api/users`, `PUT /api/users/{id}`, `GET /api/audit/catalog`, `GET /api/audit/auth`, `GET /api/reports.csv`. |
+
+O formato principal é JSON. Em geral, `401` pede novo login, `403` indica permissão/CSRF insuficiente, `409` indica versão desatualizada ou conflito, `422` indica composição não homologada e `503` indica banco indisponível. A API devolve mensagens de erro legíveis; falhas de integridade não expõem detalhes do banco. O calendário limita cada consulta da grade a **62 dias**. O CSV usa UTF-8 com BOM e separador `;`.
 
 ## Executar neste computador
 
@@ -24,6 +178,8 @@ Inicie a aplicação:
 
 Acesse **http://127.0.0.1:4174**. Se a agenda já estiver aberta, não é necessário iniciar outro servidor. `Ctrl+C` encerra a aplicação; o banco permanece ativo. Para encerrar o banco dedicado, use `pg_ctl -D instance/postgres stop` quando não houver usuários conectados.
 
+O banco do piloto já recebeu as migrações `001_initial.sql` e `002_authentication.sql`. Antes da segunda, foi criado o backup local `instance/backups/pre-auth-2026-10-13.dump`. O diretório `instance/` e o arquivo `.env` são locais e ignorados pelo Git.
+
 O primeiro acesso cria a conta individual de administração. Escolha uma senha de 15 a 128 caracteres. Frases-senha, espaços e caracteres Unicode são aceitos; não há exigência de misturar tipos de caracteres. O piloto rejeita uma lista local inicial de senhas óbvias e a própria identificação do usuário; uma checagem ampla de credenciais vazadas depende de integração futura com serviço ou lista corporativa. A primeira conta administra cadastros, pessoas e fila; isso não permite editar/cancelar solicitações de outra equipe. Não existe `admin/admin123` na aplicação nova. Senhas já cadastradas continuam válidas no login até que seus titulares as alterem; a nova regra se aplica à criação e à troca de senha.
 
 ## Preparar outra instalação
@@ -39,8 +195,6 @@ export POETRY_VIRTUALENVS_IN_PROJECT=false
 export POETRY_VIRTUALENVS_PATH="$PWD/instance/poetry-envs"
 poetry env use python3.13
 poetry sync
-poetry run python -m pytest tests_python -q
-poetry run python serve.py
 ```
 
 As duas variáveis mantêm o ambiente do Poetry separado do `.venv` preexistente. Neste computador, o executável do Poetry está em `instance/poetry-cli/bin/poetry`; use esse caminho no lugar de `poetry` se ele não estiver no `PATH`. Para os comandos administrativos, use `poetry run flask --app calendar_app <comando>`. O ambiente de desenvolvimento local que já usa `.venv` pode continuar com `pip`; mantenha as versões de `requirements*.txt` e `pyproject.toml` alinhadas ao atualizar dependências.
@@ -50,19 +204,19 @@ As duas variáveis mantêm o ambiente do Poetry separado do `.venv` preexistente
 ```sh
 python3 -m venv .venv
 .venv/bin/python -m pip install -r requirements.txt
-cp .env.example .env
 ```
 
-Crie um banco PostgreSQL dedicado e ajuste `DATABASE_URL` no `.env`. A aplicação não cria um serviço de banco corporativo. O papel do banco precisa executar as migrações iniciais; em implantação, separe o papel de migração do papel de execução conforme a política da equipe.
+Com qualquer um dos gerenciadores, copie o exemplo de configuração **somente em uma instalação nova**, crie um banco PostgreSQL dedicado e ajuste `DATABASE_URL` no `.env`. Preserve o `.env` preexistente. A aplicação não cria um serviço de banco corporativo. O papel do banco precisa executar as migrações iniciais; em implantação, separe o papel de migração do papel de execução conforme a política da equipe.
 
 ```sh
+cp .env.example .env
 .venv/bin/flask --app calendar_app init-db
 .venv/bin/flask --app calendar_app import-catalog docs/catalogo-salas-preliminar.json --preview
 .venv/bin/flask --app calendar_app import-catalog docs/catalogo-salas-preliminar.json
 .venv/bin/python serve.py
 ```
 
-`init-db` aplica apenas migrações ainda não registradas. A importação é transacional e repetível sem duplicar itens ou substituir revisões já feitas. O auxiliar `scripts/prepare_local.py` é exclusivo do banco local chamado `calendario`.
+Os comandos acima usam o caminho do ambiente `pip`; com Poetry, substitua `.venv/bin/flask` por `poetry run flask` e `.venv/bin/python` por `poetry run python`. `init-db` aplica apenas migrações ainda não registradas. A importação é transacional e repetível sem duplicar itens ou substituir revisões já feitas. O auxiliar `scripts/prepare_local.py` é exclusivo do banco local chamado `calendario`.
 
 ### Relação revisada da Costa do Sauípe
 
@@ -132,21 +286,13 @@ Não sobrescreva um `.env` existente. Proteja o arquivo e `instance/secret-key`,
 5. Uma solicitação em espera entra na fila por ordem de entrada. O responsável da fila concede manualmente a opção prioritária após verificar o conjunto inteiro. Ele também pode confirmar a reserva na tela da solicitação ou marcar **Confirmar reserva e bloquear o espaço** ao salvar uma solicitação da própria equipe. A confirmação bloqueia todos os espaços e dias da solicitação de forma atômica: se algum já estiver reservado, nada é confirmado. **Consultar disponibilidade** mostra as datas das solicitações e dos bloqueios, distinguindo pendências de reservas confirmadas e indicando ocupações de configurações compartilhadas.
 6. Apenas o responsável da fila confirma bloqueios. A equipe proprietária pode editar os dados do seu registro e cancelar com motivo; alterações de espaço ou período já confirmados exigem o responsável da fila. O cancelamento libera a ocupação e mantém histórico. A fila não avança nem expira automaticamente.
 
-| Situação | Ocupa recursos? | Observação |
-| --- | --- | --- |
-| Pendente de validação | Não | Admite composição ainda desconhecida; não tem prioridade elegível |
-| Em espera | Não | Requer composição validada e conjunto físico escolhido |
-| Em opção prioritária | Sim | Concessão manual por responsável da fila |
-| Confirmado | Sim | Confirmação da opção pela equipe proprietária |
-| Cancelado | Não | Histórico preservado; nova negociação exige nova solicitação |
-
-A prioridade é relativa à interseção de recursos e dias. Uma solicitação anterior com conjunto integralmente disponível impede ultrapassagem; uma anterior impedida por ocupação em outra parte do conjunto permanece em espera. Alterar espaços/datas/fases de uma espera ou voltar à espera gera nova ordem de entrada. Alterar apenas o texto preserva a ordem. Expansões de uma opção/confirmado revalidam conflitos e prioridade nos novos dias/recursos.
+As condições de cada situação e o tratamento da confirmação sem topologia validada estão descritos em [Funcionalidades e regras de negócio](#funcionalidades-e-regras-de-negócio). Expansões de uma opção ou confirmação revalidam conflitos e prioridade nos novos dias e recursos.
 
 Os filtros exibem **Todos**, **Costa do Sauípe** e **Rio Quente**. A categoria provisória de identificação foi retirada da interface após a classificação dos 99 espaços/configurações. O valor vazio permanece apenas como estado interno para uma eventual importação futura; um responsável cadastral precisa atribuir um dos dois empreendimentos antes de criar novos recursos ou alterar a classificação pela aplicação. Os conflitos continuam usando recursos físicos globais.
 
 Na grade, hachura significa **a validar**, ponto indica ocupação efetiva e o contador mostra solicitações pendentes/em espera. A lista apresenta a situação por texto e cor. O filtro de situação filtra solicitações; ele nunca esconde ocupações físicas para fazer um dia parecer livre. O celular abre em lista. A atualização consulta o servidor a cada 20 segundos quando nenhum formulário/campo está em edição; também há **Atualizar agenda**. Falhas de conexão são sinalizadas.
 
-**Consultar disponibilidade** mostra separadamente a ocupação efetiva e a quantidade de solicitações pendentes ou em espera que intersectam o período. Uma solicitação pendente, como a de uma configuração ainda não validada, fica visível na consulta, mas não aparece como bloqueio confirmado. Somente a opção prioritária e a confirmação ocupam recursos físicos.
+**Consultar disponibilidade** mostra separadamente a ocupação efetiva e a quantidade de solicitações pendentes ou em espera que intersectam o período. Uma solicitação pendente, como a de uma configuração ainda não validada, fica visível na consulta, mas não aparece como bloqueio confirmado. A opção prioritária ocupa recursos físicos; a confirmação os ocupa quando já foram mapeados. Uma confirmação sem composição validada bloqueia a configuração exata, com a limitação de conflitos entre composições explicada acima.
 
 ## Pessoas e responsabilidades
 
@@ -157,7 +303,7 @@ Em **Pessoas & acessos**, a administração cria contas individuais, seleciona a
 - Responsável da fila: concede a opção prioritária às solicitações elegíveis no seu escopo, inclusive de outra equipe. Não pode editar o evento nem cancelar essa outra equipe.
 - Administração de acessos: administra contas e escopos. Não altera o próprio acesso pela tela.
 
-Os nomes das pessoas responsáveis por cadastro e fila devem ser designados pela operação. O piloto ainda usa contas locais reais, senhas com hash, sessões revogáveis e proteção CSRF. O modo Entra ID depende da configuração e homologação com o tenant corporativo; recuperação de senha continua a cargo da identidade corporativa.
+Os nomes das pessoas responsáveis por cadastro e fila devem ser designados pela operação. O piloto usa contas locais; quando o modo Entra ID for ativado, a recuperação de senha ficará com a identidade corporativa.
 
 Criação administrativa por terminal, com senha solicitada sem exibição:
 
@@ -198,6 +344,8 @@ node --check dist/js/calendar.js
 
 Os testes Python criam esquemas isolados por teste no `TEST_DATABASE_URL` ou, na ausência dele, no `DATABASE_URL`. Os testes de recuperação criam e removem bancos temporários com prefixo de teste, exigindo `CREATEDB`; execute-os em ambiente de desenvolvimento. Não há SQLite. Node é usado apenas para verificar JavaScript e os nove testes preservados do painel anterior.
 
+**Última validação deste estado (13/10/2026):** 51 testes Python passaram em 3.12.4 e em 3.13.16; os 9 testes Node passaram; `poetry check --lock` aprovou a configuração. A suíte cobre regras de fila e conflito, datas, autorização e CSRF, sessões/revogação, registro de login, tentativa de SQL injection, importação/classificação, backup/restauração e um retorno Entra ID simulado. Isso **não equivale** a um teste real contra o tenant corporativo nem a um ensaio de carga.
+
 Para uma prévia visual descartável, `scripts/qa_preview.py` cria um esquema separado, disponibiliza a porta 4175 apenas no loopback e exibe aviso de dados fictícios. As contas e validações de teste nunca são inseridas no esquema operacional. O script limpa seu próprio esquema ao ser encerrado normalmente. Não use essa prévia como ambiente de equipe.
 
 ## Estrutura e preservação
@@ -207,18 +355,32 @@ Para uma prévia visual descartável, `scripts/qa_preview.py` cria um esquema se
 - `dist/`: interface adaptada, estilos originais reaproveitados e comunicação assíncrona com a API.
 - `docs/`: proposta, análise da fonte, catálogo preliminar e relatório de implementação.
 - `tests_python/`: testes de integração com banco e API.
+- `pyproject.toml`, `poetry.lock`, `requirements*.txt`: metadados, versões e instalação das dependências Python.
+- `serve.py`, `.env.example`, `scripts/`: entrada local, exemplo de configuração e utilitários de preparação/prévia.
+- `instance/`, `.env`, `.venv/`: banco, backups, segredos e ambientes locais; não são publicados no Git.
 - `legacy/`: cópia preservada do painel anterior, incluindo seu servidor estático e instruções históricas.
 
 O painel antigo pode ser consultado em `/legacy/`. Os dados `localStorage` pertencem à origem e ao perfil do navegador: a nova porta não copia os dados da antiga. Para recuperar uma base antiga, execute `node legacy/server.mjs` na porta original e exporte o JSON pelo próprio painel. Não importe exemplos como reservas. Uma migração real exige mapeamento e validação explícitos.
 
 ## Implantação compartilhada
 
-A aplicação usa `create_app`, Blueprints e Waitress com depuração desativada, seguindo a documentação oficial de [fábricas Flask](https://flask.palletsprojects.com/en/stable/patterns/appfactories/) e [implantação WSGI](https://flask.palletsprojects.com/en/stable/deploying/). `serve.py` escuta apenas `127.0.0.1`. Para uso pelas equipes, o time deve provisionar servidor, PostgreSQL, HTTPS/proxy, chave persistente, monitoramento e backup, além de definir a identidade corporativa. Desabilite o primeiro acesso por navegador antes de disponibilizar via proxy.
+A aplicação usa `create_app`, Blueprints e Waitress com depuração desativada. `serve.py` escuta apenas `127.0.0.1` e atende ao piloto local. O uso por várias pessoas precisa de um processo de implantação próprio, com proxy HTTPS e acesso controlado à aplicação e ao PostgreSQL. O endpoint `/health` consulta o banco e deve integrar o monitoramento definido pela equipe.
 
-As mutações são serializadas por transação no piloto; a chave única recurso/dia também impede dupla ocupação no banco. Isso favorece integridade para uma agenda pequena. Volume e desempenho em produção não foram medidos. Não há implantação pública nem integração com Opera Cloud nesta entrega.
+| Decisão para a equipe | O que precisa ser concluído |
+| --- | --- |
+| Hospedagem | Definir servidor, rede, URL, proxy HTTPS, processo WSGI, disponibilidade e atualização do código. Não publicar `serve.py` diretamente como serviço aberto na rede. |
+| Banco e migrações | Definir versão suportada de PostgreSQL, papéis com privilégios separados para migração/execução e procedimento de atualização com backup anterior. |
+| Identidade | Registrar a aplicação no Entra ID, configurar segredo e URL de retorno, vincular `tid` + `oid` às pessoas autorizadas e testar contas ativas/inativas, MFA e políticas do tenant. |
+| Sessões e acesso | Aprovar prazos de 8 horas/60 minutos ou seus substitutos, comportamento de saída do SSO, tratamento de contas desativadas no diretório e responsáveis por cada permissão. |
+| Catálogo físico | Validar módulos, uniões permitidas e evidências com a operação, sobretudo Arena, São Tomé e conjuntos do Rio Quente. Revisar confirmações já lançadas em configurações não validadas. |
+| Observabilidade e retenção | Coletar e proteger logs técnicos, definir alertas, acesso aos registros, duração de `auth_events`/`audit`, rotação e descarte. Agendar `prune-auth`. |
+| Continuidade | Agendar backup, guardar cópia externa protegida e ensaiar restauração para banco vazio. |
+| Aceite | Executar testes funcionais com ambas as equipes, teste real do Entra ID e avaliação de volume/desempenho. |
+
+Antes da exposição, configure `CALENDAR_SECURE_COOKIES=1`, `CALENDAR_ALLOW_LOCAL_SETUP=0`, uma chave de sessão persistente e o modo de autenticação aprovado. A aplicação recusa iniciar em modo Entra sem HTTPS e os dados obrigatórios do registro. O volume e o desempenho em produção não foram medidos. Não há implantação pública nem integração com Opera Cloud nesta entrega.
 
 ## Identidade visual Aviva — 8 de outubro de 2026
 
 O logo e o fundo fornecidos pelo solicitante estão em `dist/assets/aviva-logo.png` e `dist/assets/aviva-background.jpg`, preservados integralmente. O tema em `dist/aviva.css` aplica azul-petróleo, ciano, verde, lima e laranja ao acesso, menu, botões e indicadores, com superfícies brancas para formulários e calendário. As cores são baseadas nas imagens recebidas; não foi fornecido um manual de marca. O tema fica separado dos estilos de estrutura para facilitar manutenção.
 
-Logo com proporção original, leitura em computador/celular, ausência de transbordamento horizontal e carregamento dos arquivos conferidos no navegador. A agenda foi inspecionada no ambiente de teste isolado; esta atualização é apenas visual. Prévias: `docs/aviva-login-desktop.jpg`, `docs/aviva-login-mobile.jpg` e `docs/aviva-calendar-desktop.jpg`.
+Logo com proporção original, leitura em computador/celular, ausência de transbordamento horizontal e carregamento dos arquivos conferidos no navegador durante a revisão visual. Prévias dessa etapa: `docs/aviva-login-desktop.jpg`, `docs/aviva-login-mobile.jpg` e `docs/aviva-calendar-desktop.jpg`.
