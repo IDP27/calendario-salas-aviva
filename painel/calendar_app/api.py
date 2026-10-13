@@ -1,7 +1,9 @@
 import csv
 import io
+import secrets
 from datetime import timedelta
 from flask import Blueprint, g, request, Response
+from werkzeug.security import generate_password_hash
 from .auth import login_required, create_user, public_user, security_event
 from .db import get_db, write_transaction
 from .common import Problem, serialize, require_capability, audit, ensure_version, in_scope, json_value
@@ -196,7 +198,7 @@ def report_csv():
 @login_required
 def users_get():
     require_capability(g.user,'can_manage_users')
-    return {'users':[public_user(u) for u in get_db().execute('SELECT * FROM users ORDER BY name')]}
+    return {'users':[public_user(u) for u in get_db().execute('SELECT * FROM users WHERE deleted_at IS NULL ORDER BY name')]}
 
 
 @bp.post('/users')
@@ -212,7 +214,7 @@ def users_add():
 def users_edit(user_id):
     require_capability(g.user,'can_manage_users'); data=request.get_json()
     with write_transaction() as conn:
-        user=conn.execute('SELECT * FROM users WHERE id=%s',(user_id,)).fetchone()
+        user=conn.execute('SELECT * FROM users WHERE id=%s AND deleted_at IS NULL',(user_id,)).fetchone()
         if not user: raise Problem('Usuário não encontrado.',404)
         ensure_version(user,data)
         if user_id==g.user['id']: raise Problem('Peça a outro administrador para alterar seu próprio acesso.')
@@ -225,6 +227,30 @@ def users_edit(user_id):
         audit(conn,g.user,'user',user_id,'access_update',public_user(user),public_user(after))
         security_event(conn,'access_change','accepted',user_id,reason='sessions_revoked')
         return public_user(after)
+
+
+@bp.delete('/users/<user_id>')
+@login_required
+def users_delete(user_id):
+    require_capability(g.user,'can_manage_users')
+    if user_id == g.user['id']:
+        raise Problem('Você não pode excluir seu próprio acesso.')
+    data = request.get_json()
+    with write_transaction() as conn:
+        user = conn.execute('SELECT * FROM users WHERE id=%s AND deleted_at IS NULL',(user_id,)).fetchone()
+        if not user:
+            raise Problem('Usuário não encontrado.',404)
+        ensure_version(user,data)
+        conn.execute('''UPDATE users SET username=%s,name='Pessoa excluída',active=false,
+                        scopes='[]'::jsonb,can_catalog=false,can_schedule=false,
+                        can_manage_users=false,entra_tenant_id=NULL,entra_object_id=NULL,
+                        password_hash=%s,deleted_at=now(),version=version+1 WHERE id=%s''',
+                     ('deleted-'+user_id, generate_password_hash(secrets.token_urlsafe(48)), user_id))
+        conn.execute('UPDATE auth_sessions SET revoked_at=now() WHERE user_id=%s AND revoked_at IS NULL',(user_id,))
+        audit(conn,g.user,'user',user_id,'delete',public_user(user),
+              {'deleted':True},'Acesso excluído; vínculos históricos preservados.')
+        security_event(conn,'access_delete','accepted',user_id,reason='sessions_revoked')
+    return {'deleted':True}
 
 
 @bp.get('/audit/catalog')

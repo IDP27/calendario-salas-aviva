@@ -74,7 +74,7 @@ def register(app):
             raise click.ClickException('Ative CALENDAR_AUTH_MODE=entra antes da vinculação.')
         try:
             with write_transaction() as conn:
-                if conn.execute('SELECT 1 FROM users LIMIT 1').fetchone():
+                if conn.execute('SELECT 1 FROM users WHERE deleted_at IS NULL LIMIT 1').fetchone():
                     raise Problem('A base já tem pessoas. Use a administração existente ou link-entra.')
                 create_user(conn, {'username': username, 'name': name, 'team_id': team,
                                    'scopes': ['cs', 'rq'], 'entra_object_id': object_id}, first=True)
@@ -95,7 +95,7 @@ def register(app):
             raise click.ClickException('Object ID inválido.') from exc
         try:
             with write_transaction() as conn:
-                user = conn.execute('SELECT * FROM users WHERE username=%s', (username.lower(),)).fetchone()
+                user = conn.execute('SELECT * FROM users WHERE username=%s AND deleted_at IS NULL', (username.lower(),)).fetchone()
                 if not user:
                     raise Problem('Pessoa não encontrada.')
                 if user['entra_object_id'] and user['entra_object_id'] != object_id:

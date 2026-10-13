@@ -77,7 +77,7 @@ As dependências diretas estão fixadas em `pyproject.toml` e `requirements.txt`
 | **Consultar disponibilidade** | Exibe por espaço/período as solicitações pendentes, a fila, a ocupação confirmada e, quando a composição foi validada, as opções físicas disponíveis. |
 | **Solicitações & fila** | Criação, consulta, edição e cancelamento de solicitações; ordem de entrada; promoção manual para opção prioritária e confirmação pelo responsável da fila. |
 | **Salas & espaços** | Consulta da fonte, classificação por empreendimento/localização, revisão da importação e validação da composição física com registro de evidência. |
-| **Pessoas & acessos** | Contas individuais, equipe, escopo, responsabilidades, ativação/desativação e histórico de autenticação para administradores. |
+| **Pessoas & acessos** | Contas individuais, equipe, escopo, responsabilidades, ativação/desativação, exclusão de acesso e histórico de autenticação para administradores. |
 | **Relatórios** | Filtros por período, empreendimento, situação e pesquisa; CSV e impressão, com opção de salvar PDF no navegador. |
 
 Uma **solicitação** contém evento/motivo, responsável, observações e de **1 a 40 alocações**. Cada alocação relaciona uma configuração de espaço, uma fase (`montagem`, `evento` ou `desmontagem`), datas e, se validada, uma opção de recursos físicos. As datas apresentadas ao usuário incluem o último dia; internamente o banco guarda o fim exclusivo, o que simplifica conflitos entre intervalos. Fases repetidas ou sobrepostas não criam dupla ocupação para o mesmo recurso e dia.
@@ -98,7 +98,7 @@ O catálogo preserva os 125 códigos da lista recebida. Os códigos **5 e 6** s�
 
 ## Modelo de dados
 
-As migrações `001_initial.sql` e `002_authentication.sql` são aplicadas por `flask --app calendar_app init-db`. A tabela `schema_migrations` registra o que já foi executado. Não há SQLite nem armazenamento da agenda no navegador.
+As migrações `001_initial.sql`, `002_authentication.sql` e `003_user_deletion.sql` são aplicadas por `flask --app calendar_app init-db`. A tabela `schema_migrations` registra o que já foi executado. Não há SQLite nem armazenamento da agenda no navegador.
 
 | Tabelas | Conteúdo |
 | --- | --- |
@@ -180,7 +180,7 @@ Inicie a aplicação:
 
 Acesse **http://127.0.0.1:4174**. Se a agenda já estiver aberta, não é necessário iniciar outro servidor. `Ctrl+C` encerra a aplicação; o banco permanece ativo. Para encerrar o banco dedicado, use `pg_ctl -D instance/postgres stop` quando não houver usuários conectados.
 
-O banco do piloto já recebeu as migrações `001_initial.sql` e `002_authentication.sql`. Antes da segunda, foi criado o backup local `instance/backups/pre-auth-2026-10-13.dump`. O diretório `instance/` e o arquivo `.env` são locais e ignorados pelo Git.
+O banco do piloto já recebeu as três migrações. Antes da migração de autenticação, foi criado o backup local `instance/backups/pre-auth-2026-10-13.dump`; antes da migração de exclusão, `instance/backups/pre-user-deletion-2026-10-13.dump`. O diretório `instance/` e o arquivo `.env` são locais e ignorados pelo Git.
 
 O primeiro acesso cria a conta individual de administração. Escolha uma senha de 15 a 128 caracteres. Frases-senha, espaços e caracteres Unicode são aceitos; não há exigência de misturar tipos de caracteres. O piloto rejeita uma lista local inicial de senhas óbvias e a própria identificação do usuário; uma checagem ampla de credenciais vazadas depende de integração futura com serviço ou lista corporativa. A primeira conta administra cadastros, pessoas e fila; isso não permite editar/cancelar solicitações de outra equipe. Não existe `admin/admin123` na aplicação nova. Senhas já cadastradas continuam válidas no login até que seus titulares as alterem; a nova regra se aplica à criação e à troca de senha.
 
@@ -364,7 +364,7 @@ Na grade, hachura significa **a validar**, ponto indica ocupação efetiva e o c
 
 ## Pessoas e responsabilidades
 
-Em **Pessoas & acessos**, a administração cria contas individuais, seleciona a equipe e define o escopo: Costa do Sauípe e/ou Rio Quente. Pode desativar contas e ajustar responsabilidades. Uma alteração de acesso encerra a validade das sessões anteriores. A equipe da conta não é um campo livre de edição de bloqueios.
+Em **Pessoas & acessos**, a administração cria contas individuais, seleciona a equipe e define o escopo: Costa do Sauípe e/ou Rio Quente. Pode desativar contas, ajustar responsabilidades e escolher **Excluir pessoa** com confirmação. A exclusão encerra as sessões, retira a pessoa da lista e libera o nome de usuário e o vínculo Entra para um novo cadastro. O administrador não pode excluir a própria conta. A linha interna da pessoa excluída permanece desativada e com nome genérico para preservar as chaves de solicitações, sessões e auditoria; o evento da exclusão registra quem executou a ação e os dados anteriores. Portanto, excluir o acesso não equivale a apagar o histórico ou a executar uma solicitação de eliminação de dados pessoais. Uma alteração de acesso também encerra a validade das sessões anteriores. A equipe da conta não é um campo livre de edição de bloqueios.
 
 - Usuário comum: consulta seu escopo e altera solicitações da própria equipe.
 - Responsável cadastral: classifica espaços, revisa composições e importa a lista. Isso não concede edição de outra equipe.
@@ -412,7 +412,7 @@ node --check dist/js/calendar.js
 
 Os testes Python criam esquemas isolados por teste no `TEST_DATABASE_URL` ou, na ausência dele, no `DATABASE_URL`. Os testes de recuperação criam e removem bancos temporários com prefixo de teste, exigindo `CREATEDB`; execute-os em ambiente de desenvolvimento. Não há SQLite. Node é usado apenas para verificar JavaScript e os nove testes preservados do painel anterior.
 
-**Última validação deste estado (13/10/2026):** 51 testes Python passaram em 3.12.4 e em 3.13.16; os 9 testes Node passaram; `poetry check --lock` aprovou a configuração. A suíte cobre regras de fila e conflito, datas, autorização e CSRF, sessões/revogação, registro de login, tentativa de SQL injection, importação/classificação, backup/restauração e um retorno Entra ID simulado. Isso **não equivale** a um teste real contra o tenant corporativo nem a um ensaio de carga.
+**Validação em 13/10/2026:** 53 testes Python e 9 testes Node passaram. A suíte cobre regras de fila e conflito, datas, autorização e CSRF, sessões/revogação, registro de login, tentativa de SQL injection, importação/classificação, backup/restauração, exclusão de acesso e um retorno Entra ID simulado. `poetry check --lock` aprovou a configuração anterior das dependências. Isso **não equivale** a um teste real contra o tenant corporativo nem a um ensaio de carga.
 
 A stack Docker foi construída e executada no Docker Desktop (containers Linux ARM64) com PostgreSQL 17.11. Aplicação e banco ficaram saudáveis; `/health` respondeu; as 99 configurações foram classificadas; reiniciar a aplicação não duplicou dados; backup e cópia do arquivo funcionaram. O arquivo do Caddy passou na validação de configuração. Ainda falta executar a stack em um servidor Linux da equipe, com domínio e login Entra reais.
 

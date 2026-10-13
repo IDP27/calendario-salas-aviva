@@ -39,6 +39,11 @@ select:focus-visible, textarea:focus-visible, summary:focus-visible {
   box-shadow: 0 3px 10px #002d3c18;
 }
 .btn.primary:hover { background: #006478; border-color: #006478; }
+.btn.danger { color: #9b3948; border-color: #e5b7c0; background: #fff; }
+.btn.danger:hover { color: #842636; border-color: #c96a7c; background: #fff2f4; }
+.user-actions { display: flex; align-items: center; justify-content: flex-end; gap: 8px; flex-wrap: wrap; }
+.modal-actions .delete-user-modal { margin-right: auto; }
+@media (max-width: 700px) { .users-table article { flex-wrap: wrap; } .user-actions { justify-content: flex-start; } }
 input[type=checkbox] { accent-color: #007d9d; }
 .agenda-sidebar {
   background: #003547;

@@ -52,6 +52,6 @@ def test_restore_default_public_schema(app, tmp_path):
             restore_database(urls[1], archive)
             with connect(urls[1]) as restored:
                 assert restored.execute('SELECT count(*) AS n FROM teams').fetchone()['n']==2
-                assert restored.execute('SELECT count(*) AS n FROM schema_migrations').fetchone()['n']==2
+                assert restored.execute('SELECT count(*) AS n FROM schema_migrations').fetchone()['n']==3
         finally:
             for name in names: maintenance.execute(sql.SQL('DROP DATABASE {}').format(sql.Identifier(name)))

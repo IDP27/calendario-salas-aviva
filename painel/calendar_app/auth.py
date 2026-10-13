@@ -143,7 +143,7 @@ def create_user(conn, data, actor=None, first=False):
 
 @bp.get('/session')
 def current_session():
-    empty = get_db().execute('SELECT count(*) AS n FROM users').fetchone()['n'] == 0
+    empty = get_db().execute('SELECT count(*) AS n FROM users WHERE deleted_at IS NULL').fetchone()['n'] == 0
     return {'user': public_user(g.user) if g.user else None, 'csrf': csrf_token(),
             'auth_mode': current_app.config['AUTH_MODE'],
             'setup_required': empty, 'qa_mode': current_app.config.get('QA_MODE', False),
@@ -157,7 +157,7 @@ def setup():
     if not current_app.config['ALLOW_LOCAL_SETUP'] or request.remote_addr not in ('127.0.0.1','::1'):
         raise Problem('O primeiro acesso deve ser criado localmente pelo administrador.', 403)
     with write_transaction() as conn:
-        if conn.execute('SELECT count(*) AS n FROM users').fetchone()['n']:
+        if conn.execute('SELECT count(*) AS n FROM users WHERE deleted_at IS NULL').fetchone()['n']:
             raise Problem('A configuração inicial já foi concluída.', 409)
         user = create_user(conn, request.get_json(), first=True)
         token = issue_session(conn, user)
