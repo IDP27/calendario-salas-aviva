@@ -39,3 +39,36 @@ def test_user_deletion_requires_admin_and_current_version(app):
     assert admin.send(f"/users/{target['id']}", {'version': target['version'] + 1}, method='DELETE').status_code == 409
     assert admin.send('/users/missing', {'version': 1}, method='DELETE').status_code == 404
     assert any(u['id'] == target['id'] for u in admin.get('/users').json['users'])
+
+
+def test_administrator_role_can_be_granted_and_revoked(app):
+    admin = API(app, 'admin')
+    seller = API(app, 'seller')
+    assert seller.get('/users').status_code == 403
+    target = next(u for u in admin.get('/users').json['users'] if u['username'] == 'seller')
+
+    grant = admin.send(f"/users/{target['id']}", {
+        'version': target['version'], 'scopes': target['scopes'], 'active': True,
+        'can_catalog': False, 'can_schedule': False, 'can_manage_users': True,
+    }, method='PUT')
+    assert grant.status_code == 200 and grant.json['can_manage_users'] is True
+    assert seller.get('/users').status_code == 401
+
+    delegated = API(app, 'seller')
+    created = delegated.send('/users', {
+        'username': 'new.member', 'name': 'New Member', 'password': PASSWORD,
+        'team_id': 'operations', 'scopes': ['cs'],
+    })
+    assert created.status_code == 201
+    removed = delegated.send(f"/users/{created.json['id']}", {
+        'version': created.json['version'],
+    }, method='DELETE')
+    assert removed.status_code == 200
+
+    revoke = admin.send(f"/users/{target['id']}", {
+        'version': grant.json['version'], 'scopes': target['scopes'], 'active': True,
+        'can_catalog': False, 'can_schedule': False, 'can_manage_users': False,
+    }, method='PUT')
+    assert revoke.status_code == 200 and revoke.json['can_manage_users'] is False
+    assert delegated.get('/users').status_code == 401
+    assert API(app, 'seller').get('/users').status_code == 403
