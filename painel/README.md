@@ -1,6 +1,6 @@
 # Agenda de espaços — Costa do Sauípe & Rio Quente
 
-**Estado em 13/10/2026:** piloto local funcional. A agenda permite consultar espaços, registrar solicitações, administrar a fila e controlar bloqueios por dia inteiro de **01/01/2026 a 31/12/2028**. O backend Flask serve a interface e a API; o PostgreSQL é a fonte oficial dos dados. O Waitress executa a aplicação localmente. Não é necessário um servidor Node.js para operá-la.
+**Estado em 13/10/2026:** piloto local funcional e implantação Docker Compose preparada para Linux. A agenda permite consultar espaços, registrar solicitações, administrar a fila e controlar bloqueios por dia inteiro de **01/01/2026 a 31/12/2028**. O backend Flask serve a interface e a API; o PostgreSQL é a fonte oficial dos dados. O Waitress executa a aplicação. Não é necessário um servidor Node.js para operá-la.
 
 O projeto atende às equipes **Comercial MICE** e **Operacional**. Cada pessoa possui uma conta, uma equipe, um escopo por empreendimento e responsabilidades adicionais quando autorizada. A implantação compartilhada e o login real pelo Microsoft Entra ID ainda dependem de infraestrutura e homologação corporativas. A agenda não está integrada ao Opera Cloud.
 
@@ -13,6 +13,7 @@ O projeto atende às equipes **Comercial MICE** e **Operacional**. Cada pessoa p
 - [Autenticação, autorização e segurança](#autenticação-autorização-e-segurança)
 - [API e respostas](#api-e-respostas)
 - [Executar neste computador](#executar-neste-computador)
+- [Executar com Docker no Linux](#executar-com-docker-no-linux)
 - [Preparar outra instalação](#preparar-outra-instalação)
 - [Operar a agenda](#operar-a-agenda)
 - [Pessoas e responsabilidades](#pessoas-e-responsabilidades)
@@ -31,7 +32,7 @@ O projeto atende às equipes **Comercial MICE** e **Operacional**. Cada pessoa p
 | Acesso local | Em uso no piloto: conta e senha individuais, sessões revogáveis e histórico de acesso. |
 | Acesso corporativo | Fluxo OIDC com PKCE implementado e retorno simulado testado. Falta registrar a aplicação no tenant, vincular as identidades e homologar o login real. |
 | Relatórios e backup | Consulta, CSV, impressão/PDF via navegador, backup e restauração PostgreSQL implementados. |
-| Infraestrutura compartilhada | Pendente: hospedagem, HTTPS, banco gerenciado, coleta de logs, monitoramento, rotina de backup e política de retenção. |
+| Infraestrutura compartilhada | Docker Compose com aplicação, PostgreSQL persistente e proxy HTTPS preparado. Pendente: servidor e domínio corporativos, credenciais Entra, coleta central de logs, monitoramento, rotina de backup e política de retenção. |
 
 Os dois empreendimentos estão identificados: **90 configurações da Costa do Sauípe** e **9 do Rio Quente**. Essa classificação registra a localização administrativa, mas **não homologa a composição física** de salas ou módulos. Uma área hachurada na agenda significa “a validar”; um dia vazio, por si só, não garante disponibilidade. A origem e as decisões de classificação estão em [docs/ANALISE-LISTA-SALAS.md](docs/ANALISE-LISTA-SALAS.md) e nos arquivos de classificação em `docs/`.
 
@@ -57,7 +58,8 @@ O navegador carrega arquivos HTML, CSS e JavaScript de `dist/`. O JavaScript con
 | Python | Compatibilidade declarada `>=3.12,<3.14`. Testes passaram em **3.12.4** e **3.13.16** neste computador. |
 | Flask | **3.1.3**, fábrica de aplicação, páginas e API. |
 | Waitress | **3.0.2**, servidor WSGI do piloto. |
-| PostgreSQL | **14.18** validado localmente; versão de implantação ainda a definir. |
+| PostgreSQL | **14.18** validado no piloto local; imagem Docker **17.11** para novas instalações, testada com catálogo e backup. A passagem de uma base 14 para 17 exige migração planejada por backup/restauração, nunca reaproveitamento direto do volume. |
+| Imagens Docker | Python **3.13.16** (Debian Trixie), PostgreSQL **17.11** (Trixie) e Caddy **2.10.2**. |
 | psycopg com binário | **3.3.6**, conexão e consultas PostgreSQL. |
 | Authlib | **1.8.0**, cliente OpenID Connect para o Entra ID. |
 | Requests | **2.32.5**, dependência direta do cliente de autenticação. |
@@ -181,6 +183,72 @@ Acesse **http://127.0.0.1:4174**. Se a agenda já estiver aberta, não é necess
 O banco do piloto já recebeu as migrações `001_initial.sql` e `002_authentication.sql`. Antes da segunda, foi criado o backup local `instance/backups/pre-auth-2026-10-13.dump`. O diretório `instance/` e o arquivo `.env` são locais e ignorados pelo Git.
 
 O primeiro acesso cria a conta individual de administração. Escolha uma senha de 15 a 128 caracteres. Frases-senha, espaços e caracteres Unicode são aceitos; não há exigência de misturar tipos de caracteres. O piloto rejeita uma lista local inicial de senhas óbvias e a própria identificação do usuário; uma checagem ampla de credenciais vazadas depende de integração futura com serviço ou lista corporativa. A primeira conta administra cadastros, pessoas e fila; isso não permite editar/cancelar solicitações de outra equipe. Não existe `admin/admin123` na aplicação nova. Senhas já cadastradas continuam válidas no login até que seus titulares as alterem; a nova regra se aplica à criação e à troca de senha.
+
+## Executar com Docker no Linux
+
+Na pasta `painel`, o Docker Compose sobe o PostgreSQL e a aplicação em uma rede interna. A versão local publica a agenda somente em `127.0.0.1:4174`; a versão corporativa acrescenta o Caddy para HTTPS nas portas 80 e 443. O banco não publica porta no servidor. Instale Docker Engine com o plugin Compose e OpenSSL no Linux e reserve espaço persistente para os volumes. O build baixa as imagens e dependências Python; não exige Python, Poetry, Node ou PostgreSQL instalados no host.
+
+### Piloto local com containers
+
+Execute uma única vez para criar dois segredos aleatórios. O script preserva os arquivos se já existirem:
+
+```sh
+sh docker/init-secrets.sh
+docker compose -f compose.yaml -f compose.local.yaml up -d --build
+docker compose -f compose.yaml -f compose.local.yaml ps
+```
+
+Abra **http://127.0.0.1:4174** no próprio servidor. Como o cadastro inicial pelo navegador só aceita acesso direto pelo loopback da aplicação, crie o primeiro administrador pelo terminal; o comando pedirá os dados e a senha sem exibi-la:
+
+```sh
+docker compose -f compose.yaml -f compose.local.yaml exec app python docker/run.py flask --app calendar_app create-user --admin
+```
+
+O volume `postgres_data` guarda a agenda. O volume `app_instance` guarda backups criados dentro do container. Na primeira subida de um banco vazio, a aplicação aplica as migrações, importa as 125 linhas do catálogo e as relações revisadas dos dois empreendimentos. Nas subidas seguintes, verifica as migrações e preserva classificações e alterações existentes. A base Docker é **separada** do PostgreSQL local deste computador; dados do piloto atual exigem backup e restauração planejados antes de uma migração.
+
+Para acompanhar o estado e encerrar os serviços:
+
+```sh
+docker compose -f compose.yaml -f compose.local.yaml logs -f app
+docker compose -f compose.yaml -f compose.local.yaml down
+```
+
+`down` conserva os volumes. Evite `down -v` se houver dados: essa opção remove os volumes do banco e da aplicação. Preserve também `secrets/` e mantenha cópias externas protegidas; trocar `secrets/db_password` depois que o banco foi criado não altera automaticamente a senha interna do PostgreSQL.
+
+### Servidor Linux com HTTPS e Microsoft Entra ID
+
+Crie os dois segredos acima e copie o exemplo de configuração. Em `.env.docker`, substitua o domínio e os IDs pelo registro da aplicação web no tenant. Grave o **segredo do aplicativo Entra** em `secrets/entra_client_secret`, com permissão de leitura restrita ao administrador do servidor; não o coloque no Git nem em `.env.docker`. A URL de retorno registrada no Entra deve ser exatamente `https://SEU_DOMINIO/api/entra/callback`.
+
+```sh
+sh docker/init-secrets.sh
+cp .env.docker.example .env.docker
+```
+
+Edite `.env.docker` e crie `secrets/entra_client_secret` com o valor real. Depois:
+
+```sh
+chmod 600 .env.docker secrets/entra_client_secret
+docker compose --env-file .env.docker -f compose.yaml -f compose.prod.yaml up -d --build
+```
+
+O Caddy obtém e renova o certificado HTTPS automaticamente quando o DNS do domínio aponta para o servidor e as portas 80/443 estão alcançáveis pelo emissor. Se a agenda estiver apenas em rede interna ou usar certificado da organização, a equipe de infraestrutura deve configurar esse certificado no proxy. Não use um domínio fictício para homologar o Entra ID.
+
+Com a stack ativa, vincule a primeira pessoa administradora ao **Object ID** do Entra, ou vincule contas já restauradas conforme [Ativar o login corporativo](#ativar-o-login-corporativo):
+
+```sh
+docker compose --env-file .env.docker -f compose.yaml -f compose.prod.yaml exec app python docker/run.py flask --app calendar_app bootstrap-entra --username pessoa@empresa.com --name "Nome da pessoa" --team commercial --object-id UUID-DA-PESSOA
+```
+
+Os comandos administrativos no container usam o prefixo `python docker/run.py flask --app calendar_app`; esse auxiliar lê os segredos montados e configura a conexão. `GET /health` verifica a aplicação e o PostgreSQL. `docker compose ... logs` mostra logs técnicos dos containers; autenticações, sessões e alterações continuam registradas no banco nas tabelas descritas adiante. Para operação compartilhada, envie logs técnicos a um coletor central, defina retenção, monitore o endpoint e agende backup PostgreSQL com cópia **fora do host**. O Compose fornece execução e persistência local; a disponibilidade, a política de atualização, o backup e o aceite do login corporativo continuam sob responsabilidade da implantação.
+
+Exemplo de backup manual no modo local Docker; substitua as opções do Compose pelas do modo corporativo quando necessário:
+
+```sh
+docker compose -f compose.yaml -f compose.local.yaml exec app python docker/run.py flask --app calendar_app backup-db instance/backups/calendario.dump
+docker compose -f compose.yaml -f compose.local.yaml cp app:/app/instance/backups/calendario.dump ./calendario.dump
+```
+
+O primeiro arquivo fica no volume `app_instance`; a cópia no diretório atual ainda precisa ser enviada a um armazenamento externo protegido. Use outro nome em cada execução, pois o comando recusa sobrescrever backups. Uma base PostgreSQL 14 existente requer backup e restauração planejada em uma instalação 17 vazia; não monte um volume 14 no serviço 17.
 
 ## Preparar outra instalação
 
@@ -346,6 +414,8 @@ Os testes Python criam esquemas isolados por teste no `TEST_DATABASE_URL` ou, na
 
 **Última validação deste estado (13/10/2026):** 51 testes Python passaram em 3.12.4 e em 3.13.16; os 9 testes Node passaram; `poetry check --lock` aprovou a configuração. A suíte cobre regras de fila e conflito, datas, autorização e CSRF, sessões/revogação, registro de login, tentativa de SQL injection, importação/classificação, backup/restauração e um retorno Entra ID simulado. Isso **não equivale** a um teste real contra o tenant corporativo nem a um ensaio de carga.
 
+A stack Docker foi construída e executada no Docker Desktop (containers Linux ARM64) com PostgreSQL 17.11. Aplicação e banco ficaram saudáveis; `/health` respondeu; as 99 configurações foram classificadas; reiniciar a aplicação não duplicou dados; backup e cópia do arquivo funcionaram. O arquivo do Caddy passou na validação de configuração. Ainda falta executar a stack em um servidor Linux da equipe, com domínio e login Entra reais.
+
 Para uma prévia visual descartável, `scripts/qa_preview.py` cria um esquema separado, disponibiliza a porta 4175 apenas no loopback e exibe aviso de dados fictícios. As contas e validações de teste nunca são inseridas no esquema operacional. O script limpa seu próprio esquema ao ser encerrado normalmente. Não use essa prévia como ambiente de equipe.
 
 ## Estrutura e preservação
@@ -357,6 +427,7 @@ Para uma prévia visual descartável, `scripts/qa_preview.py` cria um esquema se
 - `tests_python/`: testes de integração com banco e API.
 - `pyproject.toml`, `poetry.lock`, `requirements*.txt`: metadados, versões e instalação das dependências Python.
 - `serve.py`, `.env.example`, `scripts/`: entrada local, exemplo de configuração e utilitários de preparação/prévia.
+- `Dockerfile`, `compose*.yaml`, `docker/`, `.env.docker.example`: imagens, execução em containers, proxy e configuração de referência. `secrets/` contém segredos locais e é ignorado pelo Git.
 - `instance/`, `.env`, `.venv/`: banco, backups, segredos e ambientes locais; não são publicados no Git.
 - `legacy/`: cópia preservada do painel anterior, incluindo seu servidor estático e instruções históricas.
 
@@ -364,12 +435,12 @@ O painel antigo pode ser consultado em `/legacy/`. Os dados `localStorage` perte
 
 ## Implantação compartilhada
 
-A aplicação usa `create_app`, Blueprints e Waitress com depuração desativada. `serve.py` escuta apenas `127.0.0.1` e atende ao piloto local. O uso por várias pessoas precisa de um processo de implantação próprio, com proxy HTTPS e acesso controlado à aplicação e ao PostgreSQL. O endpoint `/health` consulta o banco e deve integrar o monitoramento definido pela equipe.
+A aplicação usa `create_app`, Blueprints e Waitress com depuração desativada. `serve.py` escuta apenas `127.0.0.1` e atende ao piloto sem Docker. O Compose publica a aplicação apenas no loopback no modo local; no modo corporativo, o Caddy recebe HTTPS e conecta-se ao Waitress pela rede interna. O endpoint `/health` consulta o banco e deve integrar o monitoramento definido pela equipe.
 
 | Decisão para a equipe | O que precisa ser concluído |
 | --- | --- |
-| Hospedagem | Definir servidor, rede, URL, proxy HTTPS, processo WSGI, disponibilidade e atualização do código. Não publicar `serve.py` diretamente como serviço aberto na rede. |
-| Banco e migrações | Definir versão suportada de PostgreSQL, papéis com privilégios separados para migração/execução e procedimento de atualização com backup anterior. |
+| Hospedagem | Provisionar servidor Linux, DNS, rede, HTTPS, disponibilidade e atualização da stack Compose. Validar o domínio real e o certificado do Caddy. |
+| Banco e migrações | Homologar o PostgreSQL 17.11 da imagem, separar papéis de migração/execução e definir atualização com backup anterior. O Compose atual usa um único papel para inicializar e operar. |
 | Identidade | Registrar a aplicação no Entra ID, configurar segredo e URL de retorno, vincular `tid` + `oid` às pessoas autorizadas e testar contas ativas/inativas, MFA e políticas do tenant. |
 | Sessões e acesso | Aprovar prazos de 8 horas/60 minutos ou seus substitutos, comportamento de saída do SSO, tratamento de contas desativadas no diretório e responsáveis por cada permissão. |
 | Catálogo físico | Validar módulos, uniões permitidas e evidências com a operação, sobretudo Arena, São Tomé e conjuntos do Rio Quente. Revisar confirmações já lançadas em configurações não validadas. |

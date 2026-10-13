@@ -1,0 +1,36 @@
+services:
+  app:
+    environment:
+      CALENDAR_AUTH_MODE: entra
+      CALENDAR_ALLOW_LOCAL_SETUP: "0"
+      CALENDAR_SECURE_COOKIES: "1"
+      ENTRA_TENANT_ID: ${ENTRA_TENANT_ID:?Defina ENTRA_TENANT_ID em .env.docker}
+      ENTRA_CLIENT_ID: ${ENTRA_CLIENT_ID:?Defina ENTRA_CLIENT_ID em .env.docker}
+      ENTRA_REDIRECT_URI: https://${SITE_DOMAIN:?Defina SITE_DOMAIN em .env.docker}/api/entra/callback
+      ENTRA_CLIENT_SECRET_FILE: /run/secrets/entra_client_secret
+    secrets:
+      - entra_client_secret
+
+  proxy:
+    image: caddy:2.10.2-alpine
+    restart: unless-stopped
+    depends_on:
+      app:
+        condition: service_healthy
+    environment:
+      SITE_DOMAIN: ${SITE_DOMAIN:?Defina SITE_DOMAIN em .env.docker}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./docker/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+
+secrets:
+  entra_client_secret:
+    file: ./secrets/entra_client_secret
+
+volumes:
+  caddy_data:
+  caddy_config:

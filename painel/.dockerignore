@@ -1,0 +1,16 @@
+.env
+.env.docker
+.venv/
+instance/
+secrets/
+.pytest_cache/
+__pycache__/
+*.pyc
+.git/
+tests_python/
+node_modules/
+docs/*.md
+docs/*.jpg
+docs/*.png
+legacy/node_modules/
+legacy/tests/

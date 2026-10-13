@@ -1,0 +1,54 @@
+services:
+  db:
+    image: postgres:17.11-trixie
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: calendario
+      POSTGRES_USER: calendario
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+    secrets:
+      - db_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U calendario -d calendario"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_HOST: db
+      DB_NAME: calendario
+      DB_USER: calendario
+      DB_PASSWORD_FILE: /run/secrets/db_password
+      CALENDAR_SECRET_KEY_FILE: /run/secrets/calendar_secret_key
+      CALENDAR_AUTH_MODE: local
+      CALENDAR_ALLOW_LOCAL_SETUP: "0"
+      CALENDAR_SECURE_COOKIES: "0"
+    secrets:
+      - db_password
+      - calendar_secret_key
+    volumes:
+      - app_instance:/app/instance
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:4174/health', timeout=5)"]
+      interval: 15s
+      timeout: 8s
+      retries: 5
+      start_period: 30s
+
+secrets:
+  db_password:
+    file: ./secrets/db_password
+  calendar_secret_key:
+    file: ./secrets/calendar_secret_key
+
+volumes:
+  postgres_data:
+  app_instance:

@@ -4,4 +4,7 @@ __pycache__/
 .venv/
 painel/instance/
 painel/.env
+painel/.env.docker
+painel/secrets/
 *.pyc
+*.dump
