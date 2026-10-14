@@ -68,8 +68,13 @@ def create_app(config=None):
     for handler in app.logger.handlers:
         handler.setFormatter(JsonLogFormatter())
     app.teardown_appcontext(db.close_db)
-    from . import auth, api, cli, entra
-    app.register_blueprint(auth.bp); app.register_blueprint(api.bp); entra.register(app); cli.register(app)
+    from . import api_catalog, api_people, api_schedule, auth, cli, entra
+    app.register_blueprint(auth.bp)
+    app.register_blueprint(api_catalog.bp)
+    app.register_blueprint(api_schedule.bp)
+    app.register_blueprint(api_people.bp)
+    entra.register(app)
+    cli.register(app)
 
     @app.before_request
     def guard():

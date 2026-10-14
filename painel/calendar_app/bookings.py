@@ -1,6 +1,7 @@
 from datetime import date, timedelta
 import hashlib
 import json
+import unicodedata
 from .common import Problem, uid, required_text, ensure_version, audit, json_value, serialize
 from .catalog import all_catalog, resources_map, config_access
 from .db import get_db, write_transaction
@@ -222,19 +223,53 @@ def transition(actor,booking_id,data,action):
         return serialize(after)
 
 
+def filter_bookings(bookings,first,exclusive,resort='all',status='',search=''):
+    """Apply display filters without changing the full booking used for occupancy."""
+    def normalize(value):
+        return ''.join(char for char in unicodedata.normalize('NFD',value.lower())
+                       if unicodedata.category(char)!='Mn')
+
+    result=[]
+    for booking in bookings:
+        visible_allocations=[a for a in booking['allocations']
+                             if a['start_date']<exclusive and a['end_exclusive']>first
+                             and (resort=='all' or (a['resort_id'] or 'unassigned')==resort)]
+        if not visible_allocations or (status and booking['status']!=status):
+            continue
+        haystack=' '.join([booking['title'],booking['responsible'],booking['team_name']]
+                          +[a['space_name'] for a in visible_allocations])
+        if search and normalize(search) not in normalize(haystack):
+            continue
+        result.append({**booking,'matched_allocations':visible_allocations})
+    return result
+
+
 def list_bookings(actor,start,end,resort='all',status='',search=''):
     first,exclusive=period(start,end)
-    conn=get_db(); configs={c['id']:c for c in all_catalog(conn)}; resources=resources_map(conn)
-    ids=conn.execute('SELECT DISTINCT b.id,b.queue_number FROM bookings b JOIN allocations a ON a.booking_id=b.id WHERE a.start_date<%s AND a.end_exclusive>%s ORDER BY b.queue_number',(exclusive,first))
-    result=[]
-    import unicodedata
-    def normalize(s): return ''.join(c for c in unicodedata.normalize('NFD',s.lower()) if unicodedata.category(c)!='Mn')
-    for r in ids:
-        booking=get_booking(conn,r['id'])
-        if not accessible(actor,booking,configs,resources): continue
-        visible_allocations=[a for a in booking['allocations'] if a['start_date']<exclusive and a['end_exclusive']>first and (resort=='all' or (a['resort_id'] or 'unassigned')==resort)]
-        if not visible_allocations or (status and booking['status']!=status): continue
-        if search and normalize(search) not in normalize(' '.join([booking['title'],booking['responsible'],booking['team_name']]+[a['space_name'] for a in visible_allocations])): continue
-        booking['matched_allocations']=visible_allocations
-        result.append(booking)
-    return result
+    conn=get_db()
+    configs={c['id']:c for c in all_catalog(conn)}
+    resources=resources_map(conn)
+    bookings=list(conn.execute('''SELECT b.*,t.name AS team_name,u.name AS creator_name
+                                  FROM bookings b
+                                  JOIN teams t ON t.id=b.team_id
+                                  JOIN users u ON u.id=b.created_by
+                                  WHERE EXISTS (
+                                      SELECT 1 FROM allocations a
+                                      WHERE a.booking_id=b.id
+                                        AND a.start_date<%s AND a.end_exclusive>%s
+                                  )
+                                  ORDER BY b.queue_number''',(exclusive,first)))
+    if not bookings:
+        return []
+    by_id={booking['id']:booking for booking in bookings}
+    for booking in bookings:
+        booking['allocations']=[]
+    for allocation in conn.execute('''SELECT a.*,c.name AS space_name,c.resort_id,c.location
+                                      FROM allocations a
+                                      JOIN configurations c ON c.id=a.configuration_id
+                                      WHERE a.booking_id = ANY(%s)
+                                      ORDER BY a.id''',(list(by_id),)):
+        allocation['end_date']=allocation['end_exclusive']-timedelta(days=1)
+        by_id[allocation['booking_id']]['allocations'].append(allocation)
+    visible=[booking for booking in bookings if accessible(actor,booking,configs,resources)]
+    return filter_bookings(visible,first,exclusive,resort,status,search)
