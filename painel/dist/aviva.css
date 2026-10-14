@@ -46,6 +46,8 @@ select:focus-visible, textarea:focus-visible, summary:focus-visible {
 .access-admin-choice { margin-top: 18px; padding: 16px 18px; border: 1px solid #b9dbe4; border-radius: 10px; background: #f3fafc; }
 .access-admin-choice .checkbox-line { font-weight: 700; }
 .access-admin-choice p { margin: 8px 0 0 26px; color: #426370; line-height: 1.5; }
+.allocation-row .allocation-resort { grid-column: 1 / -1; max-width: 360px; }
+.allocation-row select:disabled { background: #eef3f3; color: #708486; }
 @media (max-width: 700px) { .users-table article { flex-wrap: wrap; } .user-actions { justify-content: flex-start; } }
 input[type=checkbox] { accent-color: #007d9d; }
 .agenda-sidebar {

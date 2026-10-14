@@ -12,7 +12,7 @@ from waitress import serve
 from calendar_app import create_app, load_environment, ROOT
 from calendar_app.db import migrate, write_transaction
 from calendar_app.auth import create_user
-from calendar_app.catalog import import_catalog, validate_topology
+from calendar_app.catalog import import_catalog, assign_reviewed_resort, validate_topology
 
 load_environment()
 url = os.environ['DATABASE_URL']
@@ -26,6 +26,9 @@ app = create_app({'DB_SCHEMA': schema, 'QA_MODE': True, 'SECRET_KEY': uuid4().he
 with app.app_context():
     migrate()
     import_catalog(json.loads((ROOT / 'docs/catalogo-salas-preliminar.json').read_text()))
+    for filename in ('classificacao-costa-sauipe-2026-10-08.json',
+                     'classificacao-rio-quente-2026-10-08.json'):
+        assign_reviewed_resort(json.loads((ROOT / 'docs' / filename).read_text()), apply=True)
     with write_transaction() as conn:
         user = create_user(conn, dict(username='teste.visual', name='Teste visual — dados fictícios',
             password='Teste-isolado-2026!', team_id='commercial', can_catalog=True,
