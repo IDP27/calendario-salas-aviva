@@ -6,7 +6,6 @@ import sys
 from pathlib import Path
 from urllib.parse import quote
 
-
 ROOT = Path(__file__).resolve().parent.parent
 
 
@@ -44,14 +43,18 @@ def initialize():
     app = create_app()
     with app.app_context():
         migrate()
-        catalog = json.loads((ROOT / "docs/catalogo-salas-preliminar.json").read_text(encoding="utf-8"))
+        catalog = json.loads(
+            (ROOT / "docs/catalogo-salas-preliminar.json").read_text(encoding="utf-8")
+        )
         result = import_catalog(catalog)
         if result["new"] == 125:
             for filename in (
                 "classificacao-costa-sauipe-2026-10-08.json",
                 "classificacao-rio-quente-2026-10-08.json",
             ):
-                reviewed = json.loads((ROOT / "docs" / filename).read_text(encoding="utf-8"))
+                reviewed = json.loads(
+                    (ROOT / "docs" / filename).read_text(encoding="utf-8")
+                )
                 assign_reviewed_resort(reviewed, apply=True)
         app.logger.info("Banco e catálogo preparados para iniciar a agenda.")
     return app
@@ -67,7 +70,9 @@ def main():
     elif len(sys.argv) > 1:
         os.execvpe(sys.argv[1], sys.argv[1:], os.environ)
     else:
-        raise SystemExit("Use 'serve' ou um comando administrativo, por exemplo 'flask'.")
+        raise SystemExit(
+            "Use 'serve' ou um comando administrativo, por exemplo 'flask'."
+        )
 
 
 if __name__ == "__main__":

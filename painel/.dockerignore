@@ -8,6 +8,7 @@ __pycache__/
 *.pyc
 .git/
 tests_python/
+calendar_app/api_people 2.py
 node_modules/
 docs/*.md
 docs/*.jpg
