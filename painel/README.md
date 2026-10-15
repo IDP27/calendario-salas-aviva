@@ -66,7 +66,7 @@ O navegador carrega arquivos HTML, CSS e JavaScript de `dist/`. O JavaScript con
 | Componente | Versão / papel |
 | --- | --- |
 | Projeto | `0.1.0` em `pyproject.toml`; identificação interna do piloto, sem homologação de produção. |
-| Python | Compatibilidade declarada `>=3.12,<3.14`. Testes passaram em **3.12.4** e **3.13.16** neste computador. |
+| Python | **3.13** obrigatório (`>=3.13,<3.14`); ambiente local e imagem Linux em **3.13.16**. |
 | Flask | **3.1.3**, fábrica de aplicação, páginas e API. |
 | Waitress | **3.0.2**, servidor WSGI do piloto. |
 | PostgreSQL | **14.18** validado no piloto local; imagem Docker **17.11** para novas instalações, testada com catálogo e backup. A passagem de uma base 14 para 17 exige migração planejada por backup/restauração, nunca reaproveitamento direto do volume. |
@@ -78,7 +78,7 @@ O navegador carrega arquivos HTML, CSS e JavaScript de `dist/`. O JavaScript con
 | pytest | **9.1.1**, grupo de desenvolvimento. |
 | Node.js | **20.16.0** disponível neste computador para testes JavaScript legados; a versão não está fixada para implantação e não participa do servidor da agenda. |
 
-As dependências diretas estão fixadas em `pyproject.toml` e `requirements.txt`. O `poetry.lock` fixa também as dependências indiretas para instalações com Poetry. O projeto usa o modo `package-mode = false`: instalar dependências não publica nem instala a agenda como pacote Python.
+As dependências diretas estão fixadas em `pyproject.toml`; `poetry.lock` fixa também as indiretas para o ambiente local e a imagem Linux. O projeto usa o modo `package-mode = false`: instalar dependências não publica nem instala a agenda como pacote Python. Os arquivos `requirements*.txt` permanecem apenas como referência legada; a instalação atual usa Poetry.
 
 ## Versionamento e compatibilidade
 
@@ -86,7 +86,7 @@ As dependências diretas estão fixadas em `pyproject.toml` e `requirements.txt`
 
 As migrações SQL são ordenadas pelo nome (`001` a `004`) e aplicadas uma única vez, em ordem; não edite uma migração já executada em um ambiente. Para uma alteração futura do modelo, crie outro arquivo numerado e teste a atualização de uma cópia do banco antes do deploy. A aplicação Docker aplica as migrações ao iniciar; portanto, **subir uma nova imagem pode modificar o banco antes do primeiro acesso à página**. Faça backup antes de cada atualização e trate a reversão do banco separadamente da reversão do código.
 
-O Dockerfile fixa as versões das **dependências diretas** em `requirements.txt` e usa as tags de imagem mostradas acima. O build com `pip` ainda pode resolver versões indiretas mais novas; `poetry.lock` só governa instalações feitas com Poetry. Para uma release totalmente reproduzível, a equipe deve congelar também as dependências indiretas da imagem e os digests das imagens base. Python 3.12/3.13 é a faixa do projeto; a imagem entregue executa **Python 3.13.16**. Não monte um volume de dados do PostgreSQL 14 diretamente no container 17: migre por backup/restauração planejados.
+O Dockerfile usa Poetry 2.5.1 e `poetry.lock` para instalar as dependências diretas e indiretas na imagem Linux com **Python 3.13.16**. Para reproduzir também as imagens base byte a byte, fixe os digests das imagens em uma release aprovada. Não monte um volume de dados do PostgreSQL 14 diretamente no container 17: migre por backup/restauração planejados.
 
 ## Funcionalidades e regras de negócio
 
@@ -338,7 +338,7 @@ pg_ctl -D instance/postgres -l instance/postgres.log -o '-h 127.0.0.1 -p 55432 -
 Inicie a aplicação:
 
 ```sh
-.venv/bin/python serve.py
+poetry run python serve.py
 ```
 
 Acesse **http://127.0.0.1:4174**. Se a agenda já estiver aberta, não é necessário iniciar outro servidor. `Ctrl+C` encerra a aplicação; o banco permanece ativo. Para encerrar o banco dedicado, use `pg_ctl -D instance/postgres stop` quando não houver usuários conectados.
@@ -482,48 +482,41 @@ Para uma recuperação, prepare **outro banco vazio**, restaure e valide nele an
 
 ## Preparar outra instalação
 
-Requisitos validados neste piloto: Python 3.12 e 3.13, PostgreSQL 14.18 já existente na máquina e ferramentas `pg_dump`/`pg_restore`. O time deve definir a versão suportada do PostgreSQL para implantação. Dependências diretas fixadas: Flask 3.1.3, psycopg 3.3.6, Waitress 3.0.2.
+Requisitos para executar fora do Docker: Python 3.13, Poetry 2.5.1, PostgreSQL e ferramentas `pg_dump`/`pg_restore`. O piloto local foi validado com PostgreSQL 14.18; a imagem Linux usa PostgreSQL 17.11. O time deve definir a versão suportada do PostgreSQL para implantação. Dependências diretas fixadas: Flask 3.1.3, psycopg 3.3.6, Waitress 3.0.2.
 
 ### Instalar com Poetry
 
-O projeto pode usar Poetry 2 para gerenciar dependências. O arquivo `poetry.lock` fixa as versões resolvidas; o modo sem pacote instala somente as dependências, pois esta agenda é executada diretamente com `serve.py`. Instale o Poetry e, na pasta `painel`, com Python 3.13 disponível:
+O projeto usa Poetry 2.5.1 para gerenciar dependências. O arquivo `poetry.lock` fixa as versões resolvidas; o modo sem pacote instala somente as dependências, pois esta agenda é executada diretamente com `serve.py`. Instale o Poetry e, na pasta `painel`, com Python 3.13 disponível:
 
 ```sh
-export POETRY_VIRTUALENVS_IN_PROJECT=false
-export POETRY_VIRTUALENVS_PATH="$PWD/instance/poetry-envs"
+export POETRY_VIRTUALENVS_IN_PROJECT=true
 poetry env use python3.13
 poetry sync
+poetry run python --version
 ```
 
-As duas variáveis mantêm o ambiente do Poetry separado do `.venv` preexistente. Neste computador, o executável do Poetry está em `instance/poetry-cli/bin/poetry`; use esse caminho no lugar de `poetry` se ele não estiver no `PATH`. Para os comandos administrativos, use `poetry run flask --app calendar_app <comando>`. O ambiente de desenvolvimento local que já usa `.venv` pode continuar com `pip`; mantenha as versões de `requirements*.txt` e `pyproject.toml` alinhadas ao atualizar dependências.
+O Poetry cria `painel/.venv`, que também deve ser selecionado como interpretador no VS Code. Neste computador, o executável do Poetry está em `instance/poetry-cli/bin/poetry`; use esse caminho no lugar de `poetry` se ele não estiver no `PATH`. Para os comandos administrativos, use `poetry run flask --app calendar_app <comando>`. No Linux com Docker Compose, o build instala as dependências pelo mesmo lock; o host não precisa ter Python nem Poetry.
 
-### Instalar com pip
-
-```sh
-python3 -m venv .venv
-.venv/bin/python -m pip install -r requirements.txt
-```
-
-Com qualquer um dos gerenciadores, copie o exemplo de configuração **somente em uma instalação nova**, crie um banco PostgreSQL dedicado e ajuste `DATABASE_URL` no `.env`. Preserve o `.env` preexistente. A aplicação não cria um serviço de banco corporativo. O papel do banco precisa executar as migrações iniciais; em implantação, separe o papel de migração do papel de execução conforme a política da equipe.
+Após instalar as dependências com Poetry, copie o exemplo de configuração **somente em uma instalação nova**, crie um banco PostgreSQL dedicado e ajuste `DATABASE_URL` no `.env`. Preserve o `.env` preexistente. A aplicação não cria um serviço de banco corporativo. O papel do banco precisa executar as migrações iniciais; em implantação, separe o papel de migração do papel de execução conforme a política da equipe.
 
 ```sh
 cp .env.example .env
-.venv/bin/flask --app calendar_app init-db
-.venv/bin/flask --app calendar_app import-catalog docs/catalogo-salas-preliminar.json --preview
-.venv/bin/flask --app calendar_app import-catalog docs/catalogo-salas-preliminar.json
-.venv/bin/python serve.py
+poetry run flask --app calendar_app init-db
+poetry run flask --app calendar_app import-catalog docs/catalogo-salas-preliminar.json --preview
+poetry run flask --app calendar_app import-catalog docs/catalogo-salas-preliminar.json
+poetry run python serve.py
 ```
 
-Os comandos acima usam o caminho do ambiente `pip`; com Poetry, substitua `.venv/bin/flask` por `poetry run flask` e `.venv/bin/python` por `poetry run python`. `init-db` aplica apenas migrações ainda não registradas. A importação é transacional e repetível sem duplicar itens ou substituir revisões já feitas. O auxiliar `scripts/prepare_local.py` é exclusivo do banco local chamado `calendario`.
+`init-db` aplica apenas migrações ainda não registradas. A importação é transacional e repetível sem duplicar itens ou substituir revisões já feitas. O auxiliar `scripts/prepare_local.py` é exclusivo do banco local chamado `calendario`.
 
 ### Relação revisada da Costa do Sauípe
 
 O arquivo `docs/classificacao-costa-sauipe-2026-10-08.json` registra os códigos da fonte associados à lista enviada pelo usuário e às confirmações posteriores de Bahia 1–2 e das quatro configurações de São Tomé. Há 114 linhas da fonte que representam 90 configurações da agenda, pois 28 variantes da Arena compartilham quatro configurações. Os serviços 5 e 6 continuam fora da agenda. A classificação é auditada e preserva IDs, localização, solicitações e validação física. Pode ser repetida sem duplicar alterações.
 
 ```sh
-.venv/bin/flask --app calendar_app classify-reviewed docs/classificacao-costa-sauipe-2026-10-08.json
-.venv/bin/flask --app calendar_app backup-db instance/backups/antes-classificacao-sauipe.dump
-.venv/bin/flask --app calendar_app classify-reviewed docs/classificacao-costa-sauipe-2026-10-08.json --apply
+poetry run flask --app calendar_app classify-reviewed docs/classificacao-costa-sauipe-2026-10-08.json
+poetry run flask --app calendar_app backup-db instance/backups/antes-classificacao-sauipe.dump
+poetry run flask --app calendar_app classify-reviewed docs/classificacao-costa-sauipe-2026-10-08.json --apply
 ```
 
 Sem `--apply`, o comando apenas mostra uma prévia. Ele recusa classificar parcialmente uma configuração compartilhada, como a Arena, ou mover para Sauípe um item já atribuído ao Rio Quente. Após a aplicação da relação de Sauípe, nove configurações da relação do Rio Quente aguardam classificação. As quatro configurações de São Tomé foram confirmadas para Sauípe por mensagem posterior; a segunda linha escrita como “São Tomé 1–2” no texto inicial descrevia 1–2–3. “Santa Amaro” foi associado ao nome original “Santo Amaro”, preservado no catálogo.
@@ -533,9 +526,9 @@ Sem `--apply`, o comando apenas mostra uma prévia. Ele recusa classificar parci
 O arquivo `docs/classificacao-rio-quente-2026-10-08.json` identifica Gardênia, Canário, Aimorés, Amazonas, três configurações de união do grupo, Jubarte e Maremoto: nove configurações no total. Execute após a classificação da Costa do Sauípe. Os códigos omitidos na segunda relação só são aceitos quando já têm empreendimento, evitando deixar itens sem destino por engano.
 
 ```sh
-.venv/bin/flask --app calendar_app classify-reviewed docs/classificacao-rio-quente-2026-10-08.json
-.venv/bin/flask --app calendar_app backup-db instance/backups/antes-classificacao-rio-quente.dump
-.venv/bin/flask --app calendar_app classify-reviewed docs/classificacao-rio-quente-2026-10-08.json --apply
+poetry run flask --app calendar_app classify-reviewed docs/classificacao-rio-quente-2026-10-08.json
+poetry run flask --app calendar_app backup-db instance/backups/antes-classificacao-rio-quente.dump
+poetry run flask --app calendar_app classify-reviewed docs/classificacao-rio-quente-2026-10-08.json --apply
 ```
 
 Depois das duas relações, são 90 configurações da Costa do Sauípe e nove do Rio Quente; todas têm empreendimento. As composições físicas de São Tomé e dos conjuntos de dois e três módulos do Rio Quente continuam sem validação operacional. A classificação do empreendimento, sozinha, não libera bloqueios efetivos.
@@ -564,14 +557,14 @@ Peça à equipe de identidade o **Tenant ID**, **Client ID**, segredo do aplicat
 Em uma base nova, vincule a primeira pessoa administradora pelo Object ID do Entra ID:
 
 ```sh
-.venv/bin/flask --app calendar_app init-db
-.venv/bin/flask --app calendar_app bootstrap-entra --username pessoa@empresa.com --name "Nome da pessoa" --team commercial --object-id UUID-DA-PESSOA
+poetry run flask --app calendar_app init-db
+poetry run flask --app calendar_app bootstrap-entra --username pessoa@empresa.com --name "Nome da pessoa" --team commercial --object-id UUID-DA-PESSOA
 ```
 
 Em uma base que já tem usuários do piloto, vincule cada registro existente para preservar seu ID e histórico:
 
 ```sh
-.venv/bin/flask --app calendar_app link-entra --username usuario-existente --object-id UUID-DA-PESSOA
+poetry run flask --app calendar_app link-entra --username usuario-existente --object-id UUID-DA-PESSOA
 ```
 
 No modo corporativo, o login e a troca de senha locais ficam desativados. A administração pode cadastrar novas pessoas com o Object ID do Entra ID, equipe, empreendimento e responsabilidades. Apenas identidades vinculadas e ativas acessam a agenda; o retorno do provedor não concede permissão automaticamente. `auth_sessions` guarda somente hash do verificador do token, `auth_events` guarda os eventos de acesso e `audit` mantém o histórico de alterações. Administradores consultam os 300 eventos de acesso mais recentes em `GET /api/audit/auth`; a limpeza de sessões e contadores vencidos pode ser agendada com `flask --app calendar_app prune-auth`. O prazo de retenção de `auth_events` depende da política da organização.
@@ -611,7 +604,7 @@ Os nomes das pessoas responsáveis por cadastro e fila devem ser designados pela
 Criação administrativa por terminal, com senha solicitada sem exibição:
 
 ```sh
-.venv/bin/flask --app calendar_app create-user --admin
+poetry run flask --app calendar_app create-user --admin
 ```
 
 ## Relatórios
@@ -623,7 +616,7 @@ Selecione empreendimento, situação, pesquisa e período em **Relatórios**. S�
 Use ferramentas PostgreSQL compatíveis com a versão do servidor, disponíveis no PATH. O backup inclui cadastros, contas com hashes, solicitações, ocupações, histórico e migrações do esquema da aplicação. Não inclui arquivos, papéis globais do PostgreSQL ou configuração de infraestrutura. Guarde separadamente o código, `.env` e a chave de sessão em local protegido. Defina retenção e cópia externa com o time antes do uso compartilhado; não há agendamento automático nesta entrega.
 
 ```sh
-.venv/bin/flask --app calendar_app backup-db instance/backups/calendario-2026-10-07.dump
+poetry run flask --app calendar_app backup-db instance/backups/calendario-2026-10-07.dump
 ```
 
 O comando recusa sobrescrever arquivos existentes. O arquivo é criado com permissões restritas. Faça backup antes de migrações.
@@ -631,7 +624,7 @@ O comando recusa sobrescrever arquivos existentes. O arquivo é criado com permi
 Para recuperar, o administrador cria **outro banco vazio**, configura `RESTORE_DATABASE_URL` com a conexão desse destino no ambiente do terminal e executa:
 
 ```sh
-.venv/bin/flask --app calendar_app restore-db instance/backups/calendario-2026-10-07.dump
+poetry run flask --app calendar_app restore-db instance/backups/calendario-2026-10-07.dump
 ```
 
 A restauração usa uma única transação e recusa banco que já contenha tabelas de aplicação. Confira contagens, histórico e ocupações no destino. Só depois interrompa a aplicação, troque `DATABASE_URL` e reinicie. Preserve a origem até encerrar a validação. O teste automatizado realiza backup e restauração reais em bancos temporários, incluindo proteção contra sobrescrita.
@@ -639,15 +632,15 @@ A restauração usa uma única transação e recusa banco que já contenha tabel
 ## Testar
 
 ```sh
-.venv/bin/python -m pip install -r requirements-dev.txt
-.venv/bin/python -m pytest tests_python -q --tb=short
+poetry sync
+poetry run python -m pytest tests_python -q --tb=short
 node --test tests/*.test.mjs
 node --check dist/js/calendar.js
 ```
 
 Os testes Python criam esquemas isolados por teste no `TEST_DATABASE_URL` ou, na ausência dele, no `DATABASE_URL`. Os testes de recuperação criam e removem bancos temporários com prefixo de teste, exigindo `CREATEDB`; execute-os em ambiente de desenvolvimento. Não há SQLite. Node executa 16 testes da interface e das funções preservadas do painel anterior; `node --check` verifica a sintaxe do controlador da agenda.
 
-**Validação em 15/10/2026:** 58 testes Python e 16 testes Node passaram. A suíte cobre os três status, migração e bloqueio de novas reservas sobre confirmação, regras de fila e conflito, datas, autorização e CSRF, sessões/revogação, registro de login, tentativa de SQL injection, importação/classificação, backup/restauração, concessão e revogação do papel de administrador, exclusão de acesso, um retorno Entra ID simulado e funções de filtros/apresentação da interface. `poetry check --lock` aprovou a configuração anterior das dependências. Isso **não equivale** a um teste real contra o tenant corporativo nem a um ensaio de carga.
+**Validação em 15/10/2026:** a imagem Linux com Python 3.13.16 e dependências instaladas pelo Poetry passou nos **58 testes Python versionados** contra um PostgreSQL 17.11 temporário. Os **16 testes Node** também passaram. A suíte cobre os três status, migração e bloqueio de novas reservas sobre confirmação, regras de fila e conflito, datas, autorização e CSRF, sessões/revogação, registro de login, tentativa de SQL injection, importação/classificação, backup/restauração, concessão e revogação do papel de administrador, exclusão de acesso, um retorno Entra ID simulado e funções de filtros/apresentação da interface. Isso **não equivale** a um teste real contra o tenant corporativo nem a um ensaio de carga.
 
 Em 14/10/2026, a escolha de empreendimento por período e a interface reorganizada foram conferidas em prévias isoladas com dados fictícios: o seletor exibiu apenas os nove espaços do Rio Quente, o calendário carregou as 99 configurações e a navegação para **Pessoas & acessos** abriu o formulário de cadastro sem erros no console. Uma solicitação existente também recuperou Rio Quente/Gardênia na edição. Essas verificações visuais são complementares à suíte automatizada.
 
@@ -664,7 +657,7 @@ Para uma prévia visual descartável, `scripts/qa_preview.py` cria um esquema se
 - `dist/`: interface adaptada, estilos originais reaproveitados, apresentação separada do controlador e comunicação assíncrona com a API.
 - `docs/`: proposta, análise da fonte, catálogo preliminar e relatório de implementação.
 - `tests_python/`: testes de integração com banco e API.
-- `pyproject.toml`, `poetry.lock`, `requirements*.txt`: metadados, versões e instalação das dependências Python.
+- `pyproject.toml`, `poetry.lock`: metadados, versões e instalação das dependências Python; `requirements*.txt` são referências legadas.
 - `serve.py`, `.env.example`, `scripts/`: entrada local, exemplo de configuração e utilitários de preparação/prévia.
 - `Dockerfile`, `compose*.yaml`, `docker/`, `.env.docker.example`: imagens, execução em containers, proxy e configuração de referência. `secrets/` contém segredos locais e é ignorado pelo Git.
 - `instance/`, `.env`, `.venv/`: backups, segredos e ambiente Python local; não são publicados no Git. Os dados da aplicação ficam no PostgreSQL.

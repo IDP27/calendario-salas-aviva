@@ -1,8 +1,24 @@
+FROM python:3.13.16-slim-trixie AS dependencies
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PYTHONPATH=/app \
+    POETRY_VIRTUALENVS_IN_PROJECT=true \
+    POETRY_NO_INTERACTION=1
+
+WORKDIR /app
+
+COPY pyproject.toml poetry.lock ./
+RUN pip install --no-cache-dir poetry==2.5.1 \
+    && poetry check --lock \
+    && poetry sync --only main --no-root
+
 FROM python:3.13.16-slim-trixie
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
-    PYTHONPATH=/app
+    PYTHONPATH=/app \
+    PATH="/app/.venv/bin:$PATH"
 
 WORKDIR /app
 
@@ -12,8 +28,7 @@ RUN apt-get update \
     && groupadd --gid 10001 calendar \
     && useradd --uid 10001 --gid calendar --create-home calendar
 
-COPY requirements.txt ./
-RUN pip install --no-cache-dir -r requirements.txt
+COPY --from=dependencies /app/.venv /app/.venv
 
 COPY calendar_app/ ./calendar_app/
 COPY dist/ ./dist/
