@@ -48,10 +48,10 @@ class API:
         result=self.send(f"/catalog/{c['id']}/topology",{'version':c['version'],'options':options or c['suggested_options'],'reason':'Dados fictícios de homologação usados exclusivamente em teste','attested':True})
         assert result.status_code==200,result.json
         return result.json
-    def create(self,code=7,status='waiting',start='2027-01-10',end='2027-01-12',allocations=None,**extra):
+    def create(self,code=7,status='reserved',start='2027-01-10',end='2027-01-12',allocations=None,**extra):
         body={'title':'Evento de teste','responsible':'Responsável de teste','status':status,'allocations':allocations or [allocation(code,start,end)],**extra}
         return self.send('/bookings',body)
-    def promote(self,booking): return self.send(f"/bookings/{booking['id']}/promote",{'version':booking['version']})
+    def confirm(self,booking): return self.send(f"/bookings/{booking['id']}/confirm",{'version':booking['version']})
     def detail(self,booking): return self.get(f"/bookings/{booking['id']}").json['booking']
 
 

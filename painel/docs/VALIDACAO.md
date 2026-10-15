@@ -1,5 +1,7 @@
 # Verificação da primeira versão
 
+> **Registro histórico do painel anterior.** Os totais abaixo não representam a suíte atual da agenda. Os resultados e limites vigentes estão em [Testar](../README.md#testar); a atualização de status está [documentada aqui](ATUALIZACAO-STATUS-2026-10-15.md).
+
 Verificação realizada em 2 de outubro de 2026.
 
 ## Testes automatizados

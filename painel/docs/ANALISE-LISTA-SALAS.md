@@ -1,5 +1,7 @@
 # Análise da lista recebida - Salas e espaços
 
+> **Análise da fonte, preservada como histórico.** Menções a “pendente de validação”, “espera” ou “opção prioritária” como situação de solicitação descrevem o desenho anterior. O fluxo atual tem somente **Reservado, Confirmado e Cancelado**; “a validar” refere-se à composição física. Veja o [README](../README.md) e a [atualização dos status](ATUALIZACAO-STATUS-2026-10-15.md). A classificação administrativa dos 99 espaços/configurações por empreendimento já foi feita; a homologação física continua independente.
+
 Data da análise: 7 de outubro de 2026.
 
 Fonte: `LISTA DE SALAS E ESPAÇOS CS & RQ.pdf`, enviado pelo solicitante. As duas páginas foram lidas por extração de texto e conferidas visualmente. O arquivo original foi preservado.

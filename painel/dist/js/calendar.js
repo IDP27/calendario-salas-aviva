@@ -189,6 +189,10 @@ async function refresh(quiet = false) {
       state.bookings = (
         await request(`/bookings?${queryString(true)}`)
       ).bookings;
+    } else if (state.view === "catalog" && state.status) {
+      const filters = new URLSearchParams(queryString(true));
+      filters.set("search", "");
+      state.bookings = (await request(`/bookings?${filters}`)).bookings;
     } else if (state.view === "users") {
       state.users = (await request("/users")).users;
     }
@@ -218,7 +222,7 @@ function render() {
     ],
     queue: [
       "Solicitações & fila",
-      "Ordem de entrada, com prioridade concedida manualmente.",
+      "Solicitações reservadas por ordem de entrada; somente confirmações bloqueiam espaços.",
     ],
     catalog: [
       "Salas & espaços",
@@ -236,7 +240,7 @@ function render() {
   const [title, subtitle] = titles[state.view];
   const unvalidated = state.catalog.filter((c) => !c.validated).length;
   $("#app").innerHTML =
-    `<div class="agenda-shell">${sidebar()}<div class="agenda-main"><header class="agenda-top"><span>Espaços de eventos <span aria-hidden="true">/</span> ${title}</span><div><span id="sync" class="sync-state ${state.online ? "" : "offline"}">${state.online ? `Atualizado às ${state.lastSync}` : "Sem conexão · consulta desatualizada"}</span> <button class="icon-btn" data-action="refresh" aria-label="Atualizar agenda">↻</button><button class="icon-btn" data-action="logout" aria-label="Sair">↗</button></div></header><main class="agenda-content">${state.qa ? '<div class="notice qa-banner">AMBIENTE DE TESTES · Dados e validações fictícios, isolados da base operacional.</div>' : ""}<div class="agenda-heading"><div><div class="agenda-eyebrow">COSTA DO SAUÍPE & RIO QUENTE</div><h1>${title}</h1><p>${subtitle}</p></div><div class="heading-actions">${state.view === "users" ? btn("new-user", "Adicionar pessoa", "", true) : state.view === "catalog" ? `${state.user.can_catalog ? btn("classify-selected", "Classificar seleção") + btn("add-resource", "Novo recurso físico") : ""}` : btn("availability", "Consultar disponibilidade") + btn("new-booking", "＋ Nova solicitação", "", true)}</div></div>${state.view === "calendar" ? `<section class="agenda-stats"><article class="agenda-stat"><small>Espaços e configurações<br>Catálogo compartilhado</small><strong>${state.catalog.length}</strong></article><article class="agenda-stat"><small>Solicitações no período<br>Conforme os filtros</small><strong>${state.bookings.length}</strong></article></section>` : ""}${unvalidated && state.view === "calendar" ? `<div class="notice">${unvalidated} configurações aguardam validação física. A área hachurada significa “a validar”; dias vazios não garantem disponibilidade.</div>` : ""}${state.view === "calendar" ? calendarView() : state.view === "queue" ? `<section class="agenda-card">${toolbar(false)}<div class="calendar-caption"><strong>Solicitações por ordem de entrada</strong><span>Sem promoção ou expiração automática</span></div>${bookingList(state.bookings)}</section>` : state.view === "catalog" ? catalogView() : state.view === "reports" ? reportsView() : usersView()}<footer class="agenda-footer"><span>Calendário compartilhado · bloqueios por dia inteiro</span><span>2026 — 2028 · ${esc(state.user.name)}</span></footer></main></div></div>`;
+    `<div class="agenda-shell">${sidebar()}<div class="agenda-main"><header class="agenda-top"><span>Espaços de eventos <span aria-hidden="true">/</span> ${title}</span><div><span id="sync" class="sync-state ${state.online ? "" : "offline"}">${state.online ? `Atualizado às ${state.lastSync}` : "Sem conexão · consulta desatualizada"}</span> <button class="icon-btn" data-action="refresh" aria-label="Atualizar agenda">↻</button><button class="icon-btn" data-action="logout" aria-label="Sair">↗</button></div></header><main class="agenda-content">${state.qa ? '<div class="notice qa-banner">AMBIENTE DE TESTES · Dados e validações fictícios, isolados da base operacional.</div>' : ""}<div class="agenda-heading"><div><div class="agenda-eyebrow">COSTA DO SAUÍPE & RIO QUENTE</div><h1>${title}</h1><p>${subtitle}</p></div><div class="heading-actions">${state.view === "users" ? btn("new-user", "Adicionar pessoa", "", true) : state.view === "catalog" ? `${state.user.can_catalog ? btn("classify-selected", "Classificar seleção") + btn("add-resource", "Novo recurso físico") : ""}` : btn("availability", "Consultar disponibilidade") + btn("new-booking", "＋ Nova solicitação", "", true)}</div></div>${state.view === "calendar" ? `<section class="agenda-stats"><article class="agenda-stat"><small>Espaços e configurações<br>Catálogo compartilhado</small><strong>${state.catalog.length}</strong></article><article class="agenda-stat"><small>Solicitações no período<br>Conforme os filtros</small><strong>${state.bookings.length}</strong></article></section>` : ""}${unvalidated && state.view === "calendar" ? `<div class="notice">${unvalidated} configurações aguardam validação física. A área hachurada significa “a validar”; dias vazios não garantem disponibilidade.</div>` : ""}${state.view === "calendar" ? calendarView() : state.view === "queue" ? `<section class="agenda-card">${toolbar(false)}<div class="calendar-caption"><strong>Solicitações por ordem de entrada</strong><span>Sem confirmação automática</span></div>${bookingList(state.bookings)}</section>` : state.view === "catalog" ? catalogView() : state.view === "reports" ? reportsView() : usersView()}<footer class="agenda-footer"><span>Calendário compartilhado · bloqueios por dia inteiro</span><span>2026 — 2028 · ${esc(state.user.name)}</span></footer></main></div></div>`;
   bindMain();
 }
 function bindMain() {
@@ -352,20 +356,13 @@ function bookingForm(booking = null, configId = "", dateValue = "") {
     },
   ];
   const states =
-    !booking || ["pending", "waiting"].includes(booking.status)
-      ? ["pending", "waiting"]
-      : booking.status === "option"
-        ? [
-            "option",
-            ...(state.user.can_schedule ? ["confirmed"] : []),
-            "waiting",
-            "pending",
-          ]
-        : ["confirmed", "waiting", "pending"];
+    !booking || booking.status === "reserved"
+      ? ["reserved", ...(state.user.can_schedule ? ["confirmed"] : [])]
+      : ["confirmed", "reserved"];
   if (
     !modal(
       booking ? "Editar solicitação" : "Nova solicitação",
-      `<form id="booking-form"><div class="form-grid"><label>Evento / motivo<input name="title" maxlength="180" required value="${esc(booking?.title || "")}" autofocus></label><label>Responsável<input name="responsible" maxlength="120" required value="${esc(booking?.responsible || state.user.name)}"></label><label>Situação<select name="status">${states.map((s) => option(s, statusNames[s], booking?.status || "pending")).join("")}</select></label><label>Equipe proprietária<input value="${state.user.team_id === "commercial" ? "Comercial MICE" : "Operacional"}" disabled></label></div><div class="notice">Todos os dias informados são incluídos. Solicitações pendentes e em espera não bloqueiam o espaço. O responsável pela fila pode confirmar a reserva, bloqueando a configuração escolhida em todos os dias informados. Composições físicas ainda não validadas exigem atenção especial.</div><div id="allocations">${allocations.map(allocMarkup).join("")}</div>${btn("add-allocation", "＋ Adicionar espaço ou fase")}<label class="full-width">Observações<textarea name="notes" maxlength="4000">${esc(booking?.notes || "")}</textarea></label>${state.user.can_schedule && (!booking || ["pending", "waiting"].includes(booking.status)) ? '<label class="checkbox-line"><input type="checkbox" name="confirm_reservation">Confirmar reserva e bloquear o espaço neste período</label>' : ""}<div class="form-help">${booking ? "Alterar datas/espaços de uma solicitação em espera reposiciona sua entrada na fila." : "A equipe e a autoria são registradas pelo servidor."}</div><div class="form-error" role="alert"></div></form>`,
+      `<form id="booking-form"><div class="form-grid"><label>Evento / motivo<input name="title" maxlength="180" required value="${esc(booking?.title || "")}" autofocus></label><label>Responsável<input name="responsible" maxlength="120" required value="${esc(booking?.responsible || state.user.name)}"></label><label>Situação<select name="status">${states.map((s) => option(s, statusNames[s], booking?.status || "reserved")).join("")}</select></label><label>Equipe proprietária<input value="${state.user.team_id === "commercial" ? "Comercial MICE" : "Operacional"}" disabled></label></div><div class="notice">Reservado registra a solicitação sem bloquear o espaço, desde que não exista uma confirmação conflitante. Confirmado bloqueia todos os espaços e dias informados após verificar a disponibilidade e a ordem da fila. Composições físicas ainda não validadas exigem atenção especial.</div><div id="allocations">${allocations.map(allocMarkup).join("")}</div>${btn("add-allocation", "＋ Adicionar espaço ou fase")}<label class="full-width">Observações<textarea name="notes" maxlength="4000">${esc(booking?.notes || "")}</textarea></label><div class="form-help">${booking ? "Alterar datas/espaços de uma solicitação reservada reposiciona sua entrada na fila." : "A equipe e a autoria são registradas pelo servidor."}</div><div class="form-error" role="alert"></div></form>`,
       `${btn("close", "Cancelar")}<button class="btn primary" type="submit" form="booking-form">Salvar solicitação</button>`,
       true,
     )
@@ -383,17 +380,14 @@ function bookingForm(booking = null, configId = "", dateValue = "") {
       allocations: readAllocations(),
       ...(booking ? { version: booking.version } : {}),
     };
-    if (fields.get("confirm_reservation") === "on")
-      payload.status = "confirmed";
-    delete payload.confirm_reservation;
     await repository.save(payload, booking?.id, key);
     closeModal(true);
     await refresh();
     toast(
       payload.status === "confirmed"
         ? "Reserva confirmada; o espaço está bloqueado no período."
-        : payload.status === "pending"
-          ? "Solicitação pendente registrada; a sala ainda não está bloqueada."
+        : payload.status === "reserved"
+          ? "Solicitação reservada; a sala ainda não está bloqueada."
           : "Solicitação salva na base compartilhada.",
     );
   });
@@ -401,7 +395,7 @@ function bookingForm(booking = null, configId = "", dateValue = "") {
 async function bookingDetail(id) {
   const { booking: b, history } = await request(`/bookings/${id}`);
   const own = b.team_id === state.user.team_id;
-  const actions = `${own && b.status !== "cancelled" ? btn("edit-booking", "Editar", `data-id="${id}"`) + btn("cancel-booking", "Cancelar solicitação", `data-id="${id}" data-version="${b.version}"`) : ""}${state.user.can_schedule && b.status === "waiting" ? btn("promote", "Conceder opção prioritária", `data-id="${id}" data-version="${b.version}"`) : ""}${state.user.can_schedule && ["pending", "waiting", "option"].includes(b.status) ? btn("confirm-booking", "Confirmar reserva", `data-id="${id}" data-version="${b.version}"`, true) : ""}`;
+  const actions = `${own && b.status !== "cancelled" ? btn("edit-booking", "Editar", `data-id="${id}"`) + btn("cancel-booking", "Cancelar solicitação", `data-id="${id}" data-version="${b.version}"`) : ""}${state.user.can_schedule && b.status === "reserved" ? btn("confirm-booking", "Confirmar reserva", `data-id="${id}" data-version="${b.version}"`, true) : ""}`;
   modal(
     esc(b.title),
     `<dl class="detail-grid"><div><dt>Situação</dt><dd>${pill(b.status)}</dd></div><div><dt>Equipe / responsável</dt><dd>${esc(b.team_name)} · ${esc(b.responsible)}</dd></div><div><dt>Entrada na fila</dt><dd>#${b.queue_number} · ${esc(b.creator_name)}</dd></div><div><dt>Observações</dt><dd>${esc(b.notes) || "—"}</dd></div></dl><div class="notice neutral-notice">${b.allocations.map((a) => `${esc(a.space_name)} · ${phases[a.phase]}<br>${fmt(a.start_date)} a ${fmt(a.end_date)} · ${esc(resortName(a.resort_id))}${a.resources.length ? `<br>${a.resources.map(resourceName).map(esc).join(" + ")}` : ""}`).join("<hr>")}</div><h3>Histórico da solicitação</h3>${historyMarkup(history)}`,
@@ -425,14 +419,14 @@ function cancelForm(id, version) {
     });
     closeModal(true);
     await refresh();
-    toast("Cancelado; nenhum item em espera foi promovido automaticamente.");
+    toast("Cancelado; nenhuma solicitação reservada foi confirmada automaticamente.");
   });
 }
 function confirmBookingForm(id, version) {
   if (
     !modal(
       "Confirmar reserva",
-      `<form id="confirmation-form"><p>Esta confirmação bloqueia todos os espaços e dias da solicitação. Se algum espaço já estiver reservado, nada será confirmado.</p><div class="notice">Para composições ainda não validadas, o bloqueio cobre a configuração escolhida. Sobreposições com outras configurações dependem da validação física pela operação.</div><label class="checkbox-line"><input type="checkbox" name="confirmed" required>Confirmo o bloqueio de todos os espaços e dias desta solicitação.</label><div class="form-error" role="alert"></div></form>`,
+      `<form id="confirmation-form"><p>Esta confirmação bloqueia todos os espaços e dias da solicitação. Se algum espaço já estiver confirmado, nada será confirmado.</p><div class="notice">Para composições ainda não validadas, o bloqueio cobre a configuração escolhida. Sobreposições com outras configurações dependem da validação física pela operação.</div><label class="checkbox-line"><input type="checkbox" name="confirmed" required>Confirmo o bloqueio de todos os espaços e dias desta solicitação.</label><div class="form-error" role="alert"></div></form>`,
       `${btn("close", "Voltar")}<button type="submit" form="confirmation-form" class="btn primary">Confirmar reserva</button>`,
     )
   )
@@ -500,7 +494,7 @@ function dayDetail(id, d) {
   );
   modal(
     `${esc(c.name)} · ${fmt(d)}`,
-    `${cell.state === "unvalidated" ? '<div class="notice">A composição física ainda não foi validada. Uma nova solicitação ficará pendente, sem garantia de ocupação.</div>' : ""}${cell.restricted ? '<div class="notice">Existe ocupação com detalhes restritos ao seu acesso.</div>' : ""}${bookingList(ids.map((i) => data.get(i)).filter(Boolean))}`,
+    `${cell.state === "unvalidated" ? '<div class="notice">A composição física ainda não foi validada. Uma nova solicitação ficará reservada, sem bloquear a sala.</div>' : ""}${cell.restricted ? '<div class="notice">Existe ocupação com detalhes restritos ao seu acesso.</div>' : ""}${bookingList(ids.map((i) => data.get(i)).filter(Boolean))}`,
     btn(
       "new-for-day",
       "Nova solicitação",
@@ -575,7 +569,7 @@ function topologyForm(id) {
     closeModal(true);
     await refresh();
     toast(
-      "Composição homologada. Solicitações pendentes não foram promovidas automaticamente.",
+      "Composição homologada. Solicitações reservadas permanecem sem bloqueio até serem confirmadas.",
     );
   });
 }
@@ -604,7 +598,7 @@ function availabilityForm() {
   const r = range();
   modal(
     "Consultar disponibilidade",
-    `<form id="availability-form"><div class="form-grid"><label>Primeiro dia<input name="from" type="date" min="2026-01-01" max="2028-12-31" value="${r.from}" required></label><label>Último dia<input name="to" type="date" min="2026-01-01" max="2028-12-31" value="${r.to}" required></label></div><p class="form-help">A consulta separa solicitações sem bloqueio da ocupação efetiva. A fila é verificada ao conceder uma opção.</p><div class="form-error"></div><button class="btn primary" type="submit">Consultar período</button></form><div id="availability-results" class="availability-results"></div>`,
+    `<form id="availability-form"><div class="form-grid"><label>Primeiro dia<input name="from" type="date" min="2026-01-01" max="2028-12-31" value="${r.from}" required></label><label>Último dia<input name="to" type="date" min="2026-01-01" max="2028-12-31" value="${r.to}" required></label></div><p class="form-help">A consulta separa solicitações reservadas sem bloqueio da ocupação confirmada. A ordem da fila é verificada ao confirmar.</p><div class="form-error"></div><button class="btn primary" type="submit">Consultar período</button></form><div id="availability-results" class="availability-results"></div>`,
     "",
     true,
   );
@@ -617,12 +611,10 @@ function availabilityForm() {
     $("#availability-results").innerHTML = results
       .map((result) => {
         const requests = [];
-        if (result.pending_count)
+        if (result.reserved_count)
           requests.push(
-            `${result.pending_count} solicitaç${result.pending_count === 1 ? "ão" : "ões"} pendente${result.pending_count === 1 ? "" : "s"}`,
+            `${result.reserved_count} solicitaç${result.reserved_count === 1 ? "ão" : "ões"} reservada${result.reserved_count === 1 ? "" : "s"}`,
           );
-        if (result.waiting_count)
-          requests.push(`${result.waiting_count} em espera`);
         const status =
           result.available === null
             ? "Composição a validar"
@@ -630,15 +622,13 @@ function availabilityForm() {
               ? "Sem ocupação efetiva"
               : "Ocupado no período";
         const periodNames = {
-          pending: "Solicitação pendente",
-          waiting: "Em espera",
-          option: "Opção prioritária",
+          reserved: "Reservado sem bloqueio",
           confirmed: "Reserva confirmada",
         };
         const periods = (result.periods || [])
           .map(
             (p) =>
-              `<small class="availability-period ${["option", "confirmed"].includes(p.status) ? "occupied-period" : ""}">${esc(periodNames[p.status] || p.status)}${p.related ? " em configuração compartilhada" : ""}: ${fmt(p.start_date)}${p.start_date === p.end_date ? "" : ` a ${fmt(p.end_date)}`} · ${esc(phases[p.phase] || p.phase)}</small>`,
+              `<small class="availability-period ${p.status === "confirmed" ? "occupied-period" : ""}">${esc(periodNames[p.status] || p.status)}${p.related ? " em configuração compartilhada" : ""}: ${fmt(p.start_date)}${p.start_date === p.end_date ? "" : ` a ${fmt(p.end_date)}`} · ${esc(phases[p.phase] || p.phase)}</small>`,
           )
           .join("");
         return `<div class="availability-item"><span>${esc(result.name)}${requests.length ? `<small class="availability-request">${esc(requests.join(" · "))} · ainda não bloqueia a sala</small>` : ""}${periods}</span><span class="status-pill ${result.available ? "status-option" : ""}">${status}</span></div>`;
@@ -678,7 +668,7 @@ function userForm(user = null) {
       )
       .join(
         "",
-      )}</div><div class="access-admin-choice"><label class="checkbox-line"><input type="checkbox" name="can_manage_users" ${user?.can_manage_users ? "checked" : ""}>Administrador de acessos</label><p>Pode adicionar pessoas, conceder ou revogar acessos e excluir membros. Este papel também pode designar outros administradores.</p></div><div class="notice">A responsabilidade pela fila permite conceder a opção prioritária a outra equipe. Ela não permite editar o evento nem cancelar o bloqueio dessa equipe.</div><div class="form-error"></div></form>`,
+      )}</div><div class="access-admin-choice"><label class="checkbox-line"><input type="checkbox" name="can_manage_users" ${user?.can_manage_users ? "checked" : ""}>Administrador de acessos</label><p>Pode adicionar pessoas, conceder ou revogar acessos e excluir membros. Este papel também pode designar outros administradores.</p></div><div class="notice">A responsabilidade pela fila permite confirmar uma solicitação de outra equipe após verificar disponibilidade e ordem de entrada. Ela não permite editar o evento nem cancelar o bloqueio dessa equipe.</div><div class="form-error"></div></form>`,
     `${user ? `<button type="button" class="btn danger delete-user-modal" data-action="delete-user" data-id="${user.id}">Excluir pessoa</button>` : ""}${btn("close", "Cancelar")}<button class="btn primary" form="user-form" type="submit">Salvar acesso</button>`,
     true,
   );
@@ -826,15 +816,6 @@ async function handleAction(target) {
       return cancelForm(id, Number(target.dataset.version));
     case "confirm-booking":
       return confirmBookingForm(id, Number(target.dataset.version));
-    case "promote":
-      target.disabled = true;
-      await request(`/bookings/${id}/promote`, {
-        method: "POST",
-        body: { version: Number(target.dataset.version) },
-      });
-      closeModal(true);
-      await refresh();
-      return toast("Opção prioritária concedida para todo o conjunto.");
     case "space-detail":
       return spaceDetail(id);
     case "day":

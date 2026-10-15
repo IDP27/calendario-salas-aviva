@@ -1,5 +1,7 @@
 # Implementação e validação — 7 de outubro de 2026
 
+> **Registro histórico.** Este relatório descreve a primeira versão e seus testes naquela data. Desde 15/10/2026, as situações vigentes são somente **Reservado, Confirmado e Cancelado**; a migração `004` converte os estados anteriores e mantém as ocupações de antiga opção prioritária. Os dois empreendimentos já foram classificados, e o login via Entra ID foi implementado para homologação corporativa. Para comportamento atual, implantação e resultados de testes recentes, consulte o [README](../README.md) e a [atualização dos status](ATUALIZACAO-STATUS-2026-10-15.md). Os totais de testes abaixo pertencem à verificação de 07/10, não à suíte atual.
+
 Foi implementado um piloto local em Python/Flask com PostgreSQL, mantendo HTML, CSS e JavaScript na interface. O servidor estático Node foi retirado do caminho operacional. O painel anterior, seus arquivos e seus nove testes foram preservados em `legacy/` e `tests/`; não houve conversão de exemplos em bloqueios.
 
 ## Decisões incorporadas

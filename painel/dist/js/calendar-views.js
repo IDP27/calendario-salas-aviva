@@ -70,7 +70,7 @@ export function createViews(state, resortName) {
               )
               .join("")}</tbody></table></div>`
           : '<div class="empty-state"><h3>Nenhum espaço neste filtro</h3><p>Ajuste o empreendimento ou a pesquisa para ver outros espaços.</p></div>'
-    }<div class="legend"><span>▧ Composição a validar</span><span>● Ocupação efetiva</span><span>◐ Algumas composições ocupadas</span><span>Contador amarelo: solicitações pendentes / em espera</span></div></section>`;
+    }<div class="legend"><span>▧ Composição a validar</span><span>● Ocupação efetiva</span><span>◐ Algumas composições ocupadas</span><span>Contador amarelo: solicitações reservadas sem bloqueio</span></div></section>`;
   }
   function bookingList(items) {
     if (!items.length)
@@ -88,9 +88,17 @@ export function createViews(state, resortName) {
       .join("")}</div>`;
   }
   function catalogView() {
+    const matching = new Set(
+      state.status
+        ? state.bookings.flatMap((b) =>
+            (b.matched_allocations || b.allocations).map((a) => a.configuration_id),
+          )
+        : [],
+    );
     const rows = state.catalog.filter(
       (c) =>
         (state.resort === "all" || c.resort_id === state.resort) &&
+        (!state.status || matching.has(c.id)) &&
         (!state.search ||
           normalized(c.name).includes(normalized(state.search)) ||
           c.source_codes.join(",").includes(state.search)),

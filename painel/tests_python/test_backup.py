@@ -12,7 +12,7 @@ from calendar_app.db import migrate
 
 def test_backup_restore_preserves_data_and_refuses_existing_database(api, app, tmp_path):
     api.validate(7)
-    booking = api.promote(api.create().json).json
+    booking = api.confirm(api.create().json).json
     url = app.config['DATABASE_URL']
     schema = app.config['DB_SCHEMA']
     target_name = 'restore_salas_test_' + uuid4().hex
@@ -31,7 +31,7 @@ def test_backup_restore_preserves_data_and_refuses_existing_database(api, app, t
             with connect(target_url, schema) as restored:
                 actual = {table: restored.execute(sql.SQL('SELECT count(*) AS n FROM {}').format(sql.Identifier(table))).fetchone()['n'] for table in tables}
                 assert actual == expected
-                assert restored.execute('SELECT status FROM bookings WHERE id=%s', (booking['id'],)).fetchone()['status'] == 'option'
+                assert restored.execute('SELECT status FROM bookings WHERE id=%s', (booking['id'],)).fetchone()['status'] == 'confirmed'
                 assert restored.execute('SELECT count(*) AS n FROM occupations WHERE booking_id=%s', (booking['id'],)).fetchone()['n'] == 3
             with pytest.raises(Problem, match='destino vazio'):
                 restore_database(target_url, path)
@@ -52,6 +52,6 @@ def test_restore_default_public_schema(app, tmp_path):
             restore_database(urls[1], archive)
             with connect(urls[1]) as restored:
                 assert restored.execute('SELECT count(*) AS n FROM teams').fetchone()['n']==2
-                assert restored.execute('SELECT count(*) AS n FROM schema_migrations').fetchone()['n']==3
+                assert restored.execute('SELECT count(*) AS n FROM schema_migrations').fetchone()['n']==4
         finally:
             for name in names: maintenance.execute(sql.SQL('DROP DATABASE {}').format(sql.Identifier(name)))

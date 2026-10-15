@@ -1,5 +1,7 @@
 # Prompt de implementação — Calendário provisório de salas
 
+> **Arquivo histórico.** Este prompt registra requisitos da fase inicial e não define o comportamento vigente. Para os três status atuais, migração e validação, consulte o [README](../README.md) e a [atualização dos status](ATUALIZACAO-STATUS-2026-10-15.md).
+
 Atue como engenheiro de software sênior e arquiteto responsável pela evolução do projeto existente em `painel/`.
 
 ## Objetivo

@@ -1,5 +1,7 @@
 # Etapa 4 — autenticação, tokens e registros de acesso
 
+> **Documento de desenho da etapa.** O estado implementado e os procedimentos de implantação estão no [README](../README.md). O modo Entra está no código, mas o tenant corporativo real ainda não foi homologado. A agenda não oferece redefinição de senha corporativa por administradores; essa função pertence à identidade corporativa.
+
 ## Ponto de partida do piloto
 
 Antes desta etapa, o piloto usava contas locais e senhas com hash. O Flask enviava uma sessão assinada em cookie com duração configurada de oito horas; a aplicação verificava o usuário ativo e sua versão em cada requisição, usava token CSRF para alterações e limitava tentativas de login por origem e usuário. Logout limpava o cookie do navegador. A tabela `audit` no PostgreSQL registrava alterações de solicitações, catálogo, usuários e senha; `login_attempts` guardava apenas contadores temporários para limitação de tentativas. Faltavam trilha persistente de sucessos, falhas e encerramentos de login e revogação individual de sessões no servidor.
@@ -24,7 +26,7 @@ Para a interface web atual, o cookie de sessão com token opaco atende ao fluxo.
 
 As consultas PostgreSQL atuais usam parâmetros separados do texto SQL para valores recebidos da interface (`execute(..., valores)`). Os nomes de esquema variáveis são compostos com `psycopg.sql.Identifier`. Preservar esse padrão em todas as tabelas e buscas novas de sessões, eventos e identidade: nunca concatenar ou interpolar usuário, filtro, data, identificador, grupo ou campo de log em uma instrução SQL. Identificadores SQL dinâmicos, inclusive colunas de ordenação, exigem lista fixa de opções permitidas e composição com `Identifier`. Validação de formato e tamanho complementa a parametrização, mas não a substitui.
 
-Na implantação, separar a conta que aplica migrações da conta usada pela aplicação. A conta de execução deve ter apenas as permissões necessárias nas tabelas e operações da agenda. Revisar cada nova consulta e testar entradas com aspas, comentários SQL, curingas e Unicode, verificando que são tratadas como dados e não mudam a estrutura nem o alcance da consulta. Os arquivos de migração são código versionado, executado somente pelo processo administrativo.
+Como evolução para produção, separar a conta que aplica migrações da conta usada pela aplicação. **A stack Compose atual ainda usa o mesmo papel PostgreSQL para migrar e operar**, pois `docker/run.py` aplica migrações ao iniciar. Essa separação exige adaptar a inicialização e testar os privilégios antes de reduzir permissões; apenas alterar os grants atuais impede a subida da aplicação. Revisar cada nova consulta e testar entradas com aspas, comentários SQL, curingas e Unicode, verificando que são tratadas como dados e não mudam a estrutura nem o alcance da consulta. Os arquivos de migração são código versionado, executado somente pelo processo administrativo.
 
 Se a equipe escolher autenticação direta no AD local no lugar do Entra ID, acrescentar proteção específica contra **injeção LDAP**: usar uma biblioteca que escape valores de filtros conforme RFC 4515 e componentes de DN conforme RFC 4514, nunca interpolar o nome digitado em um filtro ou DN, rejeitar senha vazia e restringir a conta de consulta do diretório. Essa decisão altera o fluxo de autenticação descrito acima e precisa ser registrada antes da implementação.
 
@@ -32,8 +34,8 @@ Se a equipe escolher autenticação direta no AD local no lugar do Entra ID, acr
 
 | Dado | Destino proposto | Conteúdo |
 | --- | --- | --- |
-| Sessões ativas | Nova tabela `auth_sessions` no PostgreSQL | Usuário, identificador público, hash do verificador, prazos, último uso e revogação. O token completo não é persistido. |
-| Eventos de segurança da agenda | Nova tabela `auth_events` no PostgreSQL | Horário UTC, tipo de evento, resultado, usuário quando conhecido, identificador de correlação, origem tratada e motivo padronizado. Inclui início e retorno do SSO, validação aceita/recusada, logout local, expiração, revogação e acesso negado. |
+| Sessões ativas | Tabela `auth_sessions` no PostgreSQL | Usuário, identificador público, hash do verificador, prazos, último uso e revogação. O token completo não é persistido. |
+| Eventos de segurança da agenda | Tabela `auth_events` no PostgreSQL | Horário UTC, tipo de evento, resultado, usuário quando conhecido, identificador de correlação, origem tratada e motivo padronizado. Inclui início e retorno do SSO, validação aceita/recusada, logout local, expiração, revogação e acesso negado. |
 | Tentativas de senha e políticas corporativas | Logs do Microsoft Entra ID, sob gestão da equipe de identidade | Falhas de senha, MFA, bloqueios e decisões de acesso condicional no provedor. A agenda registra apenas o resultado recebido ou uma falha de retorno; não inventa o motivo interno do Entra ID. |
 | Alterações de negócio | Tabela `audit` existente no PostgreSQL | Quem alterou qual entidade, quando e os dados anteriores/posteriores permitidos. Continua separada dos eventos de login. |
 | Falhas técnicas e operação | Log estruturado da aplicação, enviado à saída do processo e recolhido pelo ambiente de hospedagem | Erros de aplicação e banco, tempo de resposta e identificador de correlação, sem corpo de requisição, cookie, credenciais ou dados desnecessários. |

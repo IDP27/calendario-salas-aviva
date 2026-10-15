@@ -1,10 +1,8 @@
 // Pure presentation helpers. Keep business authorization and conflicts on the server.
 export const statusNames = {
-  pending: "Pendente de validação",
-  waiting: "Em espera",
-  option: "Em opção prioritária",
   confirmed: "Confirmado",
   cancelled: "Cancelado",
+  reserved: "Reservado",
 };
 
 export const resorts = { cs: "Costa do Sauípe", rq: "Rio Quente" };

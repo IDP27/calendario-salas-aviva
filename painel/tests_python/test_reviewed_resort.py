@@ -15,7 +15,7 @@ def rio_quente():
 
 
 def test_reviewed_sauipe_assignment_preserves_booking_and_topology(api,app):
-    booking=api.create(status='pending').json
+    booking=api.create(status='reserved').json
     with app.app_context():
         preview=assign_reviewed_resort(reviewed())
         assert preview['source_codes']==114
@@ -30,7 +30,7 @@ def test_reviewed_sauipe_assignment_preserves_booking_and_topology(api,app):
         assert get_db().execute("SELECT count(*) AS n FROM configurations WHERE validated OR options <> '[]'::jsonb").fetchone()['n']==0
         assert get_db().execute('SELECT count(*) AS n FROM resources WHERE validated').fetchone()['n']==0
         assert get_db().execute('SELECT count(*) AS n FROM audit WHERE entity_type=%s AND action=%s',('configuration','classify')).fetchone()['n']==90
-    assert api.detail(booking)['status']=='pending'
+    assert api.detail(booking)['status']=='reserved'
     assert api.config(7)['resort_id']=='cs'
     assert api.config(10)['resort_id']=='cs'
     assert all(api.config(code)['resort_id']=='cs' for code in (20,21,22,24))
@@ -53,7 +53,7 @@ def test_reviewed_assignment_rejects_partial_arena_group(app):
 
 
 def test_rio_quente_assignment_requires_prior_classification_and_preserves_pending(api,app):
-    booking=api.create(code=31,status='pending').json
+    booking=api.create(code=31,status='reserved').json
     with app.app_context():
         with pytest.raises(Problem,match='classificações anteriores'):
             assign_reviewed_resort(rio_quente(),apply=True)
@@ -70,4 +70,4 @@ def test_rio_quente_assignment_requires_prior_classification_and_preserves_pendi
         group=get_db().execute('SELECT resort_id,validated,options FROM configurations WHERE id=%s',('space_035',)).fetchone()
         assert group['resort_id']=='rq' and group['validated'] is False and group['options']==[]
         assert get_db().execute('SELECT resort_id FROM resources WHERE id=%s',('resource_031',)).fetchone()['resort_id']=='rq'
-    assert api.detail(booking)['status']=='pending'
+    assert api.detail(booking)['status']=='reserved'

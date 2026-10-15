@@ -1,5 +1,7 @@
 # Proposta de evolução — Calendário de salas
 
+> **Proposta histórica.** As seções abaixo preservam hipóteses e decisões da fase de desenho, inclusive situações e funcionalidades que mudaram. O sistema atual usa somente **Reservado, Confirmado e Cancelado**; o empreendimento dos 99 espaços/configurações já foi classificado. Não use este texto como instrução de operação ou deploy. Consulte o [README](../README.md) e a [atualização dos status](ATUALIZACAO-STATUS-2026-10-15.md).
+
 Data: 7 de outubro de 2026.
 Estado: decisões atualizadas e implementação local disponível em Flask + PostgreSQL. O diagnóstico abaixo registra a base anterior; consulte `IMPLEMENTACAO.md` para o que foi entregue e verificado. Classificação dos resorts e homologação física permanecem pendentes.
 

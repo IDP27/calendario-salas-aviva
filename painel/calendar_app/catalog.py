@@ -193,7 +193,7 @@ def validate_topology(actor,config_id,data):
         normalized=[list(o) for o in normalized]
         if config['kind']=='espaco_sem_composicao_explicita' and normalized!=[[f"resource_{config['source_codes'][0]:03}"]]:
             raise Problem('Um espaço individual deve manter sua identidade física. Fusões exigem migração revisada.')
-        live=conn.execute("SELECT b.id FROM allocations a JOIN bookings b ON b.id=a.booking_id WHERE a.configuration_id=%s AND b.status IN ('waiting','option','confirmed') LIMIT 1",(config_id,)).fetchone()
+        live=conn.execute("SELECT b.id FROM allocations a JOIN bookings b ON b.id=a.booking_id WHERE a.configuration_id=%s AND (b.status='confirmed' OR (b.status='reserved' AND a.resources <> '[]'::jsonb)) LIMIT 1",(config_id,)).fetchone()
         if live and normalized!=config['options']:
             raise Problem('Há solicitações na fila ou ocupações nessa configuração. A composição não pode ser trocada enquanto estiverem vigentes.',409)
         for rid in {r for o in normalized for r in o}:

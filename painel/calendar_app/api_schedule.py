@@ -68,10 +68,16 @@ def booking_update(booking_id):
     return save_booking(g.user, request.get_json(), booking_id)
 
 
-@bp.post('/bookings/<booking_id>/<action>')
+@bp.post('/bookings/<booking_id>/confirm')
 @login_required
-def booking_action(booking_id, action):
-    return transition(g.user, booking_id, request.get_json(), action)
+def booking_confirm(booking_id):
+    return transition(g.user, booking_id, request.get_json(), 'confirm')
+
+
+@bp.post('/bookings/<booking_id>/cancel')
+@login_required
+def booking_cancel(booking_id):
+    return transition(g.user, booking_id, request.get_json(), 'cancel')
 
 
 @bp.get('/availability')

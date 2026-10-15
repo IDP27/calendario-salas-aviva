@@ -17,12 +17,12 @@ def availability_snapshot(actor, q):
             (first,end))}
         allocations=list(conn.execute('''SELECT a.booking_id,a.configuration_id,a.phase,a.start_date,a.end_exclusive,a.resources,b.status
                                          FROM allocations a JOIN bookings b ON b.id=a.booking_id
-                                         WHERE b.status IN ('pending','waiting','option','confirmed')
+                                         WHERE b.status IN ('reserved','confirmed')
                                            AND a.start_date<%s AND a.end_exclusive>%s
                                          ORDER BY a.start_date,a.end_exclusive,a.id''',(end,first)))
         request_ids={}
         for a in allocations:
-            if a['status'] in ('pending','waiting'):
+            if a['status']=='reserved':
                 request_ids.setdefault(a['configuration_id'],{}).setdefault(a['status'],set()).add(a['booking_id'])
         for config in all_catalog(conn):
             if not config_access(actor,config,resources) or (q['resort']!='all' and (config['resort_id'] or 'unassigned')!=q['resort']): continue
@@ -30,24 +30,24 @@ def availability_snapshot(actor, q):
             matching=[]
             for a in allocations:
                 exact=a['configuration_id']==config['id']
-                shared=a['status'] in ('option','confirmed') and bool(config_resources.intersection(a['resources']))
+                shared=bool(config_resources.intersection(a['resources']))
                 if exact or shared:
                     matching.append({'status':a['status'],'phase':a['phase'],'start_date':a['start_date'],
                                      'end_date':a['end_exclusive']-timedelta(days=1),'related':not exact})
             periods=list(dict.fromkeys((p['status'],p['phase'],p['start_date'],p['end_date'],p['related']) for p in matching))
             periods=[{'status':status,'phase':phase,'start_date':start,'end_date':last,'related':related}
                      for status,phase,start,last,related in periods]
-            exact_occupation=any(p['status'] in ('option','confirmed') and not p['related'] for p in periods)
+            periods.sort(key=lambda p:(p['status']!='confirmed',p['start_date'],p['end_date'],p['related']))
+            exact_occupation=any(p['status']=='confirmed' and not p['related'] for p in periods)
             choices=[]
             for option in config['options'] if config['validated'] else []:
                 wanted={(rid,first+timedelta(days=i)) for rid in option for i in range((end-first).days)}
                 choices.append({'resources':option,'available':not exact_occupation and wanted.isdisjoint(occupied)})
             results.append({'id':config['id'],'name':config['name'],'resort_id':config['resort_id'],
                             'validated':config['validated'],'options':choices,'available':False if exact_occupation else any(o['available'] for o in choices) if choices else None,
-                            'pending_count':len(request_ids.get(config['id'],{}).get('pending',set())),
-                            'waiting_count':len(request_ids.get(config['id'],{}).get('waiting',set())),
+                            'reserved_count':len(request_ids.get(config['id'],{}).get('reserved',set())),
                             'periods':periods})
-        return serialize({'results':results,'note':'Solicitações pendentes e em espera não ocupam a sala. Somente opções prioritárias e confirmações geram ocupação efetiva; a promoção respeita a fila.'})
+        return serialize({'results':results,'note':'Reservado registra a demanda sem bloquear a sala. Somente Confirmado gera ocupação efetiva; a confirmação respeita a fila.'})
 
 
 
@@ -68,7 +68,7 @@ def calendar_snapshot(actor, q):
         exact_occupations={}
         for a in conn.execute('''SELECT a.configuration_id,a.start_date,a.end_exclusive,a.booking_id
                                  FROM allocations a JOIN bookings b ON b.id=a.booking_id
-                                 WHERE b.status IN ('option','confirmed') AND a.start_date<%s AND a.end_exclusive>%s''',(end,first)):
+                                 WHERE b.status='confirmed' AND a.start_date<%s AND a.end_exclusive>%s''',(end,first)):
             for offset in range((min(a['end_exclusive'],end)-max(a['start_date'],first)).days):
                 key=(a['configuration_id'],max(a['start_date'],first)+timedelta(days=offset))
                 exact_occupations.setdefault(key,set()).add(a['booking_id'])
@@ -81,12 +81,12 @@ def calendar_snapshot(actor, q):
                 matches=exact_matches|{occupations[(rid,d)] for option in config['options'] for rid in option if (rid,d) in occupations}
                 free=sum(not any((r,d) in occupations for r in option) for option in config['options'])
                 state='occupied' if exact_matches else 'unvalidated' if not config['validated'] else 'available' if free==len(config['options']) else 'partial' if free else 'occupied'
-                pending=[b['id'] for b in filtered if b['status'] in ('pending','waiting') and any(
+                reserved=[b['id'] for b in filtered if b['status']=='reserved' and any(
                     a['start_date']<=d<a['end_exclusive'] and
                     (a['configuration_id']==config['id'] or
-                     (b['status']=='waiting' and config_resources.intersection(a['resources'])))
+                     config_resources.intersection(a['resources']))
                     for a in b['allocations'])]
                 config['days'][d.isoformat()]={'state':state,'bookings':[bid for bid in sorted(matches) if bid in visible_by_id],
-                                              'restricted':any(bid not in visible_by_id for bid in matches),'requests':pending}
+                                              'restricted':any(bid not in visible_by_id for bid in matches),'requests':reserved}
         return serialize({'configurations':configs,'bookings':filtered,'occupying_bookings':all_visible,'days':days,
                           'unassigned_count':missing,'server_time':conn.execute('SELECT now() AS t').fetchone()['t']})

@@ -1,6 +1,6 @@
 # Agenda de espaços — Costa do Sauípe & Rio Quente
 
-**Estado em 14/10/2026:** piloto local funcional e implantação Docker Compose preparada para Linux, ainda sem homologação no servidor corporativo. A agenda permite consultar espaços, registrar solicitações, administrar a fila e controlar bloqueios por dia inteiro de **01/01/2026 a 31/12/2028**. O backend Flask serve a interface e a API; o PostgreSQL é a fonte oficial dos dados. O Waitress executa a aplicação. Não é necessário um servidor Node.js para operá-la.
+**Estado em 15/10/2026:** piloto local funcional e implantação Docker Compose preparada para Linux, ainda sem homologação no servidor corporativo. A agenda permite consultar espaços, registrar solicitações, administrar a fila e controlar bloqueios por dia inteiro de **01/01/2026 a 31/12/2028**. O backend Flask serve a interface e a API; o PostgreSQL é a fonte oficial dos dados. O Waitress executa a aplicação. Não é necessário um servidor Node.js para operá-la.
 
 O projeto atende às equipes **Comercial MICE** e **Operacional**. Cada pessoa possui uma conta, uma equipe, um escopo por empreendimento e responsabilidades adicionais quando autorizada. A implantação compartilhada e o login real pelo Microsoft Entra ID ainda dependem de infraestrutura e homologação corporativas. A agenda não está integrada ao Opera Cloud.
 
@@ -9,6 +9,7 @@ O projeto atende às equipes **Comercial MICE** e **Operacional**. Cada pessoa p
 - [Estado da entrega](#estado-da-entrega)
 - [Arquitetura e tecnologias](#arquitetura-e-tecnologias)
 - [Versionamento e compatibilidade](#versionamento-e-compatibilidade)
+- [Atualização dos três status](docs/ATUALIZACAO-STATUS-2026-10-15.md)
 - [Funcionalidades e regras de negócio](#funcionalidades-e-regras-de-negócio)
 - [Fluxos detalhados de uso](#fluxos-detalhados-de-uso)
 - [Modelo de dados](#modelo-de-dados)
@@ -83,7 +84,7 @@ As dependências diretas estão fixadas em `pyproject.toml` e `requirements.txt`
 
 `0.1.0` é a versão declarada da aplicação, **não** um número de release homologada. Até esta revisão, o repositório não possui tag de release. O código está no Git; cada implantação deve registrar o commit ou tag aprovado, a data, as versões das imagens efetivamente usadas e a versão do esquema registrada em `public.schema_migrations`. Alterações de interface e backend são entregues juntas pela imagem da aplicação. O diretório `legacy/` preserva o painel anterior para consulta e não é outra versão do banco atual.
 
-As migrações SQL são ordenadas pelo nome (`001`, `002`, `003`) e aplicadas uma única vez, em ordem; não edite uma migração já executada em um ambiente. Para uma alteração futura do modelo, crie outro arquivo numerado e teste a atualização de uma cópia do banco antes do deploy. A aplicação Docker aplica as migrações ao iniciar; portanto, **subir uma nova imagem pode modificar o banco antes do primeiro acesso à página**. Faça backup antes de cada atualização e trate a reversão do banco separadamente da reversão do código.
+As migrações SQL são ordenadas pelo nome (`001` a `004`) e aplicadas uma única vez, em ordem; não edite uma migração já executada em um ambiente. Para uma alteração futura do modelo, crie outro arquivo numerado e teste a atualização de uma cópia do banco antes do deploy. A aplicação Docker aplica as migrações ao iniciar; portanto, **subir uma nova imagem pode modificar o banco antes do primeiro acesso à página**. Faça backup antes de cada atualização e trate a reversão do banco separadamente da reversão do código.
 
 O Dockerfile fixa as versões das **dependências diretas** em `requirements.txt` e usa as tags de imagem mostradas acima. O build com `pip` ainda pode resolver versões indiretas mais novas; `poetry.lock` só governa instalações feitas com Poetry. Para uma release totalmente reproduzível, a equipe deve congelar também as dependências indiretas da imagem e os digests das imagens base. Python 3.12/3.13 é a faixa do projeto; a imagem entregue executa **Python 3.13.16**. Não monte um volume de dados do PostgreSQL 14 diretamente no container 17: migre por backup/restauração planejados.
 
@@ -92,8 +93,8 @@ O Dockerfile fixa as versões das **dependências diretas** em `requirements.txt
 | Tela / função | O que oferece |
 | --- | --- |
 | **Calendário** | Grade mensal e lista, filtros por empreendimento e situação, pesquisa, indicação de pendências e de ocupação efetiva. No celular, inicia em lista. |
-| **Consultar disponibilidade** | Exibe por espaço/período as solicitações pendentes, a fila, a ocupação confirmada e, quando a composição foi validada, as opções físicas disponíveis. |
-| **Solicitações & fila** | Criação, consulta, edição e cancelamento de solicitações; ordem de entrada; promoção manual para opção prioritária e confirmação pelo responsável da fila. |
+| **Consultar disponibilidade** | Exibe por espaço/período as solicitações reservadas sem bloqueio, a ocupação confirmada e, quando a composição foi validada, as opções físicas disponíveis. |
+| **Solicitações & fila** | Criação, consulta, edição e cancelamento de solicitações; ordem de entrada e confirmação pelo responsável da fila. |
 | **Salas & espaços** | Consulta da fonte, classificação por empreendimento/localização, revisão da importação e validação da composição física com registro de evidência. |
 | **Pessoas & acessos** | Contas individuais, equipe, escopo, responsabilidades, ativação/desativação, exclusão de acesso e histórico de autenticação para administradores. |
 | **Relatórios** | Filtros por período, empreendimento, situação e pesquisa; CSV e impressão, com opção de salvar PDF no navegador. |
@@ -102,17 +103,17 @@ Uma **solicitação** contém evento/motivo, responsável, observações e de **
 
 | Situação | Efeito e condição principal |
 | --- | --- |
-| **Pendente de validação** | Registra a demanda mesmo sem composição física homologada; não ocupa recursos nem pode receber opção prioritária. |
-| **Em espera** | Entra na fila com composição física válida; não ocupa recursos. |
-| **Em opção prioritária** | Concedida manualmente pelo responsável da fila após revalidar prioridade e disponibilidade integral; ocupa recursos. |
+| **Reservado** | Registra a demanda e entra na fila, mesmo sem composição física homologada. Não ocupa recursos. Um espaço/período já confirmado não aceita nova reserva conflitante. |
 | **Confirmado** | Reserva aprovada pelo responsável da fila; ocupa os recursos conhecidos. Excepcionalmente, uma configuração ainda não validada pode ser confirmada sem recursos mapeados: a própria configuração fica bloqueada no período, mas conflitos com outras composições dependem da futura validação física. |
 | **Cancelado** | Libera a ocupação e conserva o registro e o histórico; uma nova negociação requer outra solicitação. |
 
-A prioridade considera a **interseção de recursos físicos e dias**, além da mesma configuração. Uma solicitação anterior que permanece integralmente disponível não pode ser ultrapassada por outra que disputa seus recursos. A fila não promove nem expira registros automaticamente. Mudanças de espaços, períodos ou fases de uma espera atribuem uma nova posição; edição apenas de texto preserva a posição. A confirmação é atômica: se uma parte conflitar, nenhuma parte é reservada. A chave única `(resource_id, day)` em `occupations` oferece uma segunda proteção contra dupla ocupação.
+Esses são os **únicos status de solicitação** na interface e na API. “A validar” é o estado da composição física, não outro status de reserva. “Livre” ou “sem ocupação efetiva” é disponibilidade calculada. O filtro oferece **Todas** além dos três status; em Salas & espaços ele seleciona configurações com solicitação correspondente, sem alterar a indicação de validação física. Veja [a atualização dos três status](docs/ATUALIZACAO-STATUS-2026-10-15.md) para o mapeamento dos dados antigos, efeitos no banco e roteiro de verificação.
+
+A prioridade considera a **interseção de recursos físicos e dias**, além da mesma configuração. Uma solicitação anterior que permanece integralmente disponível não pode ser ultrapassada por outra que disputa seus recursos. A fila não confirma nem expira registros automaticamente. Mudanças de espaços, períodos ou fases de uma reserva atribuem uma nova posição; edição apenas de texto preserva a posição. A confirmação é atômica: se uma parte conflitar, nenhuma parte é bloqueada. A chave única `(resource_id, day)` em `occupations` oferece uma segunda proteção contra dupla ocupação.
 
 O catálogo preserva os 125 códigos da lista recebida. Os códigos **5 e 6** são serviços e ficam fora da agenda. As **28 variantes da Arena Sauípe** são rastreadas sob quatro configurações de uso; não representam 28 salas independentes. A importação recusa mudanças silenciosas em códigos existentes, pode mostrar prévia e não duplica registros. A classificação e a validação da topologia física são operações distintas, com histórico e controle de versão.
 
-**Exemplo do fluxo:** uma pessoa de Comercial MICE registra evento, espaço e períodos de montagem, evento e desmontagem. Se a composição ainda não foi homologada, a solicitação fica pendente de validação e visível para a equipe, sem prometer disponibilidade física. Após a operação validar os recursos e as combinações permitidas, a solicitação pode entrar em espera. O responsável da fila verifica as solicitações anteriores e a ocupação de todos os dias/recursos, concede a opção prioritária e confirma quando autorizado. O bloqueio aparece no calendário e nos relatórios; uma eventual edição ou cancelamento fica no histórico.
+**Exemplo do fluxo:** uma pessoa de Comercial MICE registra evento, espaço e períodos de montagem, evento e desmontagem como **Reservado**. A solicitação fica visível sem bloquear o espaço. O responsável pela fila verifica as solicitações anteriores e a ocupação de todos os dias/recursos; ao confirmar, o bloqueio aparece no calendário e nos relatórios. Edição e cancelamento ficam no histórico.
 
 ## Fluxos detalhados de uso
 
@@ -127,42 +128,41 @@ O catálogo preserva os 125 códigos da lista recebida. Os códigos **5 e 6** s�
 | Passo | Comportamento |
 | --- | --- |
 | Consultar o calendário | Escolha mês entre 2026 e 2028, empreendimento, situação e pesquisa. A grade exibe um dia por coluna; a lista mostra solicitações. No celular a lista é o modo inicial. O filtro de situação modifica a lista de solicitações, mas **não oculta ocupação efetiva** da grade. |
-| Interpretar um dia | Hachura indica composição física ainda não validada; ponto cheio, ocupação; meio ponto, algumas opções de composição ocupadas; contador amarelo, demandas pendentes ou em espera. Abrir um dia mostra solicitações visíveis e pode informar que existe ocupação cujos detalhes estão fora do escopo da pessoa. |
-| Consultar disponibilidade | Informe primeiro e último dia. O resultado separa pendências e espera dos períodos em opção/confirmados. Composição não validada aparece como **a validar**, e a disponibilidade de uma opção física é calculada no período completo. Essa consulta não concede prioridade nem reserva o espaço. |
+| Interpretar um dia | Hachura indica composição física ainda não validada; ponto cheio, ocupação confirmada; meio ponto, algumas opções de composição ocupadas; contador amarelo, demandas reservadas sem bloqueio. Abrir um dia mostra solicitações visíveis e pode informar que existe ocupação cujos detalhes estão fora do escopo da pessoa. |
+| Consultar disponibilidade | Informe primeiro e último dia. O resultado separa solicitações reservadas dos períodos confirmados. Composição não validada aparece como **a validar**, e a disponibilidade de uma opção física é calculada no período completo. Essa consulta não confirma nem bloqueia o espaço. |
 | Criar solicitação | Informe evento, responsável, situação, observações e de **1 a 40** alocações. Cada alocação pede empreendimento, espaço filtrado, fase, início e último dia. A equipe proprietária e o autor vêm da sessão, não do formulário. Se houver composição homologada, selecione uma das opções físicas permitidas. É possível adicionar espaços ou fases à mesma solicitação. |
-| Acompanhar a fila | **Solicitações & fila** apresenta os registros pela ordem de entrada, com filtros por empreendimento, situação e pesquisa. O número da fila é definido no banco. A solicitação em espera não ocupa o espaço; o responsável da fila promove ou confirma manualmente após a verificação integral de conflitos. |
-| Abrir e alterar | **Consultar** mostra situação, equipe, responsável, períodos, composição, número da fila e histórico. A equipe proprietária pode editar ou cancelar com motivo; o responsável da fila pode promover/confirmar registros de outra equipe no seu escopo, mas não editar o evento nem cancelá-lo. |
+| Acompanhar a fila | **Solicitações & fila** apresenta os registros pela ordem de entrada, com filtros por empreendimento, situação e pesquisa. O número da fila é definido no banco. **Reservado** não ocupa o espaço; o responsável da fila confirma manualmente após a verificação integral de conflitos. |
+| Abrir e alterar | **Consultar** mostra situação, equipe, responsável, períodos, composição, número da fila e histórico. A equipe proprietária pode editar ou cancelar com motivo; o responsável da fila pode confirmar registros de outra equipe no seu escopo, mas não editar o evento nem cancelá-lo. |
 
-Uma solicitação **pendente** pode ser criada sem composição física validada; ela não bloqueia nada. Para colocá-la **em espera**, cada alocação precisa ter uma composição homologada. A validação posterior do catálogo não muda automaticamente a situação de solicitações antigas. Somente `can_schedule` pode conceder **opção prioritária** ou **confirmar**. A confirmação de uma configuração ainda não validada é uma exceção operada por essa pessoa: impede outra opção/confirmação da configuração exata no período, mas a segurança contra sobreposição com configurações relacionadas depende do mapeamento físico futuro.
+Uma solicitação **Reservada** pode ser criada sem composição física validada e não bloqueia nada. A criação ou mudança de espaço/período é recusada se já houver uma confirmação conflitante; reservas que já estavam na fila antes da confirmação permanecem registradas. Se uma composição única for homologada depois, ela é selecionada ao confirmar; quando houver várias opções físicas, a escolha deve ser feita na solicitação antes da confirmação. Somente `can_schedule` pode **confirmar**. A confirmação de uma configuração ainda não validada é uma exceção operada por essa pessoa: impede outra reserva ou confirmação da configuração exata no período, mas a segurança contra sobreposição com configurações relacionadas depende do mapeamento físico futuro.
 
 | Transição atual | Quem pode executar | Efeito |
 | --- | --- | --- |
-| Criar `pending` ou `waiting` | Pessoa da equipe | Registra a demanda; `waiting` exige composição validada. |
+| Criar `reserved` | Pessoa da equipe | Registra a demanda e entra na fila sem bloquear o espaço. |
 | Criar diretamente `confirmed` | Pessoa com `can_schedule` | Revalida fila e conflitos e bloqueia o conjunto todo; confirmação sem topologia exige sua responsabilidade. |
-| `pending` → `waiting` | Equipe proprietária | Passa a concorrer na fila após validação física. |
-| `waiting` → `option` | Pessoa com `can_schedule` | Revalida ordem e disponibilidade e ocupa recursos físicos. |
-| `pending`/`waiting`/`option` → `confirmed` | Pessoa com `can_schedule` | Confirma todos os períodos em uma transação. |
-| Editar ou retornar para `pending`/`waiting` | Equipe proprietária | Revalida dados; sair de `option` ou `confirmed` libera ocupações. Alterar alocações enquanto está `waiting` atribui nova posição na fila. |
-| Cancelar | Equipe proprietária | Exige motivo, libera ocupações e preserva registro e histórico; não promove automaticamente outra solicitação. |
+| `reserved` → `confirmed` | Pessoa com `can_schedule` | Revalida fila e conflitos; confirma todos os períodos em uma transação. |
+| Editar ou retornar para `reserved` | Equipe proprietária | Revalida dados; sair de `confirmed` libera ocupações. Alterar alocações enquanto está `reserved` atribui nova posição na fila. |
+| Cancelar | Equipe proprietária | Exige motivo, libera ocupações e preserva registro e histórico; não confirma automaticamente outra solicitação. |
 
-**Regra a homologar com a operação:** o código atual permite à equipe proprietária rebaixar uma solicitação `confirmed` para `waiting` ou `pending`, liberando seu bloqueio; em seguida ela pode alterar períodos/espaços como demanda não confirmada. Enquanto permanece `confirmed`, uma pessoa sem `can_schedule` não pode alterar suas alocações. Defina antes do uso compartilhado se esse rebaixamento deve continuar permitido. A confirmação posterior sempre volta a exigir `can_schedule`.
+**Regra a homologar com a operação:** o código atual permite à equipe proprietária retornar uma solicitação `confirmed` para `reserved`, liberando seu bloqueio; em seguida ela pode alterar períodos/espaços. Enquanto permanece `confirmed`, uma pessoa sem `can_schedule` não pode alterar suas alocações. Defina antes do uso compartilhado se esse retorno deve continuar permitido. A confirmação posterior sempre volta a exigir `can_schedule`.
 
 ### Catálogo, pessoas e relatórios
 
-- **Salas & espaços:** o catálogo mantém os códigos originais e dados técnicos como referência. A pessoa com `can_catalog` pode consultar as 125 linhas de origem, importar a lista JSON completa primeiro em prévia e depois com confirmação, classificar de 1 a 150 configurações por empreendimento/localização com motivo, cadastrar um recurso físico identificado pela operação e validar conjuntos permitidos com atestado e referência. A importação recusa alterações silenciosas de códigos existentes e não sobrescreve uma revisão prévia.
-- **Validação física:** um recurso novo não fica validado automaticamente. Cada configuração aceita de 1 a 30 opções homologadas, cada uma com até 30 recursos; configurações com número de módulos declarado exigem esse tamanho por opção. Um espaço individual preserva sua identidade física. A topologia não pode ser substituída por outra enquanto houver solicitação `waiting`, `option` ou `confirmed` naquela configuração. O histórico cadastral exibe até 300 alterações recentes.
+- **Salas & espaços:** o catálogo mantém os códigos originais e dados técnicos como referência. O filtro de situação mostra apenas espaços com pelo menos uma solicitação daquele status em **2026–2028**; a validação física continua indicada separadamente. A pessoa com `can_catalog` pode consultar as 125 linhas de origem, importar a lista JSON completa primeiro em prévia e depois com confirmação, classificar de 1 a 150 configurações por empreendimento/localização com motivo, cadastrar um recurso físico identificado pela operação e validar conjuntos permitidos com atestado e referência. A importação recusa alterações silenciosas de códigos existentes e não sobrescreve uma revisão prévia.
+- **Validação física:** um recurso novo não fica validado automaticamente. Cada configuração aceita de 1 a 30 opções homologadas, cada uma com até 30 recursos; configurações com número de módulos declarado exigem esse tamanho por opção. Um espaço individual preserva sua identidade física. A topologia não pode ser substituída por outra enquanto houver solicitação `confirmed` ou uma solicitação `reserved` que já tenha composição física escolhida naquela configuração. O histórico cadastral exibe até 300 alterações recentes.
 - **Pessoas & acessos:** `can_manage_users` vê as contas, adiciona pessoas, define equipe e escopo na criação, altera atividade/escopo/responsabilidades e exclui acessos. Alterar ou excluir revoga as sessões da pessoa. O administrador não altera nem exclui o próprio acesso pela interface. A consulta de autenticação mostra os 300 eventos recentes; a exclusão retira a conta da lista, mas preserva vínculos históricos e a auditoria anterior.
 - **Relatórios:** use período, empreendimento, situação e pesquisa. A consulta considera alocações que **intersectam** o período, inclusive quando começaram antes dele. O CSV exporta uma linha por alocação encontrada, em UTF-8 com BOM e `;`; impressão/PDF usa o navegador. O relatório obedece ao escopo da conta e não substitui backup da base.
 
 ## Modelo de dados
 
-As migrações `001_initial.sql`, `002_authentication.sql` e `003_user_deletion.sql` são aplicadas por `flask --app calendar_app init-db`. A tabela `schema_migrations` registra o que já foi executado. Não há SQLite nem armazenamento da agenda no navegador.
+As migrações `001_initial.sql`, `002_authentication.sql`, `003_user_deletion.sql` e `004_three_booking_statuses.sql` são aplicadas por `flask --app calendar_app init-db`. A tabela `schema_migrations` registra o que já foi executado. Não há SQLite nem armazenamento da agenda no navegador.
 
 | Migração | Alteração principal |
 | --- | --- |
 | `001_initial.sql` | Empreendimentos, equipes, contas, fonte/catálogo, solicitações, alocações, ocupações, auditoria, idempotência e contadores de login. |
 | `002_authentication.sql` | Vínculo Entra (`entra_tenant_id` + `entra_object_id`), sessões revogáveis e eventos de autenticação. |
 | `003_user_deletion.sql` | Marca temporal `users.deleted_at` para retirada lógica de contas. |
+| `004_three_booking_statuses.sql` | Converte os status antigos nos três status atuais, preserva ocupações e atualiza respostas de idempotência persistidas. O texto histórico da auditoria permanece como foi gravado. |
 
 | Tabelas | Conteúdo |
 | --- | --- |
@@ -183,7 +183,7 @@ As migrações `001_initial.sql`, `002_authentication.sql` e `003_user_deletion.
 | `resources.id`, `resort_id`, `validated`, `evidence`, `version` | Identidade dos módulos/recursos físicos; uma configuração pode usar um ou vários deles. |
 | `bookings.id`, `queue_number`, `team_id`, `status`, `created_by`, `updated_by`, `version` | Evento e dono da equipe, ordem de entrada, estado e controle de edição simultânea. Título, responsável, notas e horários de criação/atualização também são persistidos. |
 | `allocations.booking_id`, `configuration_id`, `phase`, `start_date`, `end_exclusive`, `resources` | Uma linha por espaço/fase/período da solicitação. O último dia mostrado é `end_exclusive - 1 dia`; `resources` guarda o conjunto escolhido quando homologado. |
-| `occupations.resource_id`, `day`, `booking_id` | Ocupação efetiva por recurso/dia para opções e reservas confirmadas com recursos conhecidos; chave primária `(resource_id, day)`. |
+| `occupations.resource_id`, `day`, `booking_id` | Ocupação efetiva por recurso/dia para solicitações confirmadas com recursos conhecidos; chave primária `(resource_id, day)`. |
 | `audit.actor_id`, `entity_type`, `entity_id`, `action`, `before_data`, `after_data`, `note`, `occurred_at` | Trilha de mudanças de negócio/cadastro. A exclusão de acesso preserva esta tabela e seus dados anteriores. |
 | `auth_sessions`, `auth_events`, `login_attempts`, `idempotency` | Revogação de sessão, eventos de segurança, limitação temporária de login e resposta idêntica para reenvio seguro de criação. |
 
@@ -202,7 +202,7 @@ Na stack Compose entregue, o serviço `db` cria o banco **`calendario`** e o usu
 | Agenda | `bookings`, `allocations`, `occupations`, `idempotency` | Solicitações, períodos, bloqueios e proteção contra reenvio. |
 | Segurança e histórico | `auth_sessions`, `auth_events`, `login_attempts`, `audit` | Sessões, eventos de acesso, limitação de login local e alterações de negócio. |
 
-São **16 tabelas** após as três migrações. `bookings` registra o evento e sua posição na fila; `allocations` registra espaço, fase e intervalo com fim exclusivo; `occupations` tem chave primária `(resource_id, day)` para impedir ocupação duplicada do mesmo recurso no mesmo dia. `users.scopes` limita os empreendimentos consultáveis pela API. O banco não implementa isolamento por equipe via Row Level Security: o controle de escopo e responsabilidades ocorre na aplicação, por isso o acesso direto ao banco deve ser restrito.
+São **16 tabelas** após as quatro migrações. `bookings` registra o evento e sua posição na fila; `allocations` registra espaço, fase e intervalo com fim exclusivo; `occupations` tem chave primária `(resource_id, day)` para impedir ocupação duplicada do mesmo recurso no mesmo dia. `users.scopes` limita os empreendimentos consultáveis pela API. O banco não implementa isolamento por equipe via Row Level Security: o controle de escopo e responsabilidades ocorre na aplicação, por isso o acesso direto ao banco deve ser restrito.
 
 O processo abre conexões `psycopg` com tempo limite de conexão de **5 segundos** e `statement_timeout` de **20 segundos**. O Waitress inicia com **6 threads** no container; não há pool externo de conexões configurado. Dimensionamento, limite de conexões, armazenamento, alta disponibilidade e ensaio de carga dependem da infraestrutura escolhida; não há números de capacidade homologados. `/health` faz `SELECT 1` e retorna erro se o banco estiver indisponível. O Compose usa um volume persistente `postgres_data` e não publica a porta 5432 no host.
 
@@ -225,7 +225,7 @@ Após o login, a agenda gera um **token opaco aleatório**. O navegador o recebe
 
 Os padrões atuais são **8 horas de duração absoluta** e **60 minutos sem atividade**, configuráveis. Em cada chamada à API, o servidor verifica token, hash, prazos, revogação, conta ativa e versão de acesso. Logout revoga a sessão no banco. Alterar o acesso ou desativar uma conta revoga suas sessões; trocar a senha local revoga as outras sessões da pessoa. Limpeza de sessões antigas e contadores de tentativa existe no comando `prune-auth`, mas precisa de agendamento operacional.
 
-Escopo e responsabilidades são conferidos no servidor, independentemente dos botões visíveis na interface. A conta comum consulta os empreendimentos de seu escopo e edita/cancela apenas solicitações da própria equipe. `can_catalog` autoriza cadastro e topologia; `can_schedule` concede opção prioritária e confirmação; `can_manage_users` administra pessoas e acessos. O responsável da fila pode promover ou confirmar solicitações de outra equipe no escopo, mas não editar o evento ou cancelá-lo. Um administrador não altera o próprio acesso pela tela.
+Escopo e responsabilidades são conferidos no servidor, independentemente dos botões visíveis na interface. A conta comum consulta os empreendimentos de seu escopo e edita/cancela apenas solicitações da própria equipe. `can_catalog` autoriza cadastro e topologia; `can_schedule` autoriza confirmação; `can_manage_users` administra pessoas e acessos. O responsável da fila pode confirmar solicitações de outra equipe no escopo, mas não editar o evento ou cancelá-lo. Um administrador não altera o próprio acesso pela tela.
 
 ### Proteções de entrada, navegador e banco
 
@@ -261,7 +261,7 @@ As três responsabilidades são **independentes**; atribuir uma não concede aut
 | --- | --- | --- |
 | Consultar calendário, catálogo, disponibilidade, solicitações e relatórios | Qualquer conta ativa | Apenas configurações e solicitações inteiramente dentro do escopo. Um bloqueio fora do escopo pode aparecer como ocupação com detalhes restritos na grade. |
 | Criar solicitação; editar ou cancelar uma existente | Qualquer conta ativa | Equipe proprietária e escopo; o servidor define equipe/autoria. Edição confirmada obedece às regras de situação e alocação descritas acima. |
-| Conceder opção prioritária ou confirmar reserva | `can_schedule` | Pode atuar em outra equipe, desde que a solicitação inteira esteja no escopo; deve passar pela checagem de fila/conflitos. Não concede edição/cancelamento da outra equipe. |
+| Confirmar reserva | `can_schedule` | Pode atuar em outra equipe, desde que a solicitação inteira esteja no escopo; deve passar pela checagem de fila/conflitos. Não concede edição/cancelamento da outra equipe. |
 | Consultar fonte, importar catálogo completo, classificar, cadastrar recurso, validar topologia, ver histórico cadastral | `can_catalog` | Classificação, recursos e topologia respeitam o escopo; a importação da lista completa e a consulta ao histórico cadastral são globais na base. |
 | Criar, ativar/desativar, ajustar ou excluir pessoas; ver histórico de autenticação | `can_manage_users` | Administração de contas é global na base, não limitada ao escopo de consulta da própria pessoa. Não pode ajustar nem excluir o próprio acesso pela interface. |
 | Trocar a própria senha | Pessoa autenticada no modo `local` | Exige senha atual; modo `entra` transfere a gestão de senha ao provedor corporativo. |
@@ -283,22 +283,22 @@ A interface e a API usam a mesma origem. `GET /health` é público e consulta o 
 | `POST /api/catalog/classify`, `POST /api/catalog/{id}/topology`, `POST /api/resources` | Classificação, homologação da composição e cadastro de recurso; exigem `can_catalog` e escopo adequado. |
 | `GET /api/bookings`, `GET /api/bookings/{id}` | Lista filtrada ou detalhe com histórico da solicitação, dentro do escopo. |
 | `POST /api/bookings`, `PUT /api/bookings/{id}` | Cria ou edita uma solicitação da equipe, com validação de datas, composição, situação, versão e conflitos. A criação exige `Idempotency-Key`. |
-| `POST /api/bookings/{id}/promote`, `/confirm`, `/cancel` | Promoção/confirmação por `can_schedule`, ou cancelamento com motivo pela equipe proprietária; cada ação exige `version` atual. |
-| `GET /api/availability` | Situação dos espaços e opções físicas no período, com pendências/espera separados de ocupações efetivas. |
+| `POST /api/bookings/{id}/confirm`, `/cancel` | Confirmação por `can_schedule`, ou cancelamento com motivo pela equipe proprietária; cada ação exige `version` atual. |
+| `GET /api/availability` | Situação dos espaços e opções físicas no período, com solicitações reservadas separadas de ocupações confirmadas. |
 | `GET /api/calendar` | Dados diários da grade; cada consulta cobre no máximo **62 dias**. |
 | `GET /api/reports.csv` | Exportação filtrada de alocações, uma linha por período encontrado. |
 | `GET/POST /api/users`, `PUT/DELETE /api/users/{id}` | Consulta, criação, ajuste e exclusão lógica de contas; exigem `can_manage_users`. |
 | `GET /api/audit/catalog`, `GET /api/audit/auth` | Até 300 registros recentes do histórico cadastral ou de autenticação; exigem `can_catalog` ou `can_manage_users`, respectivamente. |
 
-`GET /api/bookings`, `GET /api/calendar` e `GET /api/reports.csv` aceitam `from` e `to` em `AAAA-MM-DD`, `resort` (`all`, `cs`, `rq`; `unassigned` existe para administração de dados ainda não classificados), `status` (`pending`, `waiting`, `option`, `confirmed`, `cancelled`) e `search` (texto; o servidor considera no máximo 200 caracteres). Sem datas, o período padrão da consulta é **01/01/2026 a 31/12/2028**; a grade `/api/calendar` exige um recorte de até **62 dias**, portanto deve receber um mês ou intervalo curto. O filtro é por interseção com as alocações, não apenas por data inicial. A pesquisa ignora acentos e diferenças de caixa em evento, responsável, equipe e nome do espaço. O resultado de uma solicitação pode conter `matched_allocations`, a parte das suas alocações que satisfez os filtros. `GET /api/availability` usa o intervalo e o empreendimento; ele mostra pendências e ocupações independentemente dos filtros de situação e pesquisa. As datas devolvidas em JSON seguem ISO 8601.
+`GET /api/bookings`, `GET /api/calendar` e `GET /api/reports.csv` aceitam `from` e `to` em `AAAA-MM-DD`, `resort` (`all`, `cs`, `rq`; `unassigned` existe para administração de dados ainda não classificados), `status` (`reserved`, `confirmed`, `cancelled`) e `search` (texto; o servidor considera no máximo 200 caracteres). Sem datas, o período padrão da consulta é **01/01/2026 a 31/12/2028**; a grade `/api/calendar` exige um recorte de até **62 dias**, portanto deve receber um mês ou intervalo curto. O filtro é por interseção com as alocações, não apenas por data inicial. A pesquisa ignora acentos e diferenças de caixa em evento, responsável, equipe e nome do espaço. O resultado de uma solicitação pode conter `matched_allocations`, a parte das suas alocações que satisfez os filtros. `GET /api/availability` usa o intervalo e o empreendimento; ele mostra solicitações reservadas e ocupações confirmadas independentemente dos filtros de situação e pesquisa. As datas devolvidas em JSON seguem ISO 8601.
 
-Em `POST`/`PUT`/`DELETE` sob `/api/`, o cliente envia um **objeto JSON** e `X-CSRF-Token` obtido de `/api/session`; o limite do corpo é **3 MB**. Na criação de solicitação, `Idempotency-Key` deve ter de **8 a 100 caracteres**. Edições, exclusão de pessoa e transições enviam o inteiro `version` recebido na última consulta: uma versão antiga é recusada sem substituir o trabalho mais recente. Exemplo mínimo de criação pendente, com identificador de configuração obtido de `/api/catalog`:
+Em `POST`/`PUT`/`DELETE` sob `/api/`, o cliente envia um **objeto JSON** e `X-CSRF-Token` obtido de `/api/session`; o limite do corpo é **3 MB**. Na criação de solicitação, `Idempotency-Key` deve ter de **8 a 100 caracteres**. Edições, exclusão de pessoa e transições enviam o inteiro `version` recebido na última consulta: uma versão antiga é recusada sem substituir o trabalho mais recente. Exemplo mínimo de criação reservada, com identificador de configuração obtido de `/api/catalog`:
 
 ```json
 {
   "title": "Evento de exemplo",
   "responsible": "Equipe solicitante",
-  "status": "pending",
+  "status": "reserved",
   "notes": "",
   "allocations": [
     {
@@ -343,7 +343,7 @@ Inicie a aplicação:
 
 Acesse **http://127.0.0.1:4174**. Se a agenda já estiver aberta, não é necessário iniciar outro servidor. `Ctrl+C` encerra a aplicação; o banco permanece ativo. Para encerrar o banco dedicado, use `pg_ctl -D instance/postgres stop` quando não houver usuários conectados.
 
-O banco do piloto já recebeu as três migrações. Antes da migração de autenticação, foi criado o backup local `instance/backups/pre-auth-2026-10-13.dump`; antes da migração de exclusão, `instance/backups/pre-user-deletion-2026-10-13.dump`. O diretório `instance/` e o arquivo `.env` são locais e ignorados pelo Git.
+O banco do piloto já recebeu as quatro migrações. Antes da migração de autenticação, foi criado o backup local `instance/backups/pre-auth-2026-10-13.dump`; antes da migração de exclusão, `instance/backups/pre-user-deletion-2026-10-13.dump`. O diretório `instance/` e o arquivo `.env` são locais e ignorados pelo Git.
 
 Em uma **base local vazia** com cadastro inicial habilitado, o primeiro acesso cria a conta individual de administração. A base atual do piloto já tem pessoas cadastradas; entre com a conta existente. Na criação de uma conta, escolha uma senha de 15 a 128 caracteres. Frases-senha, espaços e caracteres Unicode são aceitos; não há exigência de misturar tipos de caracteres. O piloto rejeita uma lista local inicial de senhas óbvias e a própria identificação do usuário; uma checagem ampla de credenciais vazadas depende de integração futura com serviço ou lista corporativa. A primeira conta administra cadastros, pessoas e fila; isso não permite editar/cancelar solicitações de outra equipe. Não existe `admin/admin123` na aplicação nova. Senhas já cadastradas continuam válidas no login até que seus titulares as alterem; a nova regra se aplica à criação e à troca de senha.
 
@@ -411,7 +411,7 @@ docker compose --env-file .env.docker -f compose.yaml -f compose.prod.yaml up -d
 docker compose --env-file .env.docker -f compose.yaml -f compose.prod.yaml ps
 ```
 
-Na **primeira subida de um banco vazio**, o processo aplica as três migrações, importa 125 linhas da fonte e classifica 99 configurações: 90 da Costa do Sauípe e 9 do Rio Quente. O processo não cria pessoas automaticamente. Nas subidas seguintes, verifica migrações pendentes e mantém cadastros e alterações existentes; a importação inicial não reclassifica uma base já em uso. O Caddy obtém e renova o certificado HTTPS automaticamente quando o DNS do domínio aponta para o servidor e as portas 80/443 estão alcançáveis pelo emissor. Se a agenda estiver apenas em rede interna ou usar certificado da organização, a equipe de infraestrutura deve configurar esse certificado no proxy. Não use um domínio fictício para homologar o Entra ID.
+Na **primeira subida de um banco vazio**, o processo aplica as quatro migrações, importa 125 linhas da fonte e classifica 99 configurações: 90 da Costa do Sauípe e 9 do Rio Quente. O processo não cria pessoas automaticamente. Nas subidas seguintes, verifica migrações pendentes e mantém cadastros e alterações existentes; a importação inicial não reclassifica uma base já em uso. A migração `004_three_booking_statuses.sql` converte `pending` e `waiting` para `reserved`, e `option` para `confirmed`, preservando os bloqueios físicos já concedidos. Os registros históricos da auditoria continuam refletindo os nomes originais no momento em que foram gravados. Faça backup antes de atualizar uma base existente. O Caddy obtém e renova o certificado HTTPS automaticamente quando o DNS do domínio aponta para o servidor e as portas 80/443 estão alcançáveis pelo emissor. Se a agenda estiver apenas em rede interna ou usar certificado da organização, a equipe de infraestrutura deve configurar esse certificado no proxy. Não use um domínio fictício para homologar o Entra ID.
 
 Com a stack ativa, vincule a primeira pessoa administradora ao **Object ID** do Entra, ou vincule contas já restauradas conforme [Ativar o login corporativo](#ativar-o-login-corporativo):
 
@@ -581,19 +581,19 @@ Não sobrescreva um `.env` existente. Proteja o arquivo e `instance/secret-key`,
 ## Operar a agenda
 
 1. Em **Salas & espaços**, consulte nomes, códigos da fonte e observações. As 125 linhas do PDF geram 99 espaços/configurações para revisão e 63 candidatos a recursos físicos. Os dois serviços ficam fora da agenda. As 28 variantes da Arena ficam rastreáveis sob quatro configurações, sem disponibilidade independente por fase ou climatização.
-2. Use **Validar composição** somente após confirmação da operação. A sugestão extraída do nome não é homologação. Para Arena, cadastre os módulos físicos identificados e depois vincule os conjuntos permitidos. Configurações sem validação aceitam solicitações pendentes e confirmações feitas pelo responsável da fila. Nestas confirmações, o bloqueio garante exclusividade da configuração escolhida; conflitos com outras configurações combinadas dependem da validação física.
+2. Use **Validar composição** somente após confirmação da operação. A sugestão extraída do nome não é homologação. Para Arena, cadastre os módulos físicos identificados e depois vincule os conjuntos permitidos. Configurações sem validação aceitam solicitações reservadas e confirmações feitas pelo responsável da fila. Nestas confirmações, o bloqueio garante exclusividade da configuração escolhida; conflitos com outras configurações combinadas dependem da validação física.
 3. Para atribuir resort e localização, selecione um ou mais itens e clique em **Classificar seleção**. A tela mostra os itens que serão alterados. Registre a referência da classificação. Os IDs, as solicitações e o histórico são preservados.
 4. Em **Nova solicitação**, informe evento/motivo, responsável, espaços, fases e datas. Em cada período, escolha primeiro o empreendimento (**Costa do Sauípe** ou **Rio Quente**); o campo **Espaço** mostrará somente as configurações desse empreendimento. Ao trocar o empreendimento, a escolha anterior de espaço e composição é limpa. Solicitações existentes recuperam automaticamente o empreendimento de cada espaço ao abrir a edição. Inclua montagem e desmontagem como períodos. A equipe proprietária vem da conta. A data final é inclusiva; a aplicação aceita 29/02/2028 e passagens entre meses/anos.
-5. Uma solicitação em espera entra na fila por ordem de entrada. O responsável da fila concede manualmente a opção prioritária após verificar o conjunto inteiro. Ele também pode confirmar a reserva na tela da solicitação ou marcar **Confirmar reserva e bloquear o espaço** ao salvar uma solicitação da própria equipe. A confirmação bloqueia todos os espaços e dias da solicitação de forma atômica: se algum já estiver reservado, nada é confirmado. **Consultar disponibilidade** mostra as datas das solicitações e dos bloqueios, distinguindo pendências de reservas confirmadas e indicando ocupações de configurações compartilhadas.
-6. Apenas o responsável da fila confirma bloqueios. A equipe proprietária pode editar os dados do seu registro e cancelar com motivo; para **manter a situação confirmada enquanto altera espaço ou período**, é necessário `can_schedule`. A implementação atual também permite à equipe voltar a solicitação para pendente/em espera, liberando a ocupação, conforme a regra a homologar acima. O cancelamento libera a ocupação e mantém histórico. A fila não avança nem expira automaticamente.
+5. Uma solicitação **Reservada** entra na fila por ordem de entrada sem bloquear o espaço. Se já existir confirmação conflitante, o sistema recusa uma nova reserva ou alteração de espaço/período; solicitações registradas antes da confirmação permanecem na fila. O responsável da fila pode escolher **Confirmar reserva** no detalhe ou selecionar **Confirmado** ao salvar uma solicitação da própria equipe. A confirmação bloqueia todos os espaços e dias da solicitação de forma atômica: se houver ocupação confirmada conflitante, nada é confirmado. **Consultar disponibilidade** mostra as datas das solicitações e dos bloqueios, distinguindo reservas sem bloqueio de confirmações e indicando ocupações de configurações compartilhadas.
+6. Apenas o responsável da fila confirma bloqueios. A equipe proprietária pode editar os dados do seu registro e cancelar com motivo; para **manter a situação confirmada enquanto altera espaço ou período**, é necessário `can_schedule`. A implementação atual também permite à equipe voltar a solicitação para **Reservado**, liberando a ocupação, conforme a regra a homologar acima. O cancelamento libera a ocupação e mantém histórico. A fila não confirma nem expira automaticamente.
 
-As condições de cada situação e o tratamento da confirmação sem topologia validada estão descritos em [Funcionalidades e regras de negócio](#funcionalidades-e-regras-de-negócio). Expansões de uma opção ou confirmação revalidam conflitos e prioridade nos novos dias e recursos.
+As condições de cada situação e o tratamento da confirmação sem topologia validada estão descritos em [Funcionalidades e regras de negócio](#funcionalidades-e-regras-de-negócio). Expansões de uma confirmação revalidam conflitos e prioridade nos novos dias e recursos.
 
 Os filtros exibem **Todos**, **Costa do Sauípe** e **Rio Quente**. A categoria provisória de identificação foi retirada da interface após a classificação dos 99 espaços/configurações. O valor vazio permanece apenas como estado interno para uma eventual importação futura; um responsável cadastral precisa atribuir um dos dois empreendimentos antes de criar novos recursos ou alterar a classificação pela aplicação. Os conflitos continuam usando recursos físicos globais.
 
-Na grade, hachura significa **a validar**, ponto indica ocupação efetiva e o contador mostra solicitações pendentes/em espera. A lista apresenta a situação por texto e cor. O filtro de situação filtra solicitações; ele nunca esconde ocupações físicas para fazer um dia parecer livre. O celular abre em lista. A atualização consulta o servidor a cada 20 segundos quando nenhum formulário/campo está em edição; também há **Atualizar agenda**. Falhas de conexão são sinalizadas.
+Na grade, hachura significa **a validar**, ponto indica ocupação efetiva e o contador mostra solicitações reservadas sem bloqueio. A lista apresenta a situação por texto e cor. O filtro de situação filtra solicitações; ele nunca esconde ocupações físicas para fazer um dia parecer livre. O celular abre em lista. A atualização consulta o servidor a cada 20 segundos quando nenhum formulário/campo está em edição; também há **Atualizar agenda**. Falhas de conexão são sinalizadas.
 
-**Consultar disponibilidade** mostra separadamente a ocupação efetiva e a quantidade de solicitações pendentes ou em espera que intersectam o período. Uma solicitação pendente, como a de uma configuração ainda não validada, fica visível na consulta, mas não aparece como bloqueio confirmado. A opção prioritária ocupa recursos físicos; a confirmação os ocupa quando já foram mapeados. Uma confirmação sem composição validada bloqueia a configuração exata, com a limitação de conflitos entre composições explicada acima.
+**Consultar disponibilidade** mostra separadamente a ocupação efetiva e a quantidade de solicitações reservadas que intersectam o período. Uma solicitação reservada, inclusive de configuração ainda não validada, fica visível na consulta, mas não aparece como bloqueio confirmado. Somente a confirmação ocupa recursos físicos quando já foram mapeados. Uma confirmação sem composição validada bloqueia a configuração exata, com a limitação de conflitos entre composições explicada acima.
 
 ## Pessoas e responsabilidades
 
@@ -603,7 +603,7 @@ A administração pode desativar contas e escolher **Excluir pessoa** com confir
 
 - Usuário comum: consulta seu escopo e altera solicitações da própria equipe.
 - Responsável cadastral: classifica espaços, revisa composições e importa a lista. Isso não concede edição de outra equipe.
-- Responsável da fila: concede a opção prioritária às solicitações elegíveis no seu escopo, inclusive de outra equipe. Não pode editar o evento nem cancelar essa outra equipe.
+- Responsável da fila: confirma solicitações elegíveis no seu escopo, inclusive de outra equipe. Não pode editar o evento nem cancelar essa outra equipe.
 - Administração de acessos: administra contas e escopos. Não altera o próprio acesso pela tela.
 
 Os nomes das pessoas responsáveis por cadastro e fila devem ser designados pela operação. O piloto usa contas locais; quando o modo Entra ID for ativado, a recuperação de senha ficará com a identidade corporativa.
@@ -645,11 +645,13 @@ node --test tests/*.test.mjs
 node --check dist/js/calendar.js
 ```
 
-Os testes Python criam esquemas isolados por teste no `TEST_DATABASE_URL` ou, na ausência dele, no `DATABASE_URL`. Os testes de recuperação criam e removem bancos temporários com prefixo de teste, exigindo `CREATEDB`; execute-os em ambiente de desenvolvimento. Não há SQLite. Node verifica a sintaxe JavaScript, os nove testes preservados do painel anterior e cinco testes novos do modelo e da apresentação da agenda.
+Os testes Python criam esquemas isolados por teste no `TEST_DATABASE_URL` ou, na ausência dele, no `DATABASE_URL`. Os testes de recuperação criam e removem bancos temporários com prefixo de teste, exigindo `CREATEDB`; execute-os em ambiente de desenvolvimento. Não há SQLite. Node executa 16 testes da interface e das funções preservadas do painel anterior; `node --check` verifica a sintaxe do controlador da agenda.
 
-**Validação em 14/10/2026:** 54 testes Python e 14 testes Node passaram. A suíte cobre regras de fila e conflito, datas, autorização e CSRF, sessões/revogação, registro de login, tentativa de SQL injection, importação/classificação, backup/restauração, concessão e revogação do papel de administrador, exclusão de acesso, um retorno Entra ID simulado e funções de filtros/apresentação da interface. `poetry check --lock` aprovou a configuração anterior das dependências. Isso **não equivale** a um teste real contra o tenant corporativo nem a um ensaio de carga.
+**Validação em 15/10/2026:** 58 testes Python e 16 testes Node passaram. A suíte cobre os três status, migração e bloqueio de novas reservas sobre confirmação, regras de fila e conflito, datas, autorização e CSRF, sessões/revogação, registro de login, tentativa de SQL injection, importação/classificação, backup/restauração, concessão e revogação do papel de administrador, exclusão de acesso, um retorno Entra ID simulado e funções de filtros/apresentação da interface. `poetry check --lock` aprovou a configuração anterior das dependências. Isso **não equivale** a um teste real contra o tenant corporativo nem a um ensaio de carga.
 
 Em 14/10/2026, a escolha de empreendimento por período e a interface reorganizada foram conferidas em prévias isoladas com dados fictícios: o seletor exibiu apenas os nove espaços do Rio Quente, o calendário carregou as 99 configurações e a navegação para **Pessoas & acessos** abriu o formulário de cadastro sem erros no console. Uma solicitação existente também recuperou Rio Quente/Gardênia na edição. Essas verificações visuais são complementares à suíte automatizada.
+
+Em 15/10/2026, uma prévia isolada verificou o fluxo **Reservado → Confirmado → Cancelado** pela interface: a confirmação ocupou Bahia 1, uma nova reserva para o mesmo período foi recusada, o cancelamento liberou os dias e outra solicitação no período foi aceita como Reservado. Os filtros de situação em Solicitações & fila, Relatórios e Salas & espaços foram conferidos com os registros de teste. Os dados fictícios da prévia foram descartados ao encerrar o script.
 
 A stack Docker foi construída e executada no Docker Desktop (containers Linux ARM64) com PostgreSQL 17.11. Aplicação e banco ficaram saudáveis; `/health` respondeu; as 99 configurações foram classificadas; reiniciar a aplicação não duplicou dados; backup e cópia do arquivo funcionaram. O arquivo do Caddy passou na validação de configuração. Ainda falta executar a stack em um servidor Linux da equipe, com domínio e login Entra reais.
 
@@ -681,7 +683,7 @@ A aplicação usa `create_app`, Blueprints e Waitress com depuração desativada
 | Identidade | Registrar a aplicação no Entra ID, configurar segredo e URL de retorno, vincular `tid` + `oid` às pessoas autorizadas e testar contas ativas/inativas, MFA e políticas do tenant. |
 | Sessões e acesso | Aprovar prazos de 8 horas/60 minutos ou seus substitutos, comportamento de saída do SSO, tratamento de contas desativadas no diretório e responsáveis por cada permissão. |
 | Catálogo físico | Validar módulos, uniões permitidas e evidências com a operação, sobretudo Arena, São Tomé e conjuntos do Rio Quente. Revisar confirmações já lançadas em configurações não validadas. |
-| Regra de reservas confirmadas | Decidir se a equipe proprietária poderá voltar uma confirmação para pendente/em espera, liberando o bloqueio, ou se a ação ficará restrita ao responsável da fila. O comportamento atual está descrito em [Fluxos detalhados de uso](#fluxos-detalhados-de-uso). |
+| Regra de reservas confirmadas | Decidir se a equipe proprietária poderá voltar uma confirmação para `reserved`, liberando o bloqueio, ou se a ação ficará restrita ao responsável da fila. O comportamento atual está descrito em [Fluxos detalhados de uso](#fluxos-detalhados-de-uso). |
 | Observabilidade e retenção | Coletar e proteger logs técnicos, definir alertas, acesso aos registros, duração de `auth_events`/`audit`, rotação e descarte. Agendar `prune-auth`. |
 | Continuidade | Agendar backup, guardar cópia externa protegida e ensaiar restauração para banco vazio. |
 | Aceite | Executar testes funcionais com ambas as equipes, teste real do Entra ID e avaliação de volume/desempenho. |
@@ -690,13 +692,13 @@ Antes da exposição, configure `CALENDAR_SECURE_COOKIES=1`, `CALENDAR_ALLOW_LOC
 
 ## Limites conhecidos e critérios de aceite
 
-Este README descreve o comportamento do código e o ensaio local realizado até **14/10/2026**. Para considerar a agenda pronta no servidor corporativo, registre o resultado dos pontos abaixo em uma homologação com infraestrutura, identidade, operação e as duas equipes usuárias:
+Este README descreve o comportamento do código e o ensaio local realizado até **15/10/2026**. Para considerar a agenda pronta no servidor corporativo, registre o resultado dos pontos abaixo em uma homologação com infraestrutura, identidade, operação e as duas equipes usuárias:
 
 1. **Identidade real:** testar o retorno do Entra ID no domínio definitivo, conta vinculada e não vinculada, MFA/acesso condicional, expiração, saída, troca de permissões e desativação de conta. O fluxo automatizado atual usa um retorno simulado; a desativação apenas no diretório não revoga imediatamente uma sessão local já ativa.
 2. **Catálogo e bloqueios:** validar fisicamente os módulos e todas as combinações usadas, revisar as confirmações provisórias e decidir a regra de rebaixamento de reservas confirmadas. Uma configuração ainda não homologada não oferece garantia de conflito com outras configurações que compartilham o mesmo espaço físico.
 3. **Infraestrutura e dados:** executar a stack no Linux escolhido, conferir certificados, DNS, portas e saída HTTPS; decidir se a base será nova ou migrada do PostgreSQL 14. Ensaiar backup, restauração e atualização em cópia antes de liberar o uso. A instalação atual tem banco único, sem replicação ou failover configurados.
 4. **Segurança e registros:** restringir o acesso ao banco e aos arquivos de segredo, configurar coleta/alertas e retenção de logs, eventos e backups, e agendar `prune-auth`. Rever com segurança o acesso global de `can_catalog` ao histórico cadastral e de `can_manage_users` às contas e eventos de acesso. O endereço de origem nos eventos da aplicação pode representar o proxy; não o use como identificação da pessoa sem correção homologada do encaminhamento de IP.
-5. **Operação e capacidade:** definir responsáveis por cadastro, fila e administração de acessos, testar com Comercial MICE e Operacional, medir carga esperada e estabelecer monitoramento, manutenção e recuperação. A agenda limita reservas ao período **2026–2028** e não faz promoção automática de fila nem integração com Opera Cloud.
+5. **Operação e capacidade:** definir responsáveis por cadastro, fila e administração de acessos, testar com Comercial MICE e Operacional, medir carga esperada e estabelecer monitoramento, manutenção e recuperação. A agenda limita reservas ao período **2026–2028** e não faz confirmação automática de fila nem integração com Opera Cloud.
 
 Esses itens dependem de decisões e testes no ambiente de destino. A existência dos containers e uma resposta positiva de `/health` confirmam processo e banco acessíveis, mas não substituem o aceite funcional, a topologia física ou o teste do login corporativo.
 

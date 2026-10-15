@@ -5,7 +5,7 @@ from conftest import API, PASSWORD
 def test_admin_deletes_access_and_preserves_history(app):
     admin = API(app, 'admin')
     seller = API(app, 'seller')
-    booking = seller.create(status='pending')
+    booking = seller.create(status='reserved')
     assert booking.status_code == 201, booking.json
     old = next(u for u in admin.get('/users').json['users'] if u['username'] == 'seller')
 

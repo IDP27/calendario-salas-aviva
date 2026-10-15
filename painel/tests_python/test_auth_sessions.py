@@ -54,7 +54,7 @@ def test_access_change_revokes_server_session(app):
 def test_sql_input_is_data_not_query(app):
     client = API(app, 'seller')
     title = "Sala'); DROP TABLE users; --"
-    result = client.create(code=7, status='pending', title=title)
+    result = client.create(code=7, status='reserved', title=title)
     assert result.status_code == 201, result.json
     assert client.detail(result.json)['title'] == title
     with app.app_context():

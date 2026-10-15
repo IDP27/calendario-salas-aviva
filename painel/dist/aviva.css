@@ -95,8 +95,7 @@ input[type=checkbox] { accent-color: #007d9d; }
 .day-button.partial { background: #f1f6d6; color: #5c6a00; }
 .day-button .request-count { color: #805003; background: #ffebac; }
 .day-button:hover { outline-color: #007d9d; }
-.status-pending { color: #526e7b; background: #edf2f4; }
-.status-waiting { color: #825400; background: #fff0c3; }
+.status-reserved { color: #825400; background: #fff0c3; }
 .status-option { color: #146b3f; background: #e0f4e8; }
 .status-confirmed { color: #005d76; background: #d9f2fa; }
 .status-cancelled { color: #8f453c; background: #f6e8e5; }
